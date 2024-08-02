@@ -1,5 +1,6 @@
 package com.luckybird.backendapp.dto;
 
+import com.luckybird.backendapp.exception.ExceptionMessages;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
@@ -9,13 +10,13 @@ import lombok.Setter;
  */
 @Setter
 @Getter
-public class UserRegistrationDto {
-    @NotBlank(message = "The username cannot be empty")
+public class UserLoginDto {
+    @NotBlank(message = ExceptionMessages.USERNAME_IS_EMPTY)
     private String username;
-    @NotBlank(message = "The password cannot be empty")
+    @NotBlank(message = ExceptionMessages.PASSWORD_IS_EMPTY)
     private String password;
 
-    public UserRegistrationDto() {
+    public UserLoginDto() {
     }
 
 }
