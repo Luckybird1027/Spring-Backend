@@ -23,12 +23,14 @@ public class GlobalExceptionHandler {
         log.error("BindException: " + failMsg + ", URL: " + request.getRequestURI());
         return new ResponseEntity<>(failMsg, HttpStatus.BAD_REQUEST);
     }
+
     @ExceptionHandler(BizException.class)
     public ResponseEntity<String> handleBizException(BizException e, HttpServletRequest request) {
         String failMsg = e.getMessage();
         log.error("BizException: " + failMsg + ", URL: " + request.getRequestURI());
         return new ResponseEntity<>(failMsg, HttpStatus.BAD_REQUEST);
     }
+
     @ExceptionHandler(Throwable.class)
     public ResponseEntity<String> handleException(Throwable e, HttpServletRequest request) {
         log.error("Exception: " + e.getMessage() + ", URL: " + request.getRequestURI());
