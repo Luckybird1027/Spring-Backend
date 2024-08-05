@@ -9,7 +9,7 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.luckybird</groupId>
-    <artifactId>BackendApp</artifactId>
+    <artifactId>SpringBackend</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>BackendApp</name>
     <description>BackendApp</description>
