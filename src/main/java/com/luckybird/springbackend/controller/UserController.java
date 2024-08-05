@@ -37,6 +37,7 @@ public class UserController {
         return userLoginVo;
     }
 
+
     @PostMapping("/register")
     public UserRegistrationVo register(@RequestBody @Valid UserRegistrationDto userRegistrationDto) {
         User user = userService.register(userRegistrationDto);
