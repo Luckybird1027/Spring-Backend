@@ -24,6 +24,13 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
 
+    public User convertToUser(UserRegistrationDto registrationDto){
+        User user = new User();
+        user.setUsername(registrationDto.getUsername());
+        user.setPassword(registrationDto.getPassword());
+        return user;
+    }
+
     @Override
     public User register(UserRegistrationDto registrationDto) {
         // 检查用户是否存在
@@ -57,4 +64,26 @@ public class UserServiceImpl implements UserService {
         log.info("User " + loginDto.getUsername() + " logged in successfully");
         return user;
     }
+
+    @Override
+    public User save(UserRegistrationDto dto){
+        User user = convertToUser(dto);
+        Optional<User> existingUser = userRepository.findByUsername(dto.getUsername());
+        if (existingUser.isPresent()) {
+            return existingUser.get();
+        }
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        userRepository.save(user);
+        return user;
+    }
+
+    @Override
+    public User update(Long id, UserRegistrationDto dto){
+        User user = userRepository.findById(id).orElseThrow(() -> new BizException(ExceptionMessages.USER_NOT_EXIST));
+        user.setUsername(dto.getUsername());
+        user.setPassword(passwordEncoder.encode(dto.getPassword()));
+        userRepository.save(user);
+        return user;
+    }
+    // TODO: 完善其他方法
 }

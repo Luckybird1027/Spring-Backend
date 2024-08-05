@@ -12,4 +12,8 @@ public interface UserService {
     User register(UserRegistrationDto registrationDto);
 
     User login(UserLoginDto loginDto);
+
+    User save(UserRegistrationDto dto);
+
+    User update(Long id, UserRegistrationDto dto);
 }
