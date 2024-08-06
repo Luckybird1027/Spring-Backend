@@ -4,9 +4,9 @@ import com.luckybird.springbackend.exception.BizException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.Objects;
@@ -18,23 +18,29 @@ import java.util.Objects;
 @Slf4j
 public class GlobalExceptionHandler {
     @ExceptionHandler(BindException.class)
-    public ResponseEntity<String> handleBindException(BindException e, HttpServletRequest request) {
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public String handleBindException(BindException e, HttpServletRequest request) {
         String failMsg = Objects.requireNonNull(e.getBindingResult().getFieldError()).getDefaultMessage();
         log.error("BindException: " + failMsg + ", URL: " + request.getRequestURI());
-        return new ResponseEntity<>(failMsg, HttpStatus.BAD_REQUEST);
+        return failMsg;
+        // TODO: failMsg待编写为错误信息对象
     }
 
     @ExceptionHandler(BizException.class)
-    public ResponseEntity<String> handleBizException(BizException e, HttpServletRequest request) {
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public String handleBizException(BizException e, HttpServletRequest request) {
         String failMsg = e.getMessage();
         log.error("BizException: " + failMsg + ", URL: " + request.getRequestURI());
-        return new ResponseEntity<>(failMsg, HttpStatus.BAD_REQUEST);
+        return failMsg;
+        // TODO: failMsg待编写为错误信息对象
     }
 
     @ExceptionHandler(Throwable.class)
-    public ResponseEntity<String> handleException(Throwable e, HttpServletRequest request) {
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public String handleException(Throwable e, HttpServletRequest request) {
         log.error("Exception: " + e.getMessage() + ", URL: " + request.getRequestURI());
-        return new ResponseEntity<>("Internal Server Error", HttpStatus.INTERNAL_SERVER_ERROR);
+        return "Internal Server Error";
+        // TODO: failMsg待编写为错误信息对象
     }
 
 }
