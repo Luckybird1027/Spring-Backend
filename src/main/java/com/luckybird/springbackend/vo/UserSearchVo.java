@@ -12,16 +12,16 @@ import java.util.List;
 @Getter
 @Setter
 public class UserSearchVo {
-    private Integer total;
+    private Long total;
     private List<User> users;
 
-    public UserSearchVo(List<User> users, Integer count) {
+    public UserSearchVo(List<User> users, Long count) {
         this.users = users;
         this.total = count;
-        // TODO: 当searchCount为false时，total仍然出现在回应json中，需修改
     }
 
     public UserSearchVo(List<User> users) {
         this.users = users;
+        this.total = null;
     }
 }

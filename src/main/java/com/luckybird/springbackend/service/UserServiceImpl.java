@@ -1,10 +1,13 @@
 package com.luckybird.springbackend.service;
 
 import com.luckybird.springbackend.dto.UserDto;
+import com.luckybird.springbackend.dto.UserSearchDto;
 import com.luckybird.springbackend.entity.User;
 import com.luckybird.springbackend.exception.BizException;
 import com.luckybird.springbackend.exception.ExceptionMessages;
 import com.luckybird.springbackend.reposity.UserRepository;
+import com.luckybird.springbackend.vo.UserSearchVo;
+import com.luckybird.springbackend.vo.UserVo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -34,8 +37,15 @@ public class UserServiceImpl implements UserService {
         return user;
     }
 
+    public UserVo convertToUserVo(User user) {
+        UserVo userVo = new UserVo();
+        userVo.setId(user.getId());
+        userVo.setUsername(user.getUsername());
+        return userVo;
+    }
+
     @Override
-    public User register(UserDto userDto) {
+    public UserVo register(UserDto userDto) {
         // 检查用户是否存在
         Optional<User> existingUser = userRepository.findByUsername(userDto.getUsername());
         if (existingUser.isPresent()) {
@@ -48,11 +58,11 @@ public class UserServiceImpl implements UserService {
         user.setPassword(encodedPassword);
         userRepository.save(user);
         log.info("User " + user.getUsername() + " registered successfully");
-        return user;
+        return convertToUserVo(user);
     }
 
     @Override
-    public User login(UserDto userDto) {
+    public UserVo login(UserDto userDto) {
         //检查用户是否存在
         Optional<User> existingUser = userRepository.findByUsername(userDto.getUsername());
         if (existingUser.isEmpty()) {
@@ -65,37 +75,38 @@ public class UserServiceImpl implements UserService {
         }
         // 登录成功
         log.info("User " + userDto.getUsername() + " logged in successfully");
-        return user;
+        return convertToUserVo(user);
     }
 
     @Override
-    public User save(UserDto userDto) {
+    public UserVo save(UserDto userDto) {
         User user = convertToUser(userDto);
         Optional<User> existingUser = userRepository.findByUsername(userDto.getUsername());
         if (existingUser.isPresent()) {
-            return existingUser.get();
+            return convertToUserVo(existingUser.get());
         }
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         userRepository.save(user);
-        return user;
+        return convertToUserVo(user);
     }
 
     // TODO: 更改密码操作应该单独实现一个接口
+    // TODO: update操作只修改userDto中不为空的的属性，其他属性不修改
     @Override
-    public User update(Long id, UserDto userDto) {
+    public UserVo update(Long id, UserDto userDto) {
         User user = userRepository.findById(id).orElseThrow(() -> new BizException(ExceptionMessages.USER_NOT_EXIST));
         user.setUsername(userDto.getUsername());
         user.setPassword(passwordEncoder.encode(userDto.getPassword()));
         userRepository.save(user);
-        return user;
+        return convertToUserVo(user);
     }
 
     @Override
-    public User updateUsername(Long id, String username) {
+    public UserVo updateUsername(Long id, String username) {
         User user = userRepository.findById(id).orElseThrow(() -> new BizException(ExceptionMessages.USER_NOT_EXIST));
         user.setUsername(username);
         userRepository.save(user);
-        return user;
+        return convertToUserVo(user);
     }
 
     @Override
@@ -104,18 +115,24 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User findById(Long id) {
-        return userRepository.findById(id).orElse(new User());
+    public UserVo findById(Long id) {
+        User user = userRepository.findById(id).orElse(new User());
+        return convertToUserVo(user);
     }
 
     @Override
-    public List<User> findByUsername(String username, int currentPage, int pageSize) {
+    public UserSearchVo searchByUsername(UserSearchDto userSearchDto, int currentPage, int pageSize, boolean searchCount) {
         Pageable pageable = PageRequest.of(currentPage - 1, pageSize);
-        return userRepository.findByUsernameContaining(username, pageable);
+        List<User> users = userRepository.findByUsernameContaining(userSearchDto.getKeyword(), pageable);
+        if (searchCount) {
+            long count = countByUsername(userSearchDto.getKeyword());
+            return new UserSearchVo(users, count);
+        }
+        return new UserSearchVo(users);
     }
 
     @Override
-    public Integer countByUsername(String username) {
+    public long countByUsername(String username) {
         return userRepository.countByUsernameContaining(username);
     }
 
