@@ -1,7 +1,6 @@
 package com.luckybird.springbackend.service;
 
-import com.luckybird.springbackend.dto.UserLoginDto;
-import com.luckybird.springbackend.dto.UserRegistrationDto;
+import com.luckybird.springbackend.dto.UserDto;
 import com.luckybird.springbackend.entity.User;
 
 import java.util.List;
@@ -11,13 +10,13 @@ import java.util.List;
  */
 public interface UserService {
 
-    User register(UserRegistrationDto registrationDto);
+    User register(UserDto registrationDto);
 
-    User login(UserLoginDto loginDto);
+    User login(UserDto userDto);
 
-    User save(UserRegistrationDto dto);
+    User save(UserDto dto);
 
-    User update(Long id, UserRegistrationDto dto);
+    User update(Long id, UserDto dto);
 
     User updateUsername(Long id, String username);
 
@@ -26,4 +25,6 @@ public interface UserService {
     User findById(Long id);
 
     List<User> findByUsername(String username, int currentPage, int pageSize);
+
+    Integer countByUsername(String username);
 }

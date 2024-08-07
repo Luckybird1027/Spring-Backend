@@ -1,7 +1,6 @@
 package com.luckybird.springbackend.service;
 
-import com.luckybird.springbackend.dto.UserLoginDto;
-import com.luckybird.springbackend.dto.UserRegistrationDto;
+import com.luckybird.springbackend.dto.UserDto;
 import com.luckybird.springbackend.entity.User;
 import com.luckybird.springbackend.exception.BizException;
 import com.luckybird.springbackend.exception.ExceptionMessages;
@@ -28,24 +27,24 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
 
-    public User convertToUser(UserRegistrationDto registrationDto) {
+    public User convertToUser(UserDto userDto) {
         User user = new User();
-        user.setUsername(registrationDto.getUsername());
-        user.setPassword(registrationDto.getPassword());
+        user.setUsername(userDto.getUsername());
+        user.setPassword(userDto.getPassword());
         return user;
     }
 
     @Override
-    public User register(UserRegistrationDto registrationDto) {
+    public User register(UserDto userDto) {
         // 检查用户是否存在
-        Optional<User> existingUser = userRepository.findByUsername(registrationDto.getUsername());
+        Optional<User> existingUser = userRepository.findByUsername(userDto.getUsername());
         if (existingUser.isPresent()) {
             throw new BizException(ExceptionMessages.USERNAME_ALREADY_EXISTS);
         }
         // 检查完成，注册用户
         User user = new User();
-        user.setUsername(registrationDto.getUsername());
-        String encodedPassword = passwordEncoder.encode(registrationDto.getPassword());
+        user.setUsername(userDto.getUsername());
+        String encodedPassword = passwordEncoder.encode(userDto.getPassword());
         user.setPassword(encodedPassword);
         userRepository.save(user);
         log.info("User " + user.getUsername() + " registered successfully");
@@ -53,28 +52,28 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User login(UserLoginDto loginDto) {
+    public User login(UserDto userDto) {
         //检查用户是否存在
-        Optional<User> existingUser = userRepository.findByUsername(loginDto.getUsername());
+        Optional<User> existingUser = userRepository.findByUsername(userDto.getUsername());
         if (existingUser.isEmpty()) {
             throw new BizException(ExceptionMessages.USER_NOT_EXIST);
         }
         // 检查密码是否正确
         User user = existingUser.get();
-        if (!passwordEncoder.matches(loginDto.getPassword(), user.getPassword())) {
+        if (!passwordEncoder.matches(userDto.getPassword(), user.getPassword())) {
             throw new BizException(ExceptionMessages.INCORRECT_PASSWORD);
         }
         // 登录成功
-        log.info("User " + loginDto.getUsername() + " logged in successfully");
+        log.info("User " + userDto.getUsername() + " logged in successfully");
         return user;
     }
 
     @Override
-    public User save(UserRegistrationDto dto) {
-        User user = convertToUser(dto);
-        Optional<User> existingUser = userRepository.findByUsername(dto.getUsername());
+    public User save(UserDto userDto) {
+        User user = convertToUser(userDto);
+        Optional<User> existingUser = userRepository.findByUsername(userDto.getUsername());
         if (existingUser.isPresent()) {
-            return user;
+            return existingUser.get();
         }
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         userRepository.save(user);
@@ -83,10 +82,10 @@ public class UserServiceImpl implements UserService {
 
     // TODO: 更改密码操作应该单独实现一个接口
     @Override
-    public User update(Long id, UserRegistrationDto dto) {
+    public User update(Long id, UserDto userDto) {
         User user = userRepository.findById(id).orElseThrow(() -> new BizException(ExceptionMessages.USER_NOT_EXIST));
-        user.setUsername(dto.getUsername());
-        user.setPassword(passwordEncoder.encode(dto.getPassword()));
+        user.setUsername(userDto.getUsername());
+        user.setPassword(passwordEncoder.encode(userDto.getPassword()));
         userRepository.save(user);
         return user;
     }
@@ -114,4 +113,11 @@ public class UserServiceImpl implements UserService {
         Pageable pageable = PageRequest.of(currentPage - 1, pageSize);
         return userRepository.findByUsernameContaining(username, pageable);
     }
+
+    @Override
+    public Integer countByUsername(String username) {
+        return userRepository.countByUsernameContaining(username);
+    }
+
+
 }
