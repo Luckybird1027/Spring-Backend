@@ -132,9 +132,17 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public List<User> searchByUsername(UserSearchDto userSearchDto) {
+        return userRepository.findByUsernameContaining(userSearchDto.getKeyword());
+    }
+
+    @Override
     public long countByUsername(String username) {
         return userRepository.countByUsernameContaining(username);
     }
 
-
+    @Override
+    public List<User> batchGetUsers(List<Long> ids) {
+         return userRepository.findByIdIn(ids);
+    }
 }
