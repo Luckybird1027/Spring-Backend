@@ -1,4 +1,4 @@
-package com.luckybird.springbackend.entity;
+package com.luckybird.springbackend.po;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -12,13 +12,22 @@ import lombok.Data;
  */
 @Data
 @Entity
-public class User {
+public class UserPO {
 
+    /**
+     * ID
+     */
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
+    /**
+     * 用户名
+     */
     private String username;
 
+    /**
+     * 密码
+     */
     private String password;
 }

@@ -8,9 +8,9 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class UserSearchDto {
+public class UserSearchDTO {
     private String keyword;
 
-    UserSearchDto() {
+    UserSearchDTO() {
     }
 }

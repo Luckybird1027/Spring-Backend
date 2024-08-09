@@ -8,10 +8,10 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class UserVo {
+public class UserVO {
     private Long id;
     private String username;
 
-    public UserVo() {
+    public UserVO() {
     }
 }

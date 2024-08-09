@@ -1,13 +1,13 @@
 package com.luckybird.springbackend.service;
 
-import com.luckybird.springbackend.dto.UserDto;
-import com.luckybird.springbackend.dto.UserSearchDto;
-import com.luckybird.springbackend.entity.User;
+import com.luckybird.springbackend.dto.UserDTO;
+import com.luckybird.springbackend.dto.UserSearchDTO;
+import com.luckybird.springbackend.po.UserPO;
 import com.luckybird.springbackend.exception.BizException;
 import com.luckybird.springbackend.exception.ExceptionMessages;
 import com.luckybird.springbackend.reposity.UserRepository;
-import com.luckybird.springbackend.vo.UserSearchVo;
-import com.luckybird.springbackend.vo.UserVo;
+import com.luckybird.springbackend.vo.UserSearchVO;
+import com.luckybird.springbackend.vo.UserVO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -30,83 +30,81 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
 
-    public User convertToUser(UserDto userDto) {
-        User user = new User();
-        user.setUsername(userDto.getUsername());
-        user.setPassword(userDto.getPassword());
-        return user;
+    public UserPO convertToUserPO(UserDTO dto) {
+        UserPO po = new UserPO();
+        po.setUsername(dto.getUsername());
+        po.setPassword(dto.getPassword());
+        return po;
     }
 
-    public UserVo convertToUserVo(User user) {
-        UserVo userVo = new UserVo();
-        userVo.setId(user.getId());
-        userVo.setUsername(user.getUsername());
-        return userVo;
+    public UserVO convertToUserVO(UserPO po) {
+        UserVO vo = new UserVO();
+        vo.setId(po.getId());
+        vo.setUsername(po.getUsername());
+        return vo;
     }
 
     @Override
-    public UserVo register(UserDto userDto) {
+    public UserVO register(UserDTO dto) {
         // 检查用户是否存在
-        Optional<User> existingUser = userRepository.findByUsername(userDto.getUsername());
+        Optional<UserPO> existingUser = userRepository.findByUsername(dto.getUsername());
         if (existingUser.isPresent()) {
             throw new BizException(ExceptionMessages.USERNAME_ALREADY_EXISTS);
         }
         // 检查完成，注册用户
-        User user = new User();
-        user.setUsername(userDto.getUsername());
-        String encodedPassword = passwordEncoder.encode(userDto.getPassword());
-        user.setPassword(encodedPassword);
-        userRepository.save(user);
-        log.info("User " + user.getUsername() + " registered successfully");
-        return convertToUserVo(user);
+        UserPO po = convertToUserPO(dto);
+        po.setPassword(passwordEncoder.encode(dto.getPassword()));
+        userRepository.save(po);
+        log.info("User " + po.getUsername() + " registered successfully");
+        return convertToUserVO(po);
     }
 
     @Override
-    public UserVo login(UserDto userDto) {
+    public UserVO login(UserDTO dto) {
         //检查用户是否存在
-        Optional<User> existingUser = userRepository.findByUsername(userDto.getUsername());
+        Optional<UserPO> existingUser = userRepository.findByUsername(dto.getUsername());
         if (existingUser.isEmpty()) {
             throw new BizException(ExceptionMessages.USER_NOT_EXIST);
         }
         // 检查密码是否正确
-        User user = existingUser.get();
-        if (!passwordEncoder.matches(userDto.getPassword(), user.getPassword())) {
+        UserPO po = existingUser.get();
+        if (!passwordEncoder.matches(dto.getPassword(), po.getPassword())) {
             throw new BizException(ExceptionMessages.INCORRECT_PASSWORD);
         }
         // 登录成功
-        log.info("User " + userDto.getUsername() + " logged in successfully");
-        return convertToUserVo(user);
+        log.info("User " + dto.getUsername() + " logged in successfully");
+        return convertToUserVO(po);
     }
 
     @Override
-    public UserVo save(UserDto userDto) {
-        User user = convertToUser(userDto);
-        Optional<User> existingUser = userRepository.findByUsername(userDto.getUsername());
+    public UserVO save(UserDTO dto) {
+        UserPO po = convertToUserPO(dto);
+        Optional<UserPO> existingUser = userRepository.findByUsername(dto.getUsername());
         if (existingUser.isPresent()) {
-            return convertToUserVo(existingUser.get());
+            return convertToUserVO(existingUser.get());
         }
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        userRepository.save(user);
-        return convertToUserVo(user);
+        po.setPassword(passwordEncoder.encode(po.getPassword()));
+        userRepository.save(po);
+        return convertToUserVO(po);
     }
 
     // TODO: 更改密码操作应该单独实现一个接口
     // TODO: update操作只修改userDto中不为空的的属性，其他属性不修改
     @Override
-    public UserVo update(Long id, UserDto userDto) {
-        User user = userRepository.findById(id).orElseThrow(() -> new BizException(ExceptionMessages.USER_NOT_EXIST));
-        user.setUsername(userDto.getUsername());
-        user.setPassword(passwordEncoder.encode(userDto.getPassword()));
-        userRepository.save(user);
-        return convertToUserVo(user);
+    public UserVO update(Long id, UserDTO dto) {
+        UserPO po = userRepository.findById(id).orElseThrow(() -> new BizException(ExceptionMessages.USER_NOT_EXIST));
+        po.setUsername(dto.getUsername());
+        po.setPassword(passwordEncoder.encode(dto.getPassword()));
+        userRepository.save(po);
+        return convertToUserVO(po);
     }
 
     @Override
-    public UserVo updateUsername(Long id, String username) {
-        User user = userRepository.findById(id).orElseThrow(() -> new BizException(ExceptionMessages.USER_NOT_EXIST));
-        user.setUsername(username);
-        userRepository.save(user);
-        return convertToUserVo(user);
+    public UserVO updateByIdAndUsername(Long id, String username) {
+        UserPO po = userRepository.findById(id).orElseThrow(() -> new BizException(ExceptionMessages.USER_NOT_EXIST));
+        po.setUsername(username);
+        userRepository.save(po);
+        return convertToUserVO(po);
     }
 
     @Override
@@ -115,25 +113,25 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserVo findById(Long id) {
-        User user = userRepository.findById(id).orElse(new User());
-        return convertToUserVo(user);
+    public UserVO getById(Long id) {
+        UserPO po = userRepository.findById(id).orElse(new UserPO());
+        return convertToUserVO(po);
     }
 
     @Override
-    public UserSearchVo searchByUsername(UserSearchDto userSearchDto, int currentPage, int pageSize, boolean searchCount) {
+    public UserSearchVO listByUsername(UserSearchDTO dto, int currentPage, int pageSize, boolean searchCount) {
         Pageable pageable = PageRequest.of(currentPage - 1, pageSize);
-        List<User> users = userRepository.findByUsernameContaining(userSearchDto.getKeyword(), pageable);
+        List<UserPO> po = userRepository.findByUsernameContaining(dto.getKeyword(), pageable);
         if (searchCount) {
-            long count = countByUsername(userSearchDto.getKeyword());
-            return new UserSearchVo(users, count);
+            long count = countByUsername(dto.getKeyword());
+            return new UserSearchVO(po, count);
         }
-        return new UserSearchVo(users);
+        return new UserSearchVO(po);
     }
 
     @Override
-    public List<User> searchByUsername(UserSearchDto userSearchDto) {
-        return userRepository.findByUsernameContaining(userSearchDto.getKeyword());
+    public List<UserPO> listByUsername(UserSearchDTO dto) {
+        return userRepository.findByUsernameContaining(dto.getKeyword());
     }
 
     @Override
@@ -142,7 +140,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<User> batchGetUsers(List<Long> ids) {
+    public List<UserPO> batchGetUsers(List<Long> ids) {
          return userRepository.findByIdIn(ids);
     }
 }

@@ -10,13 +10,13 @@ import lombok.Setter;
  */
 @Setter
 @Getter
-public class UserDto {
+public class UserDTO {
     @NotBlank(message = ExceptionMessages.USERNAME_IS_EMPTY)
     private String username;
     @NotBlank(message = ExceptionMessages.PASSWORD_IS_EMPTY)
     private String password;
 
-    public UserDto() {
+    public UserDTO() {
     }
 
 }

@@ -1,6 +1,6 @@
 package com.luckybird.springbackend.reposity;
 
-import com.luckybird.springbackend.entity.User;
+import com.luckybird.springbackend.po.UserPO;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -10,14 +10,14 @@ import java.util.Optional;
 /**
  * @author 新云鸟
  */
-public interface UserRepository extends JpaRepository<User, Long> {
-    Optional<User> findByUsername(String username);
+public interface UserRepository extends JpaRepository<UserPO, Long> {
+    Optional<UserPO> findByUsername(String username);
 
-    List<User> findByUsernameContaining(String username, Pageable pageable);
+    List<UserPO> findByUsernameContaining(String username, Pageable pageable);
 
-    List<User> findByUsernameContaining(String username);
+    List<UserPO> findByUsernameContaining(String username);
 
     Integer countByUsernameContaining(String username);
 
-    List<User> findByIdIn(List<Long> ids);
+    List<UserPO> findByIdIn(List<Long> ids);
 }
