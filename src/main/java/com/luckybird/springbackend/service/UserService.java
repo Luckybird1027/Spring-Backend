@@ -1,37 +1,34 @@
 package com.luckybird.springbackend.service;
 
-import com.luckybird.springbackend.dto.UserDTO;
-import com.luckybird.springbackend.dto.UserSearchDTO;
-import com.luckybird.springbackend.po.UserPO;
-import com.luckybird.springbackend.vo.UserSearchVO;
-import com.luckybird.springbackend.vo.UserVO;
+import com.luckybird.springbackend.base.PageResult;
+import com.luckybird.springbackend.api.req.UserCreateReq;
+import com.luckybird.springbackend.api.req.UserQueryReq;
+import com.luckybird.springbackend.api.req.UserUpdateReq;
+import com.luckybird.springbackend.api.vo.UserVO;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author 新云鸟
  */
 public interface UserService {
 
-    UserVO register(UserDTO dto);
+//    UserVO register(UserCreateReq req);
+//
+//    UserVO login(UserLoginReq dto);
 
-    UserVO login(UserDTO dto);
+    UserVO get(Long id);
 
-    UserVO save(UserDTO dto);
+    List<UserVO> batchGet(Set<Long> ids);
 
-    UserVO update(Long id, UserDTO dto);
+    UserVO create(UserCreateReq dto);
 
-    UserVO updateByIdAndUsername(Long id, String username);
+    UserVO update(Long id, UserUpdateReq dto);
 
     void delete(Long id);
 
-    UserVO getById(Long id);
+    List<UserVO> list(UserQueryReq req);
 
-    UserSearchVO listByUsername(UserSearchDTO dto, int currentPage, int pageSize, boolean searchCount);
-
-    List<UserPO> listByUsername(UserSearchDTO dto);
-
-    long countByUsername(String username);
-
-    List<UserPO> batchGetUsers(List<Long> ids);
+    PageResult<UserVO> page(UserQueryReq req, int current, int pageSize, boolean searchCount);
 }

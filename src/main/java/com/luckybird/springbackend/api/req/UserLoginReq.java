@@ -1,22 +1,18 @@
-package com.luckybird.springbackend.dto;
+package com.luckybird.springbackend.api.req;
 
 import com.luckybird.springbackend.exception.ExceptionMessages;
 import jakarta.validation.constraints.NotBlank;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
 /**
  * @author 新云鸟
  */
-@Setter
-@Getter
-public class UserDTO {
+@Data
+public class UserLoginReq {
+
     @NotBlank(message = ExceptionMessages.USERNAME_IS_EMPTY)
     private String username;
+
     @NotBlank(message = ExceptionMessages.PASSWORD_IS_EMPTY)
     private String password;
-
-    public UserDTO() {
-    }
-
 }
