@@ -10,6 +10,9 @@ import lombok.Data;
 @Data
 public class UserUpdateReq {
 
+    /**
+     * 用户名
+     */
     @NotBlank(message = ExceptionMessages.USERNAME_IS_EMPTY)
     private String username;
 }

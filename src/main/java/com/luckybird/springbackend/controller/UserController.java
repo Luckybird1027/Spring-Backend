@@ -43,8 +43,13 @@ public class UserController implements UserApi {
 //        return userService.login(dto);
 //    }
 
-    /////////////////CURD///////////
+    /////////////////CURD/////////////////
 
+    /**
+     * Get 单个查询
+     * @param id 用户id
+     * @return UserVO 用户信息
+     */
     @Override
     @GetMapping("/v1/users/{id}")
     public UserVO get(@PathVariable Long id) {
@@ -53,6 +58,8 @@ public class UserController implements UserApi {
 
     /**
      * BatchGet 批量查询
+     * @param ids 用户id数组
+     * @return List<UserVO> 用户信息列表
      */
     @Override
     @PostMapping("/v1/users/batchGet")
@@ -61,21 +68,33 @@ public class UserController implements UserApi {
     }
 
     /**
-     * CRUD操作
+     * Create 创建
+     * @param req 用户创建请求
+     * @return UserVO 用户信息
      */
     @Override
     @PostMapping("/v1/users")
     @ResponseStatus(HttpStatus.CREATED)
-    public UserVO create(@RequestBody @Valid UserCreateReq dto) {
-        return userService.create(dto);
+    public UserVO create(@RequestBody @Valid UserCreateReq req) {
+        return userService.create(req);
     }
 
+    /**
+     * Update 更新
+     * @param id 用户id
+     * @param req 用户更新请求
+     * @return UserVO 用户信息
+     */
     @Override
     @PutMapping("/v1/users/{id}")
-    public UserVO update(@PathVariable Long id, @RequestBody @Valid UserUpdateReq dto) {
-        return userService.update(id, dto);
+    public UserVO update(@PathVariable Long id, @RequestBody @Valid UserUpdateReq req) {
+        return userService.update(id, req);
     }
 
+    /**
+     * Delete 删除
+     * @param id 用户id
+     */
     @Override
     @DeleteMapping("/v1/users/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
@@ -84,17 +103,24 @@ public class UserController implements UserApi {
     }
 
     /**
-     * 关键字-用户名 搜索用户-全量查询
+     * List 用户名 全量查询
+     * @param req 用户查询请求
+     * @return List<UserVO> 用户信息列表
      */
     @Override
     @PostMapping("/v1/users/list")
     public List<UserVO> list(
-            @RequestBody UserQueryReq dto) {
-        return userService.list(dto);
+            @RequestBody UserQueryReq req) {
+        return userService.list(req);
     }
 
     /**
-     * 关键字-用户名 搜索用户-分页查询
+     * Page 用户名 分页查询
+     * @param current 当前页
+     * @param rows 每页条数
+     * @param searchCount 是否搜索总数
+     * @param req 用户查询请求
+     * @return PageResult<UserVO> 用户信息分页
      */
     @Override
     @PostMapping("/v1/users/page")
@@ -102,7 +128,7 @@ public class UserController implements UserApi {
             @RequestParam(name = "current", defaultValue = "1") int current,
             @RequestParam(name = "rows", defaultValue = "10") int rows,
             @RequestParam(name = "searchCount", defaultValue = "false") boolean searchCount,
-            @RequestBody UserQueryReq dto) {
-        return userService.page(dto, current, rows, searchCount);
+            @RequestBody UserQueryReq req) {
+        return userService.page(req, current, rows, searchCount);
     }
 }

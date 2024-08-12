@@ -10,9 +10,15 @@ import lombok.Data;
 @Data
 public class UserCreateReq {
 
+    /**
+     * 用户名
+     */
     @NotBlank(message = ExceptionMessages.USERNAME_IS_EMPTY)
     private String username;
 
+    /**
+     * 密码
+     */
     @NotBlank(message = ExceptionMessages.PASSWORD_IS_EMPTY)
     private String password;
 }

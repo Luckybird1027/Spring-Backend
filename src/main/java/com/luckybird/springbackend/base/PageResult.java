@@ -12,8 +12,13 @@ import java.util.List;
 @Setter
 public class PageResult<T> {
 
+    /**
+     * 总记录数
+     */
     private Long total;
-
+    /**
+     * 分页数据
+     */
     private List<T> items;
 
     public PageResult(Long total, List<T> items) {

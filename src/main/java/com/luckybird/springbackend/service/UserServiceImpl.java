@@ -90,9 +90,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserVO create(UserCreateReq dto) {
-        UserPO po = toPo(dto);
-        Optional<UserPO> existingUser = userRepository.findByUsername(dto.getUsername());
+    public UserVO create(UserCreateReq req) {
+        UserPO po = toPo(req);
+        Optional<UserPO> existingUser = userRepository.findByUsername(req.getUsername());
         if (existingUser.isPresent()) {
             return toVO(existingUser.get());
         }
@@ -104,9 +104,9 @@ public class UserServiceImpl implements UserService {
     // TODO: 更改密码操作应该单独实现一个接口
     // TODO: update操作只修改userDto中不为空的的属性，其他属性不修改
     @Override
-    public UserVO update(Long id, UserUpdateReq dto) {
+    public UserVO update(Long id, UserUpdateReq req) {
         UserPO po = userRepository.findById(id).orElseThrow(() -> new BizException(ExceptionMessages.USER_NOT_EXIST));
-        po.setUsername(dto.getUsername());
+        po.setUsername(req.getUsername());
         userRepository.save(po);
         return toVO(po);
     }

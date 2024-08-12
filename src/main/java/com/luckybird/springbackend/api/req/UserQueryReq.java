@@ -8,5 +8,8 @@ import lombok.Data;
 @Data
 public class UserQueryReq {
 
+    /**
+     * 搜索关键字
+     */
     private String keyword;
 }

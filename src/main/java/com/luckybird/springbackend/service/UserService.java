@@ -18,17 +18,55 @@ public interface UserService {
 //
 //    UserVO login(UserLoginReq dto);
 
+    /**
+     * 根据id获取用户信息
+     * @param id 用户id
+     * @return UserVO 用户信息
+     */
     UserVO get(Long id);
 
+    /**
+     * 批量获取用户信息
+     * @param ids 用户id集合
+     * @return List<UserVO> 用户信息列表
+     */
     List<UserVO> batchGet(Set<Long> ids);
 
-    UserVO create(UserCreateReq dto);
+    /**
+     * 创建用户
+     * @param req 用户创建请求
+     * @return UserVO 用户信息
+     */
+    UserVO create(UserCreateReq req);
 
-    UserVO update(Long id, UserUpdateReq dto);
+    /**
+     * 更新用户
+     * @param id 用户id
+     * @param req 用户更新请求
+     * @return UserVO 用户信息
+     */
+    UserVO update(Long id, UserUpdateReq req);
 
+    /**
+     * 删除用户
+     * @param id 用户id
+     */
     void delete(Long id);
 
+    /**
+     * 全量查询用户
+     * @param req 查询请求
+     * @return List<UserVO> 用户信息列表
+     */
     List<UserVO> list(UserQueryReq req);
 
+    /**
+     * 分页查询用户
+     * @param req 查询请求
+     * @param current 页码
+     * @param pageSize 页大小
+     * @param searchCount 是否查询总数
+     * @return PageResult<UserVO> 用户分页信息
+     */
     PageResult<UserVO> page(UserQueryReq req, int current, int pageSize, boolean searchCount);
 }
