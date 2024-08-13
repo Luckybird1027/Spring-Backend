@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.Set;
 
 /**
+ * 用户服务接口
+ *
  * @author 新云鸟
  */
 public interface UserService {

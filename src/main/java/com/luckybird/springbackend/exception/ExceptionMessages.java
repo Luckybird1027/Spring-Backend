@@ -1,6 +1,8 @@
 package com.luckybird.springbackend.exception;
 
 /**
+ * 异常信息
+ *
  * @author 新云鸟
  */
 public final class ExceptionMessages {

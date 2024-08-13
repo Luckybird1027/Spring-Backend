@@ -13,6 +13,8 @@ import java.util.Set;
 
 
 /**
+ * 用户管理API
+ *
  * @author 新云鸟
  */
 //Spring Cloud OpenFeign 注解

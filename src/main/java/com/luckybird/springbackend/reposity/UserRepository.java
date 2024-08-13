@@ -9,6 +9,8 @@ import java.util.Optional;
 import java.util.Set;
 
 /**
+ * 用户JPA仓储接口
+ *
  * @author 新云鸟
  */
 public interface UserRepository extends JpaRepository<UserPO, Long> {

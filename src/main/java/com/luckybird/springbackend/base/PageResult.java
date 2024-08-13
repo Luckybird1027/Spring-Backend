@@ -6,6 +6,8 @@ import lombok.Setter;
 import java.util.List;
 
 /**
+ * 分页查询结果
+ *
  * @author 新云鸟
  */
 @Getter

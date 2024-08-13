@@ -4,11 +4,13 @@ import lombok.Getter;
 import lombok.ToString;
 
 /**
+ * 错误码枚举
+ *
  * @author 新云鸟
  */
 @Getter
 @ToString
-public enum ErrorInfoEnum implements ErrorInfo {
+public enum ErrorInfoEnum{
 
     /**
      * 用户相关错误码

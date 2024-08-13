@@ -5,6 +5,8 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 /**
+ * 用户创建请求
+ *
  * @author 新云鸟
  */
 @Data

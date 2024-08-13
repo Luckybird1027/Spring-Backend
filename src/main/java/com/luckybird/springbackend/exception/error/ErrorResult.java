@@ -3,6 +3,8 @@ package com.luckybird.springbackend.exception.error;
 import lombok.Data;
 
 /**
+ * 错误结果
+ *
  * @author 新云鸟
  */
 

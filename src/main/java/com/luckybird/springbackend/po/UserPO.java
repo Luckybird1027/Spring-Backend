@@ -8,6 +8,8 @@ import lombok.Data;
 
 
 /**
+ * 用户实体
+ *
  * @author 新云鸟
  */
 @Data

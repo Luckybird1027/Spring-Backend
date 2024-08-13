@@ -16,6 +16,8 @@ import java.util.Objects;
 import static com.luckybird.springbackend.exception.error.ErrorInfoEnum.INTERNAL_SERVER_ERROR;
 
 /**
+ * 全局异常处理器
+ *
  * @author 新云鸟
  */
 @RestControllerAdvice
