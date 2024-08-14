@@ -13,10 +13,10 @@ import lombok.Data;
 public class UserLoginReq {
 
     /**
-     * 用户名
+     * 账号
      */
     @NotBlank(message = ExceptionMessages.USERNAME_IS_EMPTY)
-    private String username;
+    private String account;
 
     /**
      * 密码

@@ -1,10 +1,8 @@
 package com.luckybird.springbackend.controller;
 
 import com.luckybird.springbackend.api.UserApi;
+import com.luckybird.springbackend.api.req.*;
 import com.luckybird.springbackend.base.PageResult;
-import com.luckybird.springbackend.api.req.UserCreateReq;
-import com.luckybird.springbackend.api.req.UserQueryReq;
-import com.luckybird.springbackend.api.req.UserUpdateReq;
 import com.luckybird.springbackend.service.UserService;
 import com.luckybird.springbackend.api.vo.UserVO;
 import jakarta.validation.Valid;
@@ -26,26 +24,6 @@ import java.util.Set;
 public class UserController implements UserApi {
 
     private final UserService userService;
-
-//    /**
-//     * 注册用户
-//     */
-//    @PostMapping("/register")
-//    @ResponseStatus(HttpStatus.OK)
-//    public UserVO register(@RequestBody @Valid UserCreateReq req) {
-//        return userService.register(req);
-//    }
-//
-//    /**
-//     * 登录用户
-//     */
-//    @PostMapping("/login")
-//    @ResponseStatus(HttpStatus.OK)
-//    public UserVO login(@RequestBody @Valid UserLoginReq dto) {
-//        return userService.login(dto);
-//    }
-
-    /////////////////CURD/////////////////
 
     /**
      * 获取用户
@@ -132,5 +110,28 @@ public class UserController implements UserApi {
             @RequestParam(name = "searchCount", defaultValue = "false") boolean searchCount,
             @RequestBody UserQueryReq req) {
         return userService.page(req, current, rows, searchCount);
+    }
+
+
+    /**
+     * 注册用户
+     * @param req 用户注册请求
+     * @return UserVO 用户信息
+     */
+    @PostMapping("/register")
+    @ResponseStatus(HttpStatus.OK)
+    public UserVO register(@RequestBody @Valid UserRegisterReq req) {
+        return userService.register(req);
+    }
+
+    /**
+     * 登录用户
+     * @param req 用户登录请求
+     * @return UserVO 用户信息
+     */
+    @PostMapping("/login")
+    @ResponseStatus(HttpStatus.OK)
+    public UserVO login(@RequestBody @Valid UserLoginReq req) {
+        return userService.login(req);
     }
 }

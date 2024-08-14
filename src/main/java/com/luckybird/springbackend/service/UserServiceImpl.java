@@ -1,14 +1,12 @@
 package com.luckybird.springbackend.service;
 
+import com.luckybird.springbackend.api.req.*;
+import com.luckybird.springbackend.api.vo.UserVO;
+import com.luckybird.springbackend.base.PageResult;
 import com.luckybird.springbackend.exception.BizException;
 import com.luckybird.springbackend.exception.ExceptionMessages;
 import com.luckybird.springbackend.po.UserPO;
 import com.luckybird.springbackend.reposity.UserRepository;
-import com.luckybird.springbackend.api.req.UserCreateReq;
-import com.luckybird.springbackend.api.req.UserQueryReq;
-import com.luckybird.springbackend.api.req.UserUpdateReq;
-import com.luckybird.springbackend.base.PageResult;
-import com.luckybird.springbackend.api.vo.UserVO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -35,50 +33,94 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
 
     private UserPO toPo(UserCreateReq req) {
-        UserPO po = new UserPO();
-        po.setUsername(req.getUsername());
-        po.setPassword(req.getPassword());
-        return po;
+        UserPO userPO = new UserPO();
+        userPO.setAccount(req.getAccount());
+        userPO.setPassword(req.getPassword());
+        userPO.setUsername(req.getUsername());
+        userPO.setTelephone(req.getTelephone());
+        userPO.setEmail(req.getEmail());
+        userPO.setStatus(req.getStatus());
+        userPO.setOrganizationId(req.getOrganizationId());
+        userPO.setDepartmentId(req.getDepartmentId());
+        userPO.setOccupation(req.getOccupation());
+        userPO.setRemark(req.getRemark());
+        return userPO;
     }
 
-    public UserVO toVO(UserPO po) {
-        UserVO vo = new UserVO();
-        vo.setId(po.getId());
-        vo.setUsername(po.getUsername());
-        return vo;
+    private UserPO toPo(UserRegisterReq req) {
+        UserPO userPO = new UserPO();
+        userPO.setAccount(req.getAccount());
+        userPO.setPassword(req.getPassword());
+        userPO.setUsername(req.getUsername());
+        userPO.setTelephone(req.getTelephone());
+        userPO.setEmail(req.getEmail());
+        userPO.setStatus(req.getStatus());
+        userPO.setOrganizationId(req.getOrganizationId());
+        userPO.setDepartmentId(req.getDepartmentId());
+        userPO.setOccupation(req.getOccupation());
+        userPO.setRemark(req.getRemark());
+        return userPO;
     }
 
-//    @Override
-//    public UserVO register(UserCreateReq req) {
-//        // 检查用户是否存在
-//        Optional<UserPO> existingUser = userRepository.findByUsername(req.getUsername());
-//        if (existingUser.isPresent()) {
-//            throw new BizException(ExceptionMessages.USERNAME_ALREADY_EXISTS);
-//        }
-//        // 检查完成，注册用户
-//        UserPO po = toPO(req);
-//        po.setPassword(passwordEncoder.encode(req.getPassword()));
-//        userRepository.save(po);
-//        log.info("User " + po.getUsername() + " registered successfully");
-//        return toVO(po);
-//    }
-//
-//    @Override
-//    public UserVO login(UserLoginReq req) {
-//        //检查用户是否存在
-//        Optional<UserPO> existingUser = userRepository.findByUsername(req.getUsername());
-//        if (existingUser.isEmpty()) {
-//            throw new BizException(ExceptionMessages.USER_NOT_EXIST);
-//        }
-//        // 检查密码是否正确
-//        UserPO po = existingUser.get();
-//        if (!passwordEncoder.matches(req.getPassword(), po.getPassword())) {
-//            throw new BizException(ExceptionMessages.INCORRECT_PASSWORD);
-//        }
-//        // 登录成功
-//        log.info("User " + req.getUsername() + " logged in successfully");
-//        return toVO(po);
-//    }
+    private UserVO toVO(UserPO po) {
+        UserVO userVO = new UserVO();
+        userVO.setId(po.getId());
+        userVO.setAccount(po.getAccount());
+        userVO.setUsername(po.getUsername());
+        userVO.setTelephone(po.getTelephone());
+        userVO.setEmail(po.getEmail());
+        userVO.setStatus(po.getStatus());
+        userVO.setOrganizationId(po.getOrganizationId());
+        userVO.setDepartmentId(po.getDepartmentId());
+        userVO.setOccupation(po.getOccupation());
+        userVO.setRemark(po.getRemark());
+        return userVO;
+    }
+
+    private void poUpdateByReq(UserPO po, UserUpdateReq req) {
+        if (req.getAccount() != null) {
+            po.setAccount(req.getAccount());
+        }
+        if (req.getUsername() != null) {
+            po.setUsername(req.getUsername());
+        }
+        if (req.getTelephone() != null) {
+            po.setTelephone(req.getTelephone());
+        }
+        if (req.getEmail() != null) {
+            po.setEmail(req.getEmail());
+        }
+        if (req.getStatus() != null) {
+            po.setStatus(req.getStatus());
+        }
+        if (req.getOrganizationId() != null) {
+            po.setOrganizationId(req.getOrganizationId());
+        }
+        if (req.getDepartmentId() != null) {
+            po.setDepartmentId(req.getDepartmentId());
+        }
+        if (req.getOccupation() != null) {
+            po.setOccupation(req.getOccupation());
+        }
+        if (req.getRemark() != null) {
+            po.setRemark(req.getRemark());
+        }
+        if (req.getCreateTime() != null) {
+            po.setCreateTime(req.getCreateTime());
+        }
+        if (req.getCreatorId() != null) {
+            po.setCreatorId(req.getCreatorId());
+        }
+        if (req.getUpdateTime() != null) {
+            po.setUpdateTime(req.getUpdateTime());
+        }
+        if (req.getUpdaterId() != null){
+            po.setUpdaterId(req.getUpdaterId());
+        }
+        if (req.getDeleted() != null) {
+            po.setDeleted(req.getDeleted());
+        }
+    }
 
     @Override
     public UserVO get(Long id) {
@@ -104,11 +146,10 @@ public class UserServiceImpl implements UserService {
     }
 
     // TODO: 更改密码操作应该单独实现一个接口
-    // TODO: update操作只修改userDto中不为空的的属性，其他属性不修改
     @Override
     public UserVO update(Long id, UserUpdateReq req) {
         UserPO po = userRepository.findById(id).orElseThrow(() -> new BizException(ExceptionMessages.USER_NOT_EXIST));
-        po.setUsername(req.getUsername());
+        poUpdateByReq(po, req);
         userRepository.save(po);
         return toVO(po);
     }
@@ -133,5 +174,37 @@ public class UserServiceImpl implements UserService {
             return new PageResult<>(count, pos.stream().map(this::toVO).toList());
         }
         return new PageResult<>(pos.stream().map(this::toVO).toList());
+    }
+
+    @Override
+    public UserVO register(UserRegisterReq req) {
+        // 检查用户是否存在
+        Optional<UserPO> existingUser = userRepository.findByUsername(req.getUsername());
+        if (existingUser.isPresent()) {
+            throw new BizException(ExceptionMessages.USERNAME_ALREADY_EXISTS);
+        }
+        // 检查完成，注册用户
+        UserPO po = toPo(req);
+        po.setPassword(passwordEncoder.encode(req.getPassword()));
+        userRepository.save(po);
+        log.info("User " + po.getAccount() + " registered successfully");
+        return toVO(po);
+    }
+
+    @Override
+    public UserVO login(UserLoginReq req) {
+        //检查用户是否存在
+        Optional<UserPO> existingUser = userRepository.findByUsername(req.getAccount());
+        if (existingUser.isEmpty()) {
+            throw new BizException(ExceptionMessages.INCORRECT_USERNAME_OR_PASSWORD);
+        }
+        // 检查密码是否正确
+        UserPO po = existingUser.get();
+        if (!passwordEncoder.matches(req.getPassword(), po.getPassword())) {
+            throw new BizException(ExceptionMessages.INCORRECT_USERNAME_OR_PASSWORD);
+        }
+        // 登录成功
+        log.info("User " + req.getAccount() + " logged in successfully");
+        return toVO(po);
     }
 }

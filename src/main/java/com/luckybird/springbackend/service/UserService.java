@@ -1,9 +1,7 @@
 package com.luckybird.springbackend.service;
 
+import com.luckybird.springbackend.api.req.*;
 import com.luckybird.springbackend.base.PageResult;
-import com.luckybird.springbackend.api.req.UserCreateReq;
-import com.luckybird.springbackend.api.req.UserQueryReq;
-import com.luckybird.springbackend.api.req.UserUpdateReq;
 import com.luckybird.springbackend.api.vo.UserVO;
 
 import java.util.List;
@@ -15,10 +13,6 @@ import java.util.Set;
  * @author 新云鸟
  */
 public interface UserService {
-
-//    UserVO register(UserCreateReq req);
-//
-//    UserVO login(UserLoginReq dto);
 
     /**
      * 根据id获取用户信息
@@ -71,4 +65,18 @@ public interface UserService {
      * @return PageResult<UserVO> 用户分页信息
      */
     PageResult<UserVO> page(UserQueryReq req, int current, int pageSize, boolean searchCount);
+
+    /**
+     * 用户注册
+     * @param req 用户注册请求
+     * @return UserVO 用户信息
+     */
+    UserVO register(UserRegisterReq req);
+
+    /**
+     * 用户登录
+     * @param req 用户登录请求
+     * @return UserVO 用户信息
+     */
+    UserVO login(UserLoginReq req);
 }

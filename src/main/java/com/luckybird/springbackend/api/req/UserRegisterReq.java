@@ -1,33 +1,31 @@
 package com.luckybird.springbackend.api.req;
 
 import com.luckybird.springbackend.converter.OccupationConverter;
+import com.luckybird.springbackend.exception.ExceptionMessages;
 import jakarta.persistence.Convert;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
-import java.sql.Timestamp;
 import java.util.List;
 
 /**
- * 用户更新请求
+ * 用户注册请求
  *
  * @author 新云鸟
  */
 @Data
-public class UserUpdateReq {
-
-    /**
-     * ID
-     */
-    private Long id;
+public class UserRegisterReq {
 
     /**
      * 账号
      */
+    @NotBlank(message = ExceptionMessages.USERNAME_IS_EMPTY)
     private String account;
 
     /**
      * 密码
      */
+    @NotBlank(message = ExceptionMessages.PASSWORD_IS_EMPTY)
     private String password;
 
     /**
@@ -70,29 +68,4 @@ public class UserUpdateReq {
      * 备注
      */
     private String remark;
-
-    /**
-     * 创建时间
-     */
-    private Timestamp createTime;
-
-    /**
-     * 创建人ID
-     */
-    private Long creatorId;
-
-    /**
-     * 更新时间
-     */
-    private Timestamp updateTime;
-
-    /**
-     * 更新人ID
-     */
-    private Long updaterId;
-
-    /**
-     * 逻辑删除
-     */
-    private Long deleted;
 }

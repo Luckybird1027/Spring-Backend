@@ -20,6 +20,8 @@ public enum ErrorInfoEnum{
     USERNAME_IS_EMPTY("00003", "username is empty"),
     PASSWORD_IS_EMPTY("00004", "password is empty"),
     INCORRECT_PASSWORD("00005", "incorrect password"),
+    INCORRECT_USERNAME_OR_PASSWORD("00006", "incorrect username or password"),
+
 
     /**
      * 其他错误码
