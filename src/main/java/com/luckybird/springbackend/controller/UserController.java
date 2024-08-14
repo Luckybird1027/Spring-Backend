@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * 用户管理控制器
+ * 用户管理
  *
  * @author 新云鸟
  */
@@ -48,7 +48,7 @@ public class UserController implements UserApi {
     /////////////////CURD/////////////////
 
     /**
-     * Get 单个查询
+     * 获取用户
      * @param id 用户id
      * @return UserVO 用户信息
      */
@@ -59,7 +59,7 @@ public class UserController implements UserApi {
     }
 
     /**
-     * BatchGet 批量查询
+     * 批量获取用户
      * @param ids 用户id数组
      * @return List<UserVO> 用户信息列表
      */
@@ -70,7 +70,7 @@ public class UserController implements UserApi {
     }
 
     /**
-     * Create 创建
+     * 创建用户
      * @param req 用户创建请求
      * @return UserVO 用户信息
      */
@@ -82,7 +82,7 @@ public class UserController implements UserApi {
     }
 
     /**
-     * Update 更新
+     * 编辑用户
      * @param id 用户id
      * @param req 用户更新请求
      * @return UserVO 用户信息
@@ -94,7 +94,7 @@ public class UserController implements UserApi {
     }
 
     /**
-     * Delete 删除
+     * 删除用户
      * @param id 用户id
      */
     @Override
@@ -105,7 +105,7 @@ public class UserController implements UserApi {
     }
 
     /**
-     * List 用户名 全量查询
+     * 查询用户列表
      * @param req 用户查询请求
      * @return List<UserVO> 用户信息列表
      */
@@ -117,7 +117,7 @@ public class UserController implements UserApi {
     }
 
     /**
-     * Page 用户名 分页查询
+     * 查询用户分页
      * @param current 当前页
      * @param rows 每页条数
      * @param searchCount 是否搜索总数
