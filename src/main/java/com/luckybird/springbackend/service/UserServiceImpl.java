@@ -47,21 +47,6 @@ public class UserServiceImpl implements UserService {
         return userPO;
     }
 
-    private UserPO toPo(UserRegisterReq req) {
-        UserPO userPO = new UserPO();
-        userPO.setAccount(req.getAccount());
-        userPO.setPassword(req.getPassword());
-        userPO.setUsername(req.getUsername());
-        userPO.setTelephone(req.getTelephone());
-        userPO.setEmail(req.getEmail());
-        userPO.setStatus(req.getStatus());
-        userPO.setOrganizationId(req.getOrganizationId());
-        userPO.setDepartmentId(req.getDepartmentId());
-        userPO.setOccupation(req.getOccupation());
-        userPO.setRemark(req.getRemark());
-        return userPO;
-    }
-
     private UserVO toVO(UserPO po) {
         UserVO userVO = new UserVO();
         userVO.setId(po.getId());
@@ -105,21 +90,6 @@ public class UserServiceImpl implements UserService {
         if (req.getRemark() != null) {
             po.setRemark(req.getRemark());
         }
-        if (req.getCreateTime() != null) {
-            po.setCreateTime(req.getCreateTime());
-        }
-        if (req.getCreatorId() != null) {
-            po.setCreatorId(req.getCreatorId());
-        }
-        if (req.getUpdateTime() != null) {
-            po.setUpdateTime(req.getUpdateTime());
-        }
-        if (req.getUpdaterId() != null){
-            po.setUpdaterId(req.getUpdaterId());
-        }
-        if (req.getDeleted() != null) {
-            po.setDeleted(req.getDeleted());
-        }
     }
 
     @Override
@@ -136,7 +106,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserVO create(UserCreateReq req) {
         UserPO po = toPo(req);
-        Optional<UserPO> existingUser = userRepository.findByUsername(req.getUsername());
+        Optional<UserPO> existingUser = userRepository.findByAccount(req.getUsername());
         if (existingUser.isPresent()) {
             return toVO(existingUser.get());
         }
@@ -145,7 +115,6 @@ public class UserServiceImpl implements UserService {
         return toVO(po);
     }
 
-    // TODO: 更改密码操作应该单独实现一个接口
     @Override
     public UserVO update(Long id, UserUpdateReq req) {
         UserPO po = userRepository.findById(id).orElseThrow(() -> new BizException(ExceptionMessages.USER_NOT_EXIST));
@@ -177,24 +146,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserVO register(UserRegisterReq req) {
-        // 检查用户是否存在
-        Optional<UserPO> existingUser = userRepository.findByUsername(req.getUsername());
-        if (existingUser.isPresent()) {
-            throw new BizException(ExceptionMessages.USERNAME_ALREADY_EXISTS);
-        }
-        // 检查完成，注册用户
-        UserPO po = toPo(req);
-        po.setPassword(passwordEncoder.encode(req.getPassword()));
-        userRepository.save(po);
-        log.info("User " + po.getAccount() + " registered successfully");
-        return toVO(po);
-    }
-
-    @Override
     public UserVO login(UserLoginReq req) {
         //检查用户是否存在
-        Optional<UserPO> existingUser = userRepository.findByUsername(req.getAccount());
+        Optional<UserPO> existingUser = userRepository.findByAccount(req.getAccount());
         if (existingUser.isEmpty()) {
             throw new BizException(ExceptionMessages.INCORRECT_USERNAME_OR_PASSWORD);
         }
@@ -206,5 +160,22 @@ public class UserServiceImpl implements UserService {
         // 登录成功
         log.info("User " + req.getAccount() + " logged in successfully");
         return toVO(po);
+    }
+
+    @Override
+    public void changePassword(Long id, UserChangePasswordReq req){
+        // 检查用户是否存在
+        Optional<UserPO> existingUser = userRepository.findById(id);
+        if (existingUser.isEmpty()) {
+            throw new BizException(ExceptionMessages.USER_NOT_EXIST);
+        }
+        // 检查旧密码是否正确
+        UserPO po = existingUser.get();
+        if (!passwordEncoder.matches(req.getOldPassword(), po.getPassword())) {
+            throw new BizException(ExceptionMessages.INCORRECT_OLD_PASSWORD);
+        }
+        // 修改为新密码
+        po.setPassword(passwordEncoder.encode(req.getNewPassword()));
+        userRepository.save(po);
     }
 }

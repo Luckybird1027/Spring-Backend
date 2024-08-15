@@ -112,16 +112,15 @@ public class UserController implements UserApi {
         return userService.page(req, current, rows, searchCount);
     }
 
-
     /**
-     * 注册用户
-     * @param req 用户注册请求
-     * @return UserVO 用户信息
+     * 修改密码
+     * @param id 用户id
+     * @param req 密码修改请求
      */
-    @PostMapping("/register")
-    @ResponseStatus(HttpStatus.OK)
-    public UserVO register(@RequestBody @Valid UserRegisterReq req) {
-        return userService.register(req);
+    @Override
+    @PostMapping("/v1/users/changePassword/{id}")
+    public void changePassword(@PathVariable Long id, @RequestBody @Valid UserChangePasswordReq req) {
+        userService.changePassword(id, req);
     }
 
     /**
@@ -129,8 +128,8 @@ public class UserController implements UserApi {
      * @param req 用户登录请求
      * @return UserVO 用户信息
      */
+    @Override
     @PostMapping("/login")
-    @ResponseStatus(HttpStatus.OK)
     public UserVO login(@RequestBody @Valid UserLoginReq req) {
         return userService.login(req);
     }

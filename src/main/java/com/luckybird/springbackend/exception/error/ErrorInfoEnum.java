@@ -15,12 +15,13 @@ public enum ErrorInfoEnum{
     /**
      * 用户相关错误码
      */
-    USERNAME_ALREADY_EXISTS("00001", "username already exists"),
+    ACCOUNT_ALREADY_EXISTS("00001", "account already exists"),
     USER_NOT_EXIST("00002", "user not exist"),
     USERNAME_IS_EMPTY("00003", "username is empty"),
     PASSWORD_IS_EMPTY("00004", "password is empty"),
     INCORRECT_PASSWORD("00005", "incorrect password"),
     INCORRECT_USERNAME_OR_PASSWORD("00006", "incorrect username or password"),
+    INCORRECT_OLD_PASSWORD("00007", "incorrect old password"),
 
 
     /**

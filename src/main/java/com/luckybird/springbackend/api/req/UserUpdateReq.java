@@ -4,7 +4,6 @@ import com.luckybird.springbackend.converter.OccupationConverter;
 import jakarta.persistence.Convert;
 import lombok.Data;
 
-import java.sql.Timestamp;
 import java.util.List;
 
 /**
@@ -70,29 +69,4 @@ public class UserUpdateReq {
      * 备注
      */
     private String remark;
-
-    /**
-     * 创建时间
-     */
-    private Timestamp createTime;
-
-    /**
-     * 创建人ID
-     */
-    private Long creatorId;
-
-    /**
-     * 更新时间
-     */
-    private Timestamp updateTime;
-
-    /**
-     * 更新人ID
-     */
-    private Long updaterId;
-
-    /**
-     * 逻辑删除
-     */
-    private Long deleted;
 }

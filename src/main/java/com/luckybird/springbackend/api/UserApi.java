@@ -1,8 +1,6 @@
 package com.luckybird.springbackend.api;
 
-import com.luckybird.springbackend.api.req.UserCreateReq;
-import com.luckybird.springbackend.api.req.UserQueryReq;
-import com.luckybird.springbackend.api.req.UserUpdateReq;
+import com.luckybird.springbackend.api.req.*;
 import com.luckybird.springbackend.api.vo.UserVO;
 import com.luckybird.springbackend.base.PageResult;
 import jakarta.validation.Valid;
@@ -84,4 +82,20 @@ public interface UserApi {
             @RequestParam(name = "rows", defaultValue = "10") int rows,
             @RequestParam(name = "searchCount", defaultValue = "false") boolean searchCount,
             @RequestBody UserQueryReq req);
+
+    /**
+     * 修改密码
+     * @param id 用户id
+     * @param req 密码修改请求
+     */
+    @PostMapping("/v1/users/changePassword/{id}")
+    void changePassword(@PathVariable Long id, @RequestBody @Valid UserChangePasswordReq req);
+
+    /**
+     * 登录用户
+     * @param req 用户登录请求
+     * @return UserVO 用户信息
+     */
+    @PostMapping("/login")
+    UserVO login(@RequestBody @Valid UserLoginReq req);
 }

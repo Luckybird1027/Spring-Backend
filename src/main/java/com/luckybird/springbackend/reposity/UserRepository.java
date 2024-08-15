@@ -14,7 +14,7 @@ import java.util.Set;
  * @author 新云鸟
  */
 public interface UserRepository extends JpaRepository<UserPO, Long> {
-    Optional<UserPO> findByUsername(String username);
+    Optional<UserPO> findByAccount(String account);
 
     List<UserPO> findByUsernameContaining(String username, Pageable pageable);
 

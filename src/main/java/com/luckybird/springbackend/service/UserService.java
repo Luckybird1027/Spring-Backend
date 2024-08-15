@@ -67,16 +67,16 @@ public interface UserService {
     PageResult<UserVO> page(UserQueryReq req, int current, int pageSize, boolean searchCount);
 
     /**
-     * 用户注册
-     * @param req 用户注册请求
-     * @return UserVO 用户信息
-     */
-    UserVO register(UserRegisterReq req);
-
-    /**
      * 用户登录
      * @param req 用户登录请求
      * @return UserVO 用户信息
      */
     UserVO login(UserLoginReq req);
+
+    /**
+     * 用户修改密码
+     * @param id 用户id
+     * @param req 用户修改密码请求
+     */
+    void changePassword(Long id,UserChangePasswordReq req);
 }
