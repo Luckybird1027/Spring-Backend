@@ -5,7 +5,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 import org.hibernate.annotations.DynamicInsert;
 
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.List;
 
 
@@ -81,7 +81,7 @@ public class UserPO {
     /**
      * 创建时间
      */
-    private Timestamp createTime;
+    private LocalDateTime createTime;
 
     /**
      * 创建人ID
@@ -91,7 +91,7 @@ public class UserPO {
     /**
      * 更新时间
      */
-    private Timestamp updateTime;
+    private LocalDateTime updateTime;
 
     /**
      * 更新人ID

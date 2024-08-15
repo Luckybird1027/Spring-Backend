@@ -117,7 +117,6 @@ public class UserController implements UserApi {
      * @param id 用户id
      * @param req 密码修改请求
      */
-    @Override
     @PostMapping("/v1/users/changePassword/{id}")
     public void changePassword(@PathVariable Long id, @RequestBody @Valid UserChangePasswordReq req) {
         userService.changePassword(id, req);
@@ -128,7 +127,6 @@ public class UserController implements UserApi {
      * @param req 用户登录请求
      * @return UserVO 用户信息
      */
-    @Override
     @PostMapping("/login")
     public UserVO login(@RequestBody @Valid UserLoginReq req) {
         return userService.login(req);

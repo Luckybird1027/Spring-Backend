@@ -7,6 +7,7 @@ import com.luckybird.springbackend.exception.BizException;
 import com.luckybird.springbackend.exception.ExceptionMessages;
 import com.luckybird.springbackend.po.UserPO;
 import com.luckybird.springbackend.reposity.UserRepository;
+import com.luckybird.springbackend.reposity.UserSpecifications;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -130,7 +131,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<UserVO> list(UserQueryReq req) {
-        return userRepository.findByUsernameContaining(req.getKeyword()).stream().map(this::toVO).toList();
+        return userRepository.findAll(UserSpecifications.queryByReq(req)).stream().map(this::toVO).toList();
     }
 
     @Override
