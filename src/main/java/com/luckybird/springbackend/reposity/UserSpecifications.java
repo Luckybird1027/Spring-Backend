@@ -17,6 +17,7 @@ public class UserSpecifications {
         return (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
             if (StringUtils.hasText(req.getKeyword())) {
+                // TODO: 防注入
                 Predicate accountPredicate = cb.like(root.get("account"), "%" + req.getKeyword() + "%");
                 Predicate usernamePredicate = cb.like(root.get("username"), "%" + req.getKeyword() + "%");
                 Predicate telephonePredicate = cb.like(root.get("telephone"), "%" + req.getKeyword() + "%");
@@ -34,6 +35,7 @@ public class UserSpecifications {
                 predicates.add(cb.equal(root.get("departmentId"), req.getDepartmentId()));
             }
             if (StringUtils.hasText(req.getOccupation())){
+                // TODO: 用JSON方法模糊查询
                 predicates.add(cb.like(root.get("occupation"), "%" + req.getOccupation() + "%"));
             }
             return cb.and(predicates.toArray(new Predicate[0]));

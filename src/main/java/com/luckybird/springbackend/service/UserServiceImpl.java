@@ -102,7 +102,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<UserVO> batchGet(Set<Long> ids) {
-        return userRepository.findByIdIn(ids).stream().map(this::toVO).toList();
+        return userRepository.findAllById(ids).stream().map(this::toVO).toList();
     }
 
     @Override
@@ -110,7 +110,7 @@ public class UserServiceImpl implements UserService {
         UserPO po = toPo(req);
         Optional<UserPO> existingUser = userRepository.findByAccount(req.getUsername());
         if (existingUser.isPresent()) {
-            return toVO(existingUser.get());
+            throw new BizException(ExceptionMessages.ACCOUNT_ALREADY_EXISTS);
         }
         po.setPassword(passwordEncoder.encode(po.getPassword()));
         userRepository.save(po);
