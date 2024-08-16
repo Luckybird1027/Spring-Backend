@@ -15,7 +15,7 @@ public class UserLoginReq {
     /**
      * 账号
      */
-    @NotBlank(message = ExceptionMessages.USERNAME_IS_EMPTY)
+    @NotBlank(message = ExceptionMessages.ACCOUNT_IS_EMPTY)
     private String account;
 
     /**

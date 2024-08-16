@@ -22,6 +22,7 @@ public enum ErrorInfoEnum{
     INCORRECT_PASSWORD("00005", "incorrect password"),
     INCORRECT_USERNAME_OR_PASSWORD("00006", "incorrect username or password"),
     INCORRECT_OLD_PASSWORD("00007", "incorrect old password"),
+    ACCOUNT_IS_EMPTY("00008", "account is empty"),
 
 
     /**

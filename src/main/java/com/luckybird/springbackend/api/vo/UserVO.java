@@ -42,7 +42,7 @@ public class UserVO {
     /**
      * 状态
      */
-    private Byte status;
+    private Integer status;
 
     /**
      * 组织ID

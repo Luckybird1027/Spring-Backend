@@ -1,10 +1,6 @@
 package com.luckybird.springbackend.api.req;
 
-import com.luckybird.springbackend.converter.OccupationConverter;
-import jakarta.persistence.Convert;
 import lombok.Data;
-
-import java.util.List;
 
 /**
  * 用户查询请求
@@ -22,7 +18,7 @@ public class UserQueryReq {
     /**
      * 状态
      */
-    private Byte status;
+    private Integer status;
 
     /**
      * 组织ID
@@ -37,6 +33,5 @@ public class UserQueryReq {
     /**
      * 职位
      */
-    @Convert(converter = OccupationConverter.class)
-    private List<String> occupation;
+    private String occupation;
 }

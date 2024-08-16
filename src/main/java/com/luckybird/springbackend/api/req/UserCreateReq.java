@@ -19,7 +19,7 @@ public class UserCreateReq {
     /**
      * 账号
      */
-    @NotBlank(message = ExceptionMessages.USERNAME_IS_EMPTY)
+    @NotBlank(message = ExceptionMessages.ACCOUNT_IS_EMPTY)
     private String account;
 
     /**
@@ -46,7 +46,7 @@ public class UserCreateReq {
     /**
      * 状态
      */
-    private Byte status;
+    private Integer status;
 
     /**
      * 组织ID

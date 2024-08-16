@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -40,7 +41,7 @@ public class UserServiceImpl implements UserService {
         userPO.setUsername(req.getUsername());
         userPO.setTelephone(req.getTelephone());
         userPO.setEmail(req.getEmail());
-        userPO.setStatus(req.getStatus());
+        userPO.setStatus(req.getStatus().byteValue());
         userPO.setOrganizationId(req.getOrganizationId());
         userPO.setDepartmentId(req.getDepartmentId());
         userPO.setOccupation(req.getOccupation());
@@ -55,7 +56,7 @@ public class UserServiceImpl implements UserService {
         userVO.setUsername(po.getUsername());
         userVO.setTelephone(po.getTelephone());
         userVO.setEmail(po.getEmail());
-        userVO.setStatus(po.getStatus());
+        userVO.setStatus(po.getStatus().intValue());
         userVO.setOrganizationId(po.getOrganizationId());
         userVO.setDepartmentId(po.getDepartmentId());
         userVO.setOccupation(po.getOccupation());
@@ -77,7 +78,7 @@ public class UserServiceImpl implements UserService {
             po.setEmail(req.getEmail());
         }
         if (req.getStatus() != null) {
-            po.setStatus(req.getStatus());
+            po.setStatus(req.getStatus().byteValue());
         }
         if (req.getOrganizationId() != null) {
             po.setOrganizationId(req.getOrganizationId());
@@ -137,10 +138,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public PageResult<UserVO> page(UserQueryReq req, int current, int pageSize, boolean searchCount) {
         Pageable pageable = PageRequest.of(current - 1, pageSize);
-        List<UserPO> pos = userRepository.findByUsernameContaining(req.getKeyword(), pageable);
+        Specification<UserPO> spec = UserSpecifications.queryByReq(req);
+        List<UserPO> pos = userRepository.findAll(spec, pageable).getContent();
         if (searchCount) {
-            long count = userRepository.countByUsernameContaining(req.getKeyword());
-
+            long count = userRepository.count(spec);
             return new PageResult<>(count, pos.stream().map(this::toVO).toList());
         }
         return new PageResult<>(pos.stream().map(this::toVO).toList());
