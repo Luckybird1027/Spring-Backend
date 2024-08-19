@@ -7,7 +7,7 @@ import com.luckybird.springbackend.exception.BizException;
 import com.luckybird.springbackend.exception.ExceptionMessages;
 import com.luckybird.springbackend.po.UserPO;
 import com.luckybird.springbackend.reposity.UserRepository;
-import com.luckybird.springbackend.reposity.UserSpecifications;
+import jakarta.persistence.criteria.Predicate;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -15,7 +15,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -65,33 +67,44 @@ public class UserServiceImpl implements UserService {
     }
 
     private void poUpdateByReq(UserPO po, UserUpdateReq req) {
-        if (req.getAccount() != null) {
-            po.setAccount(req.getAccount());
-        }
-        if (req.getUsername() != null) {
-            po.setUsername(req.getUsername());
-        }
-        if (req.getTelephone() != null) {
-            po.setTelephone(req.getTelephone());
-        }
-        if (req.getEmail() != null) {
-            po.setEmail(req.getEmail());
-        }
-        if (req.getStatus() != null) {
-            po.setStatus(req.getStatus().byteValue());
-        }
-        if (req.getOrganizationId() != null) {
-            po.setOrganizationId(req.getOrganizationId());
-        }
-        if (req.getDepartmentId() != null) {
-            po.setDepartmentId(req.getDepartmentId());
-        }
-        if (req.getOccupation() != null) {
-            po.setOccupation(req.getOccupation());
-        }
-        if (req.getRemark() != null) {
-            po.setRemark(req.getRemark());
-        }
+        Optional.ofNullable(req.getAccount()).ifPresent(po::setAccount);
+        Optional.ofNullable(req.getUsername()).ifPresent(po::setUsername);
+        Optional.ofNullable(req.getTelephone()).ifPresent(po::setTelephone);
+        Optional.ofNullable(req.getEmail()).ifPresent(po::setEmail);
+        Optional.ofNullable(req.getStatus()).ifPresent(status -> po.setStatus(status.byteValue()));
+        Optional.ofNullable(req.getOrganizationId()).ifPresent(po::setOrganizationId);
+        Optional.ofNullable(req.getDepartmentId()).ifPresent(po::setDepartmentId);
+        Optional.ofNullable(req.getOccupation()).ifPresent(po::setOccupation);
+        Optional.ofNullable(req.getRemark()).ifPresent(po::setRemark);
+    }
+
+    private Specification<UserPO> queryByReq(UserQueryReq req) {
+        return (root, query, cb) -> {
+            List<Predicate> predicates = new ArrayList<>();
+            if (StringUtils.hasText(req.getKeyword())) {
+                // TODO: 防注入
+                Predicate accountPredicate = cb.like(root.get("account"), "%" + req.getKeyword() + "%");
+                Predicate usernamePredicate = cb.like(root.get("username"), "%" + req.getKeyword() + "%");
+                Predicate telephonePredicate = cb.like(root.get("telephone"), "%" + req.getKeyword() + "%");
+                Predicate emailPredicate = cb.like(root.get("email"), "%" + req.getKeyword() + "%");
+                Predicate remarkPredicate = cb.like(root.get("remark"), "%" + req.getKeyword() + "%");
+                predicates.add(cb.or(accountPredicate, usernamePredicate, telephonePredicate, emailPredicate, remarkPredicate));
+            }
+            if (req.getStatus() != null) {
+                predicates.add(cb.equal(root.get("status"), req.getStatus()));
+            }
+            if (req.getOrganizationId() != null){
+                predicates.add(cb.equal(root.get("organizationId"), req.getOrganizationId()));
+            }
+            if (req.getDepartmentId() != null){
+                predicates.add(cb.equal(root.get("departmentId"), req.getDepartmentId()));
+            }
+            if (StringUtils.hasText(req.getOccupation())){
+                // TODO: 用JSON方法模糊查询
+                predicates.add(cb.like(root.get("occupation"), "%" + req.getOccupation() + "%"));
+            }
+            return cb.and(predicates.toArray(new Predicate[0]));
+        };
     }
 
     @Override
@@ -132,13 +145,13 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<UserVO> list(UserQueryReq req) {
-        return userRepository.findAll(UserSpecifications.queryByReq(req)).stream().map(this::toVO).toList();
+        return userRepository.findAll(queryByReq(req)).stream().map(this::toVO).toList();
     }
 
     @Override
     public PageResult<UserVO> page(UserQueryReq req, int current, int pageSize, boolean searchCount) {
         Pageable pageable = PageRequest.of(current - 1, pageSize);
-        Specification<UserPO> spec = UserSpecifications.queryByReq(req);
+        Specification<UserPO> spec = queryByReq(req);
         List<UserPO> pos = userRepository.findAll(spec, pageable).getContent();
         if (searchCount) {
             long count = userRepository.count(spec);
