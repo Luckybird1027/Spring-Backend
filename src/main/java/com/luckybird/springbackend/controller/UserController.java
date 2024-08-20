@@ -2,6 +2,7 @@ package com.luckybird.springbackend.controller;
 
 import com.luckybird.springbackend.api.UserApi;
 import com.luckybird.springbackend.api.req.*;
+import com.luckybird.springbackend.api.vo.TokenVO;
 import com.luckybird.springbackend.base.PageResult;
 import com.luckybird.springbackend.service.UserService;
 import com.luckybird.springbackend.api.vo.UserVO;
@@ -117,8 +118,8 @@ public class UserController implements UserApi {
      * @param req 用户登录请求
      * @return UserVO 用户信息
      */
-    @PostMapping("/login")
-    public UserVO login(@RequestBody @Valid UserLoginReq req) {
+    @PostMapping("/v1/users/login")
+    public TokenVO login(@RequestBody @Valid UserLoginReq req) {
         return userService.login(req);
     }
 

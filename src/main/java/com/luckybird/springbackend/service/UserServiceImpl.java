@@ -1,6 +1,7 @@
 package com.luckybird.springbackend.service;
 
 import com.luckybird.springbackend.api.req.*;
+import com.luckybird.springbackend.api.vo.TokenVO;
 import com.luckybird.springbackend.api.vo.UserVO;
 import com.luckybird.springbackend.base.PageResult;
 import com.luckybird.springbackend.exception.BizException;
@@ -35,6 +36,8 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
 
     private final UserRepository userRepository;
+
+    private final TokenService tokenService;
 
     private UserPO toPo(UserCreateReq req) {
         UserPO userPO = new UserPO();
@@ -161,7 +164,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserVO login(UserLoginReq req) {
+    public TokenVO login(UserLoginReq req) {
         //检查用户是否存在
         Optional<UserPO> existingUser = userRepository.findByAccount(req.getAccount());
         if (existingUser.isEmpty()) {
@@ -172,9 +175,10 @@ public class UserServiceImpl implements UserService {
         if (!passwordEncoder.matches(req.getPassword(), po.getPassword())) {
             throw new BizException(ExceptionMessages.INCORRECT_USERNAME_OR_PASSWORD);
         }
-        // 登录成功
+        // 登录成功，发放token
         log.info("User " + req.getAccount() + " logged in successfully");
-        return toVO(po);
+        // TODO: 缓存token
+        return null;
     }
 
     @Override
