@@ -1,6 +1,8 @@
 package com.luckybird.springbackend.po;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * Token实体
@@ -8,8 +10,10 @@ import lombok.Data;
  * @author 新云鸟
  */
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class TokenPO {
-    // TODO: 需修改以实现踢人需求
+    // TODO: 最后实现踢人需求
     /**
      * token凭据
      */
@@ -19,10 +23,5 @@ public class TokenPO {
      * 用户id
      */
     private Long userId;
-
-    /**
-     * 过期时间
-     */
-    private Integer expireTime;
 
 }

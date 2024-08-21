@@ -4,26 +4,40 @@ import com.luckybird.springbackend.service.TokenService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
+
+import java.io.IOException;
+import java.io.PrintWriter;
 
 /**
  * @author 新云鸟
  */
 @RequiredArgsConstructor
+@Component
 public class AuthInterceptor implements HandlerInterceptor {
 
     private final TokenService tokenService;
+
+    private void sendError(HttpServletResponse response) throws IOException {
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        response.setContentType("application/json");
+        PrintWriter out = response.getWriter();
+        out.print("{\"error\":\"Unauthorized: Token is missing or invalid.\"}");
+        out.flush();
+    }
+
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         String token = request.getHeader("Authorization");
         if (token == null || !token.startsWith("Bearer ")) {
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized: Token is missing or invalid.");
+            sendError(response);
             return false;
         }
         token = token.substring(7);
-        if (!tokenService.verifyToken(token)) {
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized: Token is missing or invalid.");
+        if (tokenService.verifyToken(token) == null) {
+            sendError(response);
             return false;
         }
         return true;

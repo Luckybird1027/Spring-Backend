@@ -9,11 +9,17 @@ import lombok.Data;
  */
 @Data
 public class TokenVO {
-    // TODO: 需修改以实现踢人需求
+    // TODO: 最后实现踢人需求
+
     /**
      * token凭据
      */
     private String accessToken;
+
+    /**
+     * 用户id
+     */
+    private Long userId;
 
     /**
      * 过期时间

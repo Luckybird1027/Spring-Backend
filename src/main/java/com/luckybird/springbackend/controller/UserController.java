@@ -1,11 +1,12 @@
 package com.luckybird.springbackend.controller;
 
 import com.luckybird.springbackend.api.UserApi;
-import com.luckybird.springbackend.api.req.*;
-import com.luckybird.springbackend.api.vo.TokenVO;
+import com.luckybird.springbackend.api.req.UserCreateReq;
+import com.luckybird.springbackend.api.req.UserQueryReq;
+import com.luckybird.springbackend.api.req.UserUpdateReq;
+import com.luckybird.springbackend.api.vo.UserVO;
 import com.luckybird.springbackend.base.PageResult;
 import com.luckybird.springbackend.service.UserService;
-import com.luckybird.springbackend.api.vo.UserVO;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -111,25 +112,5 @@ public class UserController implements UserApi {
             @RequestParam(name = "searchCount", defaultValue = "false") boolean searchCount,
             @RequestBody UserQueryReq req) {
         return userService.page(req, current, rows, searchCount);
-    }
-
-    /**
-     * 登录用户
-     * @param req 用户登录请求
-     * @return UserVO 用户信息
-     */
-    @PostMapping("/v1/users/login")
-    public TokenVO login(@RequestBody @Valid UserLoginReq req) {
-        return userService.login(req);
-    }
-
-    /**
-     * 修改密码
-     * @param id 用户id
-     * @param req 密码修改请求
-     */
-    @PostMapping("/v1/users/changePassword/{id}")
-    public void changePassword(@PathVariable Long id, @RequestBody @Valid UserChangePasswordReq req) {
-        userService.changePassword(id, req);
     }
 }

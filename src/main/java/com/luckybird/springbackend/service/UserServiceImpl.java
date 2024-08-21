@@ -177,8 +177,11 @@ public class UserServiceImpl implements UserService {
         }
         // 登录成功，发放token
         log.info("User " + req.getAccount() + " logged in successfully");
-        // TODO: 缓存token
-        return null;
+        /* TODO: 需检查是否重复登录（redis是否已存在token），若已登录则报业务异常
+         * 如果要检测是否登录，则需要在登录时同时插入一个（ID,accessToken）的键值对以供查询，在TokenService中增加登录状态检查，并在UserService中调用TokenService的登录方法
+         * 基于上面的设计还可以增加logout的功能
+         */
+        return tokenService.generateToken(po.getId());
     }
 
     @Override
