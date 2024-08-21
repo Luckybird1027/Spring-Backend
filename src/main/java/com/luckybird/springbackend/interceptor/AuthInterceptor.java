@@ -1,5 +1,6 @@
 package com.luckybird.springbackend.interceptor;
 
+import com.luckybird.springbackend.annotation.NoAuthRequired;
 import com.luckybird.springbackend.exception.BizException;
 import com.luckybird.springbackend.exception.ExceptionMessages;
 import com.luckybird.springbackend.service.TokenService;
@@ -7,6 +8,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -21,6 +23,11 @@ public class AuthInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
+        HandlerMethod handlerMethod = (HandlerMethod) handler;
+        NoAuthRequired noAuthRequired = handlerMethod.getMethodAnnotation(NoAuthRequired.class);
+        if (noAuthRequired != null) {
+            return true;
+        }
         String rawToken = request.getHeader("Authorization");
         String accessToken = tokenService.extractToken(rawToken);
         if (tokenService.verifyToken(accessToken) == null) {
