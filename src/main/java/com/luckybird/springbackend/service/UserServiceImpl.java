@@ -124,7 +124,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserVO create(UserCreateReq req) {
         UserPO po = toPo(req);
-        Optional<UserPO> existingUser = userRepository.findByAccount(req.getUsername());
+        Optional<UserPO> existingUser = userRepository.findByAccount(req.getAccount());
         if (existingUser.isPresent()) {
             throw new BizException(ExceptionMessages.ACCOUNT_ALREADY_EXISTS);
         }
