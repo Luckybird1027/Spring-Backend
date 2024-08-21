@@ -36,14 +36,24 @@ public class TokenController {
     }
 
     /**
+     * 登出用户
+     *
+     * @param rawToken 未处理token
+     */
+    @PostMapping("/v1/users/logout")
+    public void logout(@RequestHeader("Authorization") String rawToken) {
+        userService.logout(rawToken);
+    }
+
+    /**
      * 修改密码
      *
-     * @param id  用户id
+     * @param rawToken 未处理token
      * @param req 密码修改请求
      */
-    @PostMapping("/v1/users/changePassword/{id}")
-    public void changePassword(@PathVariable Long id, @RequestBody @Valid UserChangePasswordReq req) {
-        userService.changePassword(id, req);
+    @PostMapping("/v1/users/changePassword")
+    public void changePassword(@RequestHeader("Authorization") String rawToken, @RequestBody @Valid UserChangePasswordReq req) {
+        userService.changePassword(rawToken, req);
     }
 
     /**
@@ -56,4 +66,3 @@ public class TokenController {
         return tokenService.verifyToken(accessToken);
     }
 }
-

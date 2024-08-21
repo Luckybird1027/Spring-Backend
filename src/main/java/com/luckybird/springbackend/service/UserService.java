@@ -2,8 +2,8 @@ package com.luckybird.springbackend.service;
 
 import com.luckybird.springbackend.api.req.*;
 import com.luckybird.springbackend.api.vo.TokenVO;
-import com.luckybird.springbackend.base.PageResult;
 import com.luckybird.springbackend.api.vo.UserVO;
+import com.luckybird.springbackend.base.PageResult;
 
 import java.util.List;
 import java.util.Set;
@@ -17,6 +17,7 @@ public interface UserService {
 
     /**
      * 根据id获取用户信息
+     *
      * @param id 用户id
      * @return UserVO 用户信息
      */
@@ -24,6 +25,7 @@ public interface UserService {
 
     /**
      * 批量获取用户信息
+     *
      * @param ids 用户id集合
      * @return List<UserVO> 用户信息列表
      */
@@ -31,6 +33,7 @@ public interface UserService {
 
     /**
      * 创建用户
+     *
      * @param req 用户创建请求
      * @return UserVO 用户信息
      */
@@ -38,7 +41,8 @@ public interface UserService {
 
     /**
      * 更新用户
-     * @param id 用户id
+     *
+     * @param id  用户id
      * @param req 用户更新请求
      * @return UserVO 用户信息
      */
@@ -46,12 +50,14 @@ public interface UserService {
 
     /**
      * 删除用户
+     *
      * @param id 用户id
      */
     void delete(Long id);
 
     /**
      * 全量查询用户
+     *
      * @param req 查询请求
      * @return List<UserVO> 用户信息列表
      */
@@ -59,9 +65,10 @@ public interface UserService {
 
     /**
      * 分页查询用户
-     * @param req 查询请求
-     * @param current 页码
-     * @param pageSize 页大小
+     *
+     * @param req         查询请求
+     * @param current     页码
+     * @param pageSize    页大小
      * @param searchCount 是否查询总数
      * @return PageResult<UserVO> 用户分页信息
      */
@@ -69,15 +76,19 @@ public interface UserService {
 
     /**
      * 用户登录
+     *
      * @param req 用户登录请求
      * @return UserVO 用户信息
      */
     TokenVO login(UserLoginReq req);
 
+    void logout(String rawToken);
+
     /**
      * 用户修改密码
-     * @param id 用户id
+     *
+     * @param rawToken  用户id
      * @param req 用户修改密码请求
      */
-    void changePassword(Long id,UserChangePasswordReq req);
+    void changePassword(String rawToken, UserChangePasswordReq req);
 }

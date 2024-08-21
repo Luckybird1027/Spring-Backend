@@ -96,13 +96,13 @@ public class UserServiceImpl implements UserService {
             if (req.getStatus() != null) {
                 predicates.add(cb.equal(root.get("status"), req.getStatus()));
             }
-            if (req.getOrganizationId() != null){
+            if (req.getOrganizationId() != null) {
                 predicates.add(cb.equal(root.get("organizationId"), req.getOrganizationId()));
             }
-            if (req.getDepartmentId() != null){
+            if (req.getDepartmentId() != null) {
                 predicates.add(cb.equal(root.get("departmentId"), req.getDepartmentId()));
             }
-            if (StringUtils.hasText(req.getOccupation())){
+            if (StringUtils.hasText(req.getOccupation())) {
                 // TODO: 用JSON方法模糊查询
                 predicates.add(cb.like(root.get("occupation"), "%" + req.getOccupation() + "%"));
             }
@@ -165,7 +165,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public TokenVO login(UserLoginReq req) {
-        //检查用户是否存在
+        // 检查用户是否存在
         Optional<UserPO> existingUser = userRepository.findByAccount(req.getAccount());
         if (existingUser.isEmpty()) {
             throw new BizException(ExceptionMessages.INCORRECT_USERNAME_OR_PASSWORD);
@@ -175,17 +175,40 @@ public class UserServiceImpl implements UserService {
         if (!passwordEncoder.matches(req.getPassword(), po.getPassword())) {
             throw new BizException(ExceptionMessages.INCORRECT_USERNAME_OR_PASSWORD);
         }
-        // 登录成功，发放token
+        // 检查用户是否被禁用
+        if (existingUser.get().getStatus() == 1) {
+            throw new BizException(ExceptionMessages.USER_DISABLED);
+        }
+        // 检查是否重复登录
+        if (tokenService.findTokenByUserId(po.getId()) != null) {
+            throw new BizException(ExceptionMessages.USER_ALREADY_LOGIN);
+        }
+        // 登录成功，返回token
         log.info("User " + req.getAccount() + " logged in successfully");
-        /* TODO: 需检查是否重复登录（redis是否已存在token），若已登录则报业务异常
-         * 如果要检测是否登录，则需要在登录时同时插入一个（ID,accessToken）的键值对以供查询，在TokenService中增加登录状态检查，并在UserService中调用TokenService的登录方法
-         * 基于上面的设计还可以增加logout的功能
-         */
         return tokenService.generateToken(po.getId());
     }
 
     @Override
-    public void changePassword(Long id, UserChangePasswordReq req){
+    public void logout(String rawToken) {
+        // 处理token头部
+        String accessToken = tokenService.extractToken(rawToken);
+        // 从token获取用户ID
+        Long userId = tokenService.verifyToken(accessToken).getUserId();
+        if (!tokenService.deleteTokenByUserId(userId)){
+            throw new BizException("user not login");
+        }
+        log.info("User " + userId + " logged out successfully");
+    }
+
+    @Override
+    public void changePassword(String rawToken, UserChangePasswordReq req) {
+        // 处理token头部
+        String accessToken = tokenService.extractToken(rawToken);
+        // 从token获取用户ID
+        Long id = tokenService.verifyToken(accessToken).getUserId();
+        if (id == null){
+            throw new BizException(ExceptionMessages.UNAUTHORIZED_ACCESS);
+        }
         // 检查用户是否存在
         Optional<UserPO> existingUser = userRepository.findById(id);
         if (existingUser.isEmpty()) {

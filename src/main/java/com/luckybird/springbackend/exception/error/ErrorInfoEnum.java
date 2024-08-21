@@ -23,8 +23,9 @@ public enum ErrorInfoEnum{
     INCORRECT_USERNAME_OR_PASSWORD("00006", "incorrect username or password"),
     INCORRECT_OLD_PASSWORD("00007", "incorrect old password"),
     ACCOUNT_IS_EMPTY("00008", "account is empty"),
-
-
+    USER_ALREADY_LOGIN("00009", "user already login"),
+    USER_DISABLED("00010", "user disabled"),
+    UNAUTHORIZED_ACCESS("00011", "unauthorized access"),
     /**
      * 其他错误码
      */

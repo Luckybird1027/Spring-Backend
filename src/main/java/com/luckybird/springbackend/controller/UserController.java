@@ -9,7 +9,6 @@ import com.luckybird.springbackend.base.PageResult;
 import com.luckybird.springbackend.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -56,7 +55,6 @@ public class UserController implements UserApi {
      */
     @Override
     @PostMapping("/v1/users")
-    @ResponseStatus(HttpStatus.CREATED)
     public UserVO create(@RequestBody @Valid UserCreateReq req) {
         return userService.create(req);
     }
@@ -79,7 +77,6 @@ public class UserController implements UserApi {
      */
     @Override
     @DeleteMapping("/v1/users/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable Long id) {
         userService.delete(id);
     }
