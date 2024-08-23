@@ -45,8 +45,15 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Throwable.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResult handleException(Throwable e, HttpServletRequest request) {
-        ErrorResult errorResult = new ErrorResult("99999", e.getMessage());
-        log.error("Exception: " + errorResult + ", URL: " + request.getRequestURI());
+        ErrorResult errorResult = new ErrorResult();
+        if (e.getMessage() != null){
+            errorResult.setCode("99999");
+            errorResult.setMessage(e.getMessage());
+        } else {
+            errorResult.setCode("99999");
+            errorResult.setMessage(e.getCause().getMessage());
+        }
+        log.error("Exception: " + errorResult + ", URL: " + request.getRequestURI(), e);
         return new ErrorResult(INTERNAL_SERVER_ERROR);
     }
 

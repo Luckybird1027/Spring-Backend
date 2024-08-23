@@ -72,7 +72,7 @@ public interface UserService {
      * @param searchCount 是否查询总数
      * @return PageResult<UserVO> 用户分页信息
      */
-    PageResult<UserVO> page(UserQueryReq req, int current, int pageSize, boolean searchCount);
+    PageResult<UserVO> page(UserQueryReq req, Long current, Long pageSize, boolean searchCount);
 
     /**
      * 用户登录

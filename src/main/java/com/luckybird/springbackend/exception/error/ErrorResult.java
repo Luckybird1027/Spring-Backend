@@ -1,6 +1,7 @@
 package com.luckybird.springbackend.exception.error;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * 错误结果
@@ -9,6 +10,7 @@ import lombok.Data;
  */
 
 @Data
+@NoArgsConstructor
 public class ErrorResult {
     /**
      * 错误码

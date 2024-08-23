@@ -78,8 +78,8 @@ public interface UserApi {
      */
     @PostMapping("/v1/users/page")
     PageResult<UserVO> page(
-            @RequestParam(name = "current", defaultValue = "1") int current,
-            @RequestParam(name = "rows", defaultValue = "10") int rows,
+            @RequestParam(name = "current", defaultValue = "1") Long current,
+            @RequestParam(name = "rows", defaultValue = "10") Long rows,
             @RequestParam(name = "searchCount", defaultValue = "false") boolean searchCount,
             @RequestBody UserQueryReq req);
 

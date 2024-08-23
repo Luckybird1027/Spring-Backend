@@ -104,8 +104,8 @@ public class UserController implements UserApi {
     @Override
     @PostMapping("/v1/users/page")
     public PageResult<UserVO> page(
-            @RequestParam(name = "current", defaultValue = "1") int current,
-            @RequestParam(name = "rows", defaultValue = "10") int rows,
+            @RequestParam(name = "current", defaultValue = "1") Long current,
+            @RequestParam(name = "rows", defaultValue = "10") Long rows,
             @RequestParam(name = "searchCount", defaultValue = "false") boolean searchCount,
             @RequestBody UserQueryReq req) {
         return userService.page(req, current, rows, searchCount);
