@@ -14,7 +14,7 @@ import java.util.List;
  * @author 新云鸟
  */
 @Data
-@TableName(value = "user")
+@TableName(value = "user", autoResultMap = true)
 public class UserPO {
 
     /**
