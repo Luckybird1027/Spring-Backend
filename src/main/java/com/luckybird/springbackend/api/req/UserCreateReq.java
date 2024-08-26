@@ -1,8 +1,6 @@
 package com.luckybird.springbackend.api.req;
 
-import com.luckybird.springbackend.converter.OccupationConverter;
 import com.luckybird.springbackend.exception.ExceptionMessages;
-import jakarta.persistence.Convert;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
@@ -61,7 +59,6 @@ public class UserCreateReq {
     /**
      * 职位
      */
-    @Convert(converter = OccupationConverter.class)
     private List<String> occupation;
 
     /**

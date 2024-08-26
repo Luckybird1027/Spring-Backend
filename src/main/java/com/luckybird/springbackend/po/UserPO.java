@@ -1,14 +1,8 @@
 package com.luckybird.springbackend.po;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.*;
 import com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler;
-import com.luckybird.springbackend.converter.OccupationConverter;
-import jakarta.persistence.*;
 import lombok.Data;
-import org.hibernate.annotations.DynamicInsert;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -20,16 +14,12 @@ import java.util.List;
  * @author 新云鸟
  */
 @Data
-@Entity
-@DynamicInsert
-@Table(name = "user")
 @TableName(value = "user")
 public class UserPO {
 
     /**
      * ID
      */
-    @Id
     @TableId(value = "id", type = IdType.ASSIGN_ID)
     private Long id;
 
@@ -76,7 +66,6 @@ public class UserPO {
     /**
      * 职位
      */
-    @Convert(converter = OccupationConverter.class)
     @TableField(typeHandler = JacksonTypeHandler.class)
     private List<String> occupation;
 
@@ -108,5 +97,6 @@ public class UserPO {
     /**
      * 逻辑删除
      */
+    @TableLogic(value = "0", delval = "id")
     private Long deleted;
 }
