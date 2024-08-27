@@ -1,7 +1,7 @@
 package com.luckybird.springbackend.service;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.luckybird.springbackend.api.req.*;
 import com.luckybird.springbackend.api.vo.TokenVO;
 import com.luckybird.springbackend.api.vo.UserVO;
@@ -100,7 +100,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserVO create(UserCreateReq req) {
         UserPO po = toPo(req);
-        QueryWrapper<UserPO> wrapper = new QueryWrapper<UserPO>().eq("account", req.getAccount());
+        LambdaQueryWrapper<UserPO> wrapper = new LambdaQueryWrapper<UserPO>().eq(UserPO::getAccount, req.getAccount());
         UserPO existingUser = userMapper.selectOne(wrapper);
         if (existingUser != null) {
             throw new BizException(ExceptionMessages.ACCOUNT_ALREADY_EXISTS);
@@ -116,7 +116,7 @@ public class UserServiceImpl implements UserService {
         if (po == null) {
             throw new BizException(ExceptionMessages.USER_NOT_EXIST);
         }
-        UpdateWrapper<UserPO> wrapper = new UpdateWrapper<UserPO>().eq("id", id);
+        LambdaUpdateWrapper<UserPO> wrapper = new LambdaUpdateWrapper<UserPO>().eq(UserPO::getId, id);
         userMapper.update(toPo(req), wrapper);
         return toVO(po);
     }
@@ -164,7 +164,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public TokenVO login(UserLoginReq req) {
         // 检查用户是否存在
-        UserPO existingUser = userMapper.selectOne(new QueryWrapper<UserPO>().eq("account", req.getAccount()));
+        UserPO existingUser = userMapper.selectOne(new LambdaQueryWrapper<UserPO>().eq(UserPO::getAccount, req.getAccount()));
         if (existingUser == null) {
             throw new BizException(ExceptionMessages.INCORRECT_USERNAME_OR_PASSWORD);
         }
