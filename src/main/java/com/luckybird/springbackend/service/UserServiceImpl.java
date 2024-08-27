@@ -2,8 +2,6 @@ package com.luckybird.springbackend.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.luckybird.springbackend.api.req.*;
 import com.luckybird.springbackend.api.vo.TokenVO;
 import com.luckybird.springbackend.api.vo.UserVO;
@@ -16,7 +14,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 import java.util.List;
 import java.util.Set;
@@ -86,32 +83,6 @@ public class UserServiceImpl implements UserService {
         return userVO;
     }
 
-    private QueryWrapper<UserPO> wrapperByReq(UserQueryReq req) {
-        QueryWrapper<UserPO> wrapper = new QueryWrapper<>();
-        if (StringUtils.hasText(req.getKeyword())) {
-            // TODO: 防注入
-            wrapper.like("account", "%" + req.getKeyword() + "%");
-            wrapper.or().like("username", "%" + req.getKeyword() + "%");
-            wrapper.or().like("telephone", "%" + req.getKeyword() + "%");
-            wrapper.or().like("email", "%" + req.getKeyword() + "%");
-            wrapper.or().like("remark", "%" + req.getKeyword() + "%");
-        }
-        if (req.getStatus() != null) {
-            wrapper.eq("status", req.getStatus());
-        }
-        if (req.getOrganizationId() != null) {
-            wrapper.eq("organization_id", req.getOrganizationId());
-        }
-        if (req.getDepartmentId() != null) {
-            wrapper.eq("department_id", req.getDepartmentId());
-        }
-        if (StringUtils.hasText(req.getOccupation())) {
-            // TODO: 用JSON方法模糊查询
-            wrapper.like("occupation", "%" + req.getOccupation() + "%");
-        }
-        return wrapper;
-    }
-
     @Override
     public UserVO get(Long id) {
         UserPO po = userMapper.selectById(id);
@@ -157,21 +128,36 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<UserVO> list(UserQueryReq req) {
-        return userMapper.selectList(wrapperByReq(req)).stream().map(this::toVO).toList();
+        List<UserPO> poList = userMapper.selectByConditions(
+                req.getKeyword(),
+                req.getStatus(),
+                req.getOrganizationId(),
+                req.getDepartmentId(),
+                req.getOccupation());
+        return poList.stream().map(this::toVO).toList();
     }
 
     @Override
     public PageResult<UserVO> page(UserQueryReq req, Long current, Long pageSize, boolean searchCount) {
-        IPage<UserPO> page = new Page<>(current, pageSize);
-        QueryWrapper<UserPO> wrapper = wrapperByReq(req);
-        IPage<UserPO> userPage = userMapper.selectPage(page, wrapper);
-        List<UserPO> userList = userPage.getRecords();
-        Long total = userPage.getTotal();
-        List<UserVO> userVOList = userList.stream().map(this::toVO).toList();
+        List<UserPO> poList = userMapper.selectByConditionsWithPage(
+                req.getKeyword(),
+                req.getStatus(),
+                req.getOrganizationId(),
+                req.getDepartmentId(),
+                req.getOccupation(),
+                (current - 1) * pageSize,
+                pageSize);
+        List<UserVO> voList = poList.stream().map(this::toVO).toList();
         if (searchCount) {
-            return new PageResult<>(total, userVOList);
+            return new PageResult<>(userMapper.countByConditions(
+                    req.getKeyword(),
+                    req.getStatus(),
+                    req.getOrganizationId(),
+                    req.getDepartmentId(),
+                    req.getOccupation()
+            ), voList);
         } else {
-            return new PageResult<>(userVOList);
+            return new PageResult<>(voList);
         }
     }
 

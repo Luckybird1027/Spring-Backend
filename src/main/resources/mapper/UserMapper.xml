@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.luckybird.springbackend.mapper.UserMapper">
+    <resultMap id="UserPOResultMap" type="com.luckybird.springbackend.po.UserPO">
+        <result column="occupation" property="occupation"
+                typeHandler="com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler"/>
+    </resultMap>
+
+    <select id="selectByConditions" resultMap="UserPOResultMap">
+        SELECT * FROM user WHERE 1=1
+        <if test="keyword != null and keyword.trim() != ''">
+            AND (
+            account LIKE CONCAT('%', #{keyword}, '%')
+            OR username LIKE CONCAT('%', #{keyword}, '%')
+            OR telephone LIKE CONCAT('%', #{keyword}, '%')
+            OR email LIKE CONCAT('%', #{keyword}, '%')
+            OR remark LIKE CONCAT('%', #{keyword}, '%')
+            )
+        </if>
+        <if test='status != null'>
+            AND status = #{status}
+        </if>
+        <if test='organizationId != null'>
+            AND organization_id = #{organizationId}
+        </if>
+        <if test='departmentId != null'>
+            AND department_id = #{departmentId}
+        </if>
+        <if test="occupation != null and occupation != ''">
+            AND JSON_CONTAINS(occupation, JSON_QUOTE(#{occupation}), '$')
+        </if>
+    </select>
+
+    <select id="selectByConditionsWithPage" resultMap="UserPOResultMap">
+        SELECT * FROM user WHERE 1=1
+        <if test="keyword != null and keyword.trim() != ''">
+            AND (
+            account LIKE CONCAT('%', #{keyword}, '%')
+            OR username LIKE CONCAT('%', #{keyword}, '%')
+            OR telephone LIKE CONCAT('%', #{keyword}, '%')
+            OR email LIKE CONCAT('%', #{keyword}, '%')
+            OR remark LIKE CONCAT('%', #{keyword}, '%')
+            )
+        </if>
+        <if test='status != null'>
+            AND status = #{status}
+        </if>
+        <if test='organizationId != null'>
+            AND organization_id = #{organizationId}
+        </if>
+        <if test='departmentId != null'>
+            AND department_id = #{departmentId}
+        </if>
+        <if test="occupation != null and occupation != ''">
+            AND JSON_CONTAINS(occupation, JSON_QUOTE(#{occupation}), '$')
+        </if>
+        LIMIT #{page}, #{size}
+    </select>
+
+    <select id="countByConditions" resultType="java.lang.Long">
+        SELECT COUNT(*) FROM user WHERE 1=1
+        <if test="keyword != null and keyword.trim() != ''">
+            AND (
+            account LIKE CONCAT('%', #{keyword}, '%')
+            OR username LIKE CONCAT('%', #{keyword}, '%')
+            OR telephone LIKE CONCAT('%', #{keyword}, '%')
+            OR email LIKE CONCAT('%', #{keyword}, '%')
+            OR remark LIKE CONCAT('%', #{keyword}, '%')
+            )
+        </if>
+        <if test='status != null'>
+            AND status = #{status}
+        </if>
+        <if test='organizationId != null'>
+            AND organization_id = #{organizationId}
+        </if>
+        <if test='departmentId != null'>
+            AND department_id = #{departmentId}
+        </if>
+        <if test="occupation != null and occupation != ''">
+            AND JSON_CONTAINS(occupation, JSON_QUOTE(#{occupation}), '$')
+        </if>
+    </select>
+</mapper>
