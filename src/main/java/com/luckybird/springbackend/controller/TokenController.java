@@ -1,6 +1,6 @@
 package com.luckybird.springbackend.controller;
 
-import com.luckybird.springbackend.annotation.NoAuthRequired;
+import com.luckybird.springbackend.common.annotation.NoAuthRequired;
 import com.luckybird.springbackend.api.req.UserChangePasswordReq;
 import com.luckybird.springbackend.api.req.UserLoginReq;
 import com.luckybird.springbackend.api.vo.TokenVO;
