@@ -82,13 +82,17 @@ public interface UserService {
      */
     TokenVO login(UserLoginReq req);
 
-    void logout(String rawToken);
+    /**
+     * 用户登出
+     * @param userId 用户id
+     */
+    void logout(Long userId);
 
     /**
      * 用户修改密码
      *
-     * @param rawToken  用户id
+     * @param userId 用户id
      * @param req 用户修改密码请求
      */
-    void changePassword(String rawToken, UserChangePasswordReq req);
+    void changePassword(Long userId, UserChangePasswordReq req);
 }

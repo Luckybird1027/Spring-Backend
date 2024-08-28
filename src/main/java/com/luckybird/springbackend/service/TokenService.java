@@ -10,14 +10,6 @@ import com.luckybird.springbackend.api.vo.TokenVO;
 public interface TokenService {
 
     /**
-     * TODO: 可抽成公共工具方法
-     * 从请求头中提取token
-     * @param rawToken 请求头中的token
-     * @return token
-     */
-    String extractToken(String rawToken);
-
-    /**
      * 生成token
      * @param userId 用户id
      * @return TokenVO
@@ -33,10 +25,10 @@ public interface TokenService {
 
     /**
      * 验证token
-     * @param accessToken 用于验证的token
+     * @param token 用于验证的token
      * @return 验证结果
      */
-    TokenVO verifyToken(String accessToken);
+    TokenVO verifyToken(String token);
 
     /**
      * 根据用户id查询token

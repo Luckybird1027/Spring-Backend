@@ -4,6 +4,7 @@ import com.luckybird.springbackend.common.annotation.NoAuthRequired;
 import com.luckybird.springbackend.api.req.UserChangePasswordReq;
 import com.luckybird.springbackend.api.req.UserLoginReq;
 import com.luckybird.springbackend.api.vo.TokenVO;
+import com.luckybird.springbackend.common.util.ContextUtil;
 import com.luckybird.springbackend.service.TokenService;
 import com.luckybird.springbackend.service.UserService;
 import jakarta.validation.Valid;
@@ -40,22 +41,20 @@ public class TokenController {
     /**
      * 登出用户
      *
-     * @param rawToken 未处理token
      */
     @PostMapping("/v1/users/logout")
-    public void logout(@RequestHeader("Authorization") String rawToken) {
-        userService.logout(rawToken);
+    public void logout() {
+        userService.logout(ContextUtil.getUserId());
     }
 
     /**
      * 修改密码
      *
-     * @param rawToken 未处理token
      * @param req 密码修改请求
      */
     @PostMapping("/v1/users/changePassword")
-    public void changePassword(@RequestHeader("Authorization") String rawToken, @RequestBody @Valid UserChangePasswordReq req) {
-        userService.changePassword(rawToken, req);
+    public void changePassword(@RequestBody @Valid UserChangePasswordReq req) {
+        userService.changePassword(ContextUtil.getUserId(), req);
     }
 
     /**

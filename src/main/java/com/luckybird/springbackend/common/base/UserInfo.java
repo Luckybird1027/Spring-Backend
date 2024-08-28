@@ -14,4 +14,8 @@ public class UserInfo {
      * 用户ID
      */
     private Long id;
+
+    public boolean isEmpty() {
+        return id == null;
+    }
 }

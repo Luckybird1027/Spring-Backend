@@ -12,37 +12,53 @@ public class ContextUtil {
     private static final ThreadLocal<UserInfo> THREAD_LOCAL = new ThreadLocal<>();
 
     /**
+     * 设置上下文用户信息
+     *
+     * @param userInfo 用户信息
+     */
+    public static void setUserInfo(UserInfo userInfo) {
+        THREAD_LOCAL.set(userInfo);
+    }
+
+    /**
      * 设置上下文用户ID
+     *
      * @param id 用户ID
      */
     public static void setUserId(Long id) {
-        THREAD_LOCAL.get().setId(id);
+        UserInfo userInfo = THREAD_LOCAL.get();
+        if (userInfo == null) {
+            userInfo = new UserInfo();
+            THREAD_LOCAL.set(userInfo);
+        }
+        userInfo.setId(id);
     }
 
     /**
      * 获取上下文用户ID
+     *
      * @return 用户ID
      */
     public static Long getUserId() {
-        return THREAD_LOCAL.get().getId();
+        UserInfo userInfo = THREAD_LOCAL.get();
+        return userInfo != null ? userInfo.getId() : null;
     }
 
     /**
      * 移除上下文用户ID
      */
-    public static void removeUserId(){
+    public static void removeUserId() {
         THREAD_LOCAL.get().setId(null);
         // 如果THREAD_LOCAL中的UserInfo的所有字段值为空，则直接移除上下文UserInfo
-        if (THREAD_LOCAL.get().getId() == null){
+        if (THREAD_LOCAL.get().isEmpty()) {
             THREAD_LOCAL.remove();
         }
     }
 
     /**
-     * 直接移除上下文UserInfo
-     * 当前线程进程结束前必须执行，防止内存泄露
+     * 移除上下文用户信息
      */
-    public static void removeUserInfo(){
+    public static void removeUserInfo() {
         THREAD_LOCAL.remove();
     }
 }

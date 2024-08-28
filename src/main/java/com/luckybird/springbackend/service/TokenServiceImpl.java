@@ -34,14 +34,6 @@ public class TokenServiceImpl implements TokenService {
     }
 
     @Override
-    public String extractToken(String rawToken){
-        if (rawToken == null || !rawToken.startsWith("Bearer ")) {
-            throw new BizException(ExceptionMessages.UNAUTHORIZED_ACCESS);
-        }
-       return rawToken.substring(7);
-    }
-
-    @Override
     public TokenVO generateToken(Long userId) {
         UUID uuid = UUID.randomUUID();
         String accessToken = uuid.toString();
@@ -51,6 +43,7 @@ public class TokenServiceImpl implements TokenService {
         stringRedisTemplate.opsForValue().set(userId.toString(), accessToken, expireTime, TimeUnit.SECONDS);
         return toVO(token, expireTime);
     }
+
     @Override
     public boolean deleteTokenByUserId(Long userId) {
         String accessToken = stringRedisTemplate.opsForValue().get(userId.toString());
@@ -67,14 +60,20 @@ public class TokenServiceImpl implements TokenService {
     }
 
     @Override
-    public TokenVO verifyToken(String accessToken) {
-        TokenPO token = tokenRedisTemplate.opsForValue().get(accessToken);
+    public TokenVO verifyToken(String token) {
         if (token == null) {
-            return null;
+            throw new BizException(ExceptionMessages.UNAUTHORIZED_ACCESS);
         }
-        tokenRedisTemplate.expire(accessToken, 900, TimeUnit.SECONDS);
-        stringRedisTemplate.expire(token.getUserId().toString(), 900, TimeUnit.SECONDS);
-        return toVO(token, 900);
+        if (token.startsWith("Bearer ")) {
+            token = token.substring(7);
+        }
+        TokenPO po = tokenRedisTemplate.opsForValue().get(token);
+        if (po == null) {
+            throw new BizException(ExceptionMessages.UNAUTHORIZED_ACCESS);
+        }
+        tokenRedisTemplate.expire(token, 900, TimeUnit.SECONDS);
+        stringRedisTemplate.expire(po.getUserId().toString(), 900, TimeUnit.SECONDS);
+        return toVO(po, 900);
     }
 
     @Override

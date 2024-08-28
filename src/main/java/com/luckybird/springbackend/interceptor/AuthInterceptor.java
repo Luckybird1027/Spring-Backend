@@ -1,8 +1,8 @@
 package com.luckybird.springbackend.interceptor;
 
+import com.luckybird.springbackend.api.vo.TokenVO;
 import com.luckybird.springbackend.common.annotation.NoAuthRequired;
-import com.luckybird.springbackend.exception.BizException;
-import com.luckybird.springbackend.exception.ExceptionMessages;
+import com.luckybird.springbackend.common.util.ContextUtil;
 import com.luckybird.springbackend.service.TokenService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -28,11 +28,9 @@ public class AuthInterceptor implements HandlerInterceptor {
         if (noAuthRequired != null) {
             return true;
         }
-        String rawToken = request.getHeader("Authorization");
-        String accessToken = tokenService.extractToken(rawToken);
-        if (tokenService.verifyToken(accessToken) == null) {
-            throw new BizException(ExceptionMessages.UNAUTHORIZED_ACCESS);
-        }
+        String token = request.getHeader("Authorization");
+        TokenVO tokenVO = tokenService.verifyToken(token);
+        ContextUtil.setUserId(tokenVO.getUserId());
         return true;
     }
 
@@ -42,7 +40,7 @@ public class AuthInterceptor implements HandlerInterceptor {
     }
 
     @Override
-    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
-        HandlerInterceptor.super.afterCompletion(request, response, handler, ex);
+    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
+        ContextUtil.removeUserInfo();
     }
 }

@@ -35,36 +35,36 @@ public class UserServiceImpl implements UserService {
     private final UserMapper userMapper;
 
     private UserPO toPo(UserCreateReq req) {
-        UserPO userPO = new UserPO();
-        userPO.setAccount(req.getAccount());
-        userPO.setPassword(req.getPassword());
-        userPO.setUsername(req.getUsername());
-        userPO.setTelephone(req.getTelephone());
-        userPO.setEmail(req.getEmail());
-        userPO.setStatus(req.getStatus().byteValue());
-        userPO.setOrganizationId(req.getOrganizationId());
-        userPO.setDepartmentId(req.getDepartmentId());
-        userPO.setOccupation(req.getOccupation());
-        userPO.setRemark(req.getRemark());
-        return userPO;
+        UserPO po = new UserPO();
+        po.setAccount(req.getAccount());
+        po.setPassword(req.getPassword());
+        po.setUsername(req.getUsername());
+        po.setTelephone(req.getTelephone());
+        po.setEmail(req.getEmail());
+        po.setStatus(req.getStatus().byteValue());
+        po.setOrganizationId(req.getOrganizationId());
+        po.setDepartmentId(req.getDepartmentId());
+        po.setOccupation(req.getOccupation());
+        po.setRemark(req.getRemark());
+        return po;
     }
 
     private UserPO toPo(UserUpdateReq req) {
-        UserPO userPO = new UserPO();
-        userPO.setId(req.getId());
-        userPO.setAccount(req.getAccount());
-        userPO.setPassword(req.getPassword());
-        userPO.setUsername(req.getUsername());
-        userPO.setTelephone(req.getTelephone());
-        userPO.setEmail(req.getEmail());
+        UserPO po = new UserPO();
+        po.setId(req.getId());
+        po.setAccount(req.getAccount());
+        po.setPassword(req.getPassword());
+        po.setUsername(req.getUsername());
+        po.setTelephone(req.getTelephone());
+        po.setEmail(req.getEmail());
         if (req.getStatus() != null) {
-            userPO.setStatus(req.getStatus().byteValue());
+            po.setStatus(req.getStatus().byteValue());
         }
-        userPO.setOrganizationId(req.getOrganizationId());
-        userPO.setDepartmentId(req.getDepartmentId());
-        userPO.setOccupation(req.getOccupation());
-        userPO.setRemark(req.getRemark());
-        return userPO;
+        po.setOrganizationId(req.getOrganizationId());
+        po.setDepartmentId(req.getDepartmentId());
+        po.setOccupation(req.getOccupation());
+        po.setRemark(req.getRemark());
+        return po;
 
     }
 
@@ -186,11 +186,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void logout(String rawToken) {
-        // 处理token头部
-        String accessToken = tokenService.extractToken(rawToken);
-        // 从token获取用户ID
-        Long userId = tokenService.verifyToken(accessToken).getUserId();
+    public void logout(Long userId) {
         if (!tokenService.deleteTokenByUserId(userId)) {
             throw new BizException("user not login");
         }
@@ -198,16 +194,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void changePassword(String rawToken, UserChangePasswordReq req) {
-        // 处理token头部
-        String accessToken = tokenService.extractToken(rawToken);
-        // 从token获取用户ID
-        Long id = tokenService.verifyToken(accessToken).getUserId();
-        if (id == null) {
-            throw new BizException(ExceptionMessages.UNAUTHORIZED_ACCESS);
-        }
+    public void changePassword(Long userId, UserChangePasswordReq req) {
         // 检查用户是否存在
-        UserPO existingUser = userMapper.selectById(id);
+        UserPO existingUser = userMapper.selectById(userId);
         if (existingUser == null) {
             throw new BizException(ExceptionMessages.INCORRECT_USERNAME_OR_PASSWORD);
         }
@@ -217,7 +206,7 @@ public class UserServiceImpl implements UserService {
         }
         // 修改为新密码
         UserPO newUser = new UserPO();
-        newUser.setId(id);
+        newUser.setId(userId);
         newUser.setPassword(passwordEncoder.encode(req.getNewPassword()));
         userMapper.updateById(newUser);
     }
