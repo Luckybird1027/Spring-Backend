@@ -15,7 +15,23 @@ public class UserInfo {
      */
     private Long id;
 
-    public boolean isEmpty() {
-        return id == null;
-    }
+    /**
+     * 账号
+     */
+    private String account;
+
+    /**
+     * 状态
+     */
+    private Byte status;
+
+    /**
+     * 组织ID
+     */
+    private Long organizationId;
+
+    /**
+     * 部门ID
+     */
+    private Long departmentId;
 }

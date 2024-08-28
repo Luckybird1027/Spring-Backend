@@ -21,38 +21,15 @@ public class ContextUtil {
     }
 
     /**
-     * 设置上下文用户ID
+     * 获取上下文用户信息
      *
-     * @param id 用户ID
+     * @return 用户信息
      */
-    public static void setUserId(Long id) {
-        UserInfo userInfo = THREAD_LOCAL.get();
-        if (userInfo == null) {
-            userInfo = new UserInfo();
-            THREAD_LOCAL.set(userInfo);
+    public static UserInfo getUserInfo() {
+        if (THREAD_LOCAL.get() == null){
+            THREAD_LOCAL.set(new UserInfo());
         }
-        userInfo.setId(id);
-    }
-
-    /**
-     * 获取上下文用户ID
-     *
-     * @return 用户ID
-     */
-    public static Long getUserId() {
-        UserInfo userInfo = THREAD_LOCAL.get();
-        return userInfo != null ? userInfo.getId() : null;
-    }
-
-    /**
-     * 移除上下文用户ID
-     */
-    public static void removeUserId() {
-        THREAD_LOCAL.get().setId(null);
-        // 如果THREAD_LOCAL中的UserInfo的所有字段值为空，则直接移除上下文UserInfo
-        if (THREAD_LOCAL.get().isEmpty()) {
-            THREAD_LOCAL.remove();
-        }
+        return THREAD_LOCAL.get();
     }
 
     /**

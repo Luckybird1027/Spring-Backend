@@ -2,7 +2,7 @@ package com.luckybird.springbackend.exception.handler;
 
 import com.luckybird.springbackend.exception.BizException;
 import com.luckybird.springbackend.exception.error.ErrorInfoEnum;
-import com.luckybird.springbackend.exception.error.ErrorResult;
+import com.luckybird.springbackend.common.base.ErrorResult;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;

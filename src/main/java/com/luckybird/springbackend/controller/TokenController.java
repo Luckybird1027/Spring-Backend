@@ -1,6 +1,6 @@
 package com.luckybird.springbackend.controller;
 
-import com.luckybird.springbackend.common.annotation.NoAuthRequired;
+import com.luckybird.springbackend.common.annotation.NoAuth;
 import com.luckybird.springbackend.api.req.UserChangePasswordReq;
 import com.luckybird.springbackend.api.req.UserLoginReq;
 import com.luckybird.springbackend.api.vo.TokenVO;
@@ -33,7 +33,7 @@ public class TokenController {
      * @return UserVO 用户信息
      */
     @PostMapping("/v1/users/login")
-    @NoAuthRequired
+    @NoAuth
     public TokenVO login(@RequestBody @Valid UserLoginReq req) {
         return userService.login(req);
     }
@@ -44,7 +44,7 @@ public class TokenController {
      */
     @PostMapping("/v1/users/logout")
     public void logout() {
-        userService.logout(ContextUtil.getUserId());
+        userService.logout(ContextUtil.getUserInfo().getId());
     }
 
     /**
@@ -54,7 +54,7 @@ public class TokenController {
      */
     @PostMapping("/v1/users/changePassword")
     public void changePassword(@RequestBody @Valid UserChangePasswordReq req) {
-        userService.changePassword(ContextUtil.getUserId(), req);
+        userService.changePassword(ContextUtil.getUserInfo().getId(), req);
     }
 
     /**
@@ -63,7 +63,7 @@ public class TokenController {
      * @param accessToken 验证token
      */
     @PostMapping("v1/token/testVerity")
-    @NoAuthRequired
+    @NoAuth
     public TokenVO verityToken(@RequestParam(name = "accessToken") String accessToken) {
         return tokenService.verifyToken(accessToken);
     }

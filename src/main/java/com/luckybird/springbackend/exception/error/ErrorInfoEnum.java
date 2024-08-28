@@ -26,6 +26,9 @@ public enum ErrorInfoEnum{
     USER_ALREADY_LOGIN("00009", "user already login"),
     USER_DISABLED("00010", "user disabled"),
     UNAUTHORIZED_ACCESS("00011", "unauthorized access"),
+    USER_NOT_LOGIN("00012", "user not login"),
+
+
     /**
      * 其他错误码
      */
@@ -44,15 +47,6 @@ public enum ErrorInfoEnum{
     ErrorInfoEnum(final String code, final String message) {
         this.code = code;
         this.message = message;
-    }
-
-    public static ErrorInfoEnum getInfoByCode(String code) {
-        for (ErrorInfoEnum errorInfo : ErrorInfoEnum.values()) {
-            if (errorInfo.code.equals(code)) {
-                return errorInfo;
-            }
-        }
-        return null;
     }
 
     public static ErrorInfoEnum getInfoByMessage(String message) {
