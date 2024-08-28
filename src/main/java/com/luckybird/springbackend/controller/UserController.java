@@ -5,7 +5,7 @@ import com.luckybird.springbackend.api.req.UserCreateReq;
 import com.luckybird.springbackend.api.req.UserQueryReq;
 import com.luckybird.springbackend.api.req.UserUpdateReq;
 import com.luckybird.springbackend.api.vo.UserVO;
-import com.luckybird.springbackend.base.PageResult;
+import com.luckybird.springbackend.common.base.PageResult;
 import com.luckybird.springbackend.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

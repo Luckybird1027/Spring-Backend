@@ -3,7 +3,7 @@ package com.luckybird.springbackend.service;
 import com.luckybird.springbackend.api.req.*;
 import com.luckybird.springbackend.api.vo.TokenVO;
 import com.luckybird.springbackend.api.vo.UserVO;
-import com.luckybird.springbackend.base.PageResult;
+import com.luckybird.springbackend.common.base.PageResult;
 
 import java.util.List;
 import java.util.Set;

@@ -5,7 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.luckybird.springbackend.api.req.*;
 import com.luckybird.springbackend.api.vo.TokenVO;
 import com.luckybird.springbackend.api.vo.UserVO;
-import com.luckybird.springbackend.base.PageResult;
+import com.luckybird.springbackend.common.base.PageResult;
 import com.luckybird.springbackend.exception.BizException;
 import com.luckybird.springbackend.exception.ExceptionMessages;
 import com.luckybird.springbackend.mapper.UserMapper;
@@ -116,7 +116,7 @@ public class UserServiceImpl implements UserService {
         if (po == null) {
             throw new BizException(ExceptionMessages.USER_NOT_EXIST);
         }
-        LambdaUpdateWrapper<UserPO> wrapper = new LambdaUpdateWrapper<UserPO>().eq(UserPO::getId, id);
+        LambdaUpdateWrapper<UserPO> wrapper = new LambdaUpdateWrapper<>();
         userMapper.update(toPo(req), wrapper);
         return toVO(po);
     }

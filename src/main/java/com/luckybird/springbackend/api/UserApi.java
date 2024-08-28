@@ -2,7 +2,7 @@ package com.luckybird.springbackend.api;
 
 import com.luckybird.springbackend.api.req.*;
 import com.luckybird.springbackend.api.vo.UserVO;
-import com.luckybird.springbackend.base.PageResult;
+import com.luckybird.springbackend.common.base.PageResult;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 

@@ -1,6 +1,6 @@
 package com.luckybird.springbackend.interceptor;
 
-import com.luckybird.springbackend.annotation.NoAuthRequired;
+import com.luckybird.springbackend.common.annotation.NoAuthRequired;
 import com.luckybird.springbackend.exception.BizException;
 import com.luckybird.springbackend.exception.ExceptionMessages;
 import com.luckybird.springbackend.service.TokenService;
