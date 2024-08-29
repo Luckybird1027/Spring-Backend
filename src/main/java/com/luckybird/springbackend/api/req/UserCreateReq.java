@@ -61,6 +61,11 @@ public class UserCreateReq {
     private List<String> occupation;
 
     /**
+     * 权限角色
+     */
+    private List<String> permissionRole;
+
+    /**
      * 备注
      */
     private String remark;
