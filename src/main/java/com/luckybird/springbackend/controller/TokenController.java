@@ -1,15 +1,18 @@
 package com.luckybird.springbackend.controller;
 
-import com.luckybird.springbackend.common.annotation.NoAuth;
 import com.luckybird.springbackend.api.req.UserChangePasswordReq;
 import com.luckybird.springbackend.api.req.UserLoginReq;
-import com.luckybird.springbackend.api.vo.TokenVO;
+import com.luckybird.springbackend.common.annotation.NoAuth;
+import com.luckybird.springbackend.common.base.TokenInfo;
 import com.luckybird.springbackend.common.util.ContextUtil;
 import com.luckybird.springbackend.service.TokenService;
 import com.luckybird.springbackend.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * Token鉴权管理
@@ -34,13 +37,12 @@ public class TokenController {
      */
     @PostMapping("/v1/users/login")
     @NoAuth
-    public TokenVO login(@RequestBody @Valid UserLoginReq req) {
+    public TokenInfo login(@RequestBody @Valid UserLoginReq req) {
         return userService.login(req);
     }
 
     /**
      * 登出用户
-     *
      */
     @PostMapping("/v1/users/logout")
     public void logout() {
@@ -57,14 +59,4 @@ public class TokenController {
         userService.changePassword(ContextUtil.getUserInfo().getId(), req);
     }
 
-    /**
-     * 本接口暂时用于测试
-     *
-     * @param accessToken 验证token
-     */
-    @PostMapping("v1/token/testVerity")
-    @NoAuth
-    public TokenVO verityToken(@RequestParam(name = "accessToken") String accessToken) {
-        return tokenService.verifyToken(accessToken);
-    }
 }

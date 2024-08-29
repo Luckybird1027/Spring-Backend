@@ -5,7 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * Token实体
+ * Token信息
  *
  * @author 新云鸟
  */
@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class TokenInfo {
-    // TODO: 最后实现踢人需求
+
     /**
      * token凭据
      */

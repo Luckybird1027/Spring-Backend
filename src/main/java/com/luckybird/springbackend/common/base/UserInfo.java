@@ -9,7 +9,7 @@ import lombok.Data;
  */
 @Data
 public class UserInfo {
-    // TODO: 目前只需要使用到ID，后续可能需要增加更多信息
+
     /**
      * 用户ID
      */
@@ -21,9 +21,9 @@ public class UserInfo {
     private String account;
 
     /**
-     * 状态
+     * 昵称
      */
-    private Byte status;
+    private String username;
 
     /**
      * 组织ID

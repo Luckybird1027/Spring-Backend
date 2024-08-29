@@ -24,7 +24,7 @@ public class ErrorResult {
      */
     private String message;
 
-    public ErrorResult(ErrorInfoEnum errorInfoEnum){
+    public ErrorResult(ErrorInfoEnum errorInfoEnum) {
         this.code = errorInfoEnum.getCode();
         this.message = errorInfoEnum.getMessage();
     }

@@ -26,7 +26,7 @@ public class ContextUtil {
      * @return 用户信息
      */
     public static UserInfo getUserInfo() {
-        if (THREAD_LOCAL.get() == null){
+        if (THREAD_LOCAL.get() == null) {
             THREAD_LOCAL.set(new UserInfo());
         }
         return THREAD_LOCAL.get();

@@ -1,7 +1,7 @@
 package com.luckybird.springbackend.service;
 
-import com.luckybird.springbackend.api.vo.TokenVO;
 import com.luckybird.springbackend.common.base.TokenInfo;
+import com.luckybird.springbackend.common.base.UserInfo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -20,63 +20,50 @@ import java.util.concurrent.TimeUnit;
 @RequiredArgsConstructor
 public class TokenServiceImpl implements TokenService {
 
-    private final RedisTemplate<String, TokenInfo> tokenRedisTemplate;
-    private final RedisTemplate<String, String> stringRedisTemplate;
+    private final int EXPIRE_TIME = 900;
 
-    private TokenVO toVO(TokenInfo tokenpo, int expireTime) {
-        TokenVO tokenVO = new TokenVO();
-        tokenVO.setAccessToken(tokenpo.getAccessToken());
-        tokenVO.setUserId(tokenpo.getUserId());
-        tokenVO.setExpireTime(expireTime);
-        return tokenVO;
-    }
+    private final RedisTemplate<String, TokenInfo> tokenRedisTemplate;
+    private final RedisTemplate<String, UserInfo> userRedisTemplate;
 
     @Override
-    public TokenVO generateToken(Long userId) {
+    public TokenInfo generateToken(Long userId, UserInfo userInfo) {
         UUID uuid = UUID.randomUUID();
         String accessToken = uuid.toString();
-        int expireTime = 900;
-        TokenInfo token = new TokenInfo(accessToken, userId);
-        tokenRedisTemplate.opsForValue().set(accessToken, token, expireTime, TimeUnit.SECONDS);
-        stringRedisTemplate.opsForValue().set(userId.toString(), accessToken, expireTime, TimeUnit.SECONDS);
-        return toVO(token, expireTime);
+        TokenInfo tokenInfo = new TokenInfo(accessToken, userId);
+        tokenRedisTemplate.opsForValue().set(accessToken, tokenInfo, EXPIRE_TIME, TimeUnit.SECONDS);
+        userRedisTemplate.opsForValue().set(userId.toString(), userInfo, EXPIRE_TIME, TimeUnit.SECONDS);
+        return tokenInfo;
     }
 
     @Override
     public boolean deleteTokenByUserId(Long userId) {
-        String accessToken = stringRedisTemplate.opsForValue().get(userId.toString());
-        if (accessToken == null) {
+        UserInfo userInfo = userRedisTemplate.opsForValue().get(userId.toString());
+        if (userInfo == null) {
             return false;
         }
-        TokenInfo token = tokenRedisTemplate.opsForValue().get(accessToken);
-        if (token == null) {
-            return false;
-        }
-        tokenRedisTemplate.delete(accessToken);
-        stringRedisTemplate.delete(userId.toString());
+        userRedisTemplate.delete(userId.toString());
         return true;
     }
 
     @Override
-    public TokenVO verifyToken(String token) {
+    public UserInfo verifyToken(String token) {
         if (token == null) {
             return null;
         }
         if (token.startsWith("Bearer ")) {
             token = token.substring(7);
         }
-        TokenInfo po = tokenRedisTemplate.opsForValue().get(token);
-        if (po == null) {
+        TokenInfo tokenInfo = tokenRedisTemplate.opsForValue().get(token);
+        if (tokenInfo == null) {
             return null;
         }
-        tokenRedisTemplate.expire(token, 900, TimeUnit.SECONDS);
-        stringRedisTemplate.expire(po.getUserId().toString(), 900, TimeUnit.SECONDS);
-        return toVO(po, 900);
-    }
-
-    @Override
-    public String findTokenByUserId(Long userId) {
-        return stringRedisTemplate.opsForValue().get(userId.toString());
+        UserInfo userInfo = userRedisTemplate.opsForValue().get(tokenInfo.getUserId().toString());
+        if (userInfo == null) {
+            return null;
+        }
+        tokenRedisTemplate.expire(token, EXPIRE_TIME, TimeUnit.SECONDS);
+        userRedisTemplate.expire(tokenInfo.getUserId().toString(), EXPIRE_TIME, TimeUnit.SECONDS);
+        return userInfo;
     }
 
 }

@@ -3,9 +3,10 @@ package com.luckybird.springbackend.service;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.luckybird.springbackend.api.req.*;
-import com.luckybird.springbackend.api.vo.TokenVO;
 import com.luckybird.springbackend.api.vo.UserVO;
 import com.luckybird.springbackend.common.base.PageResult;
+import com.luckybird.springbackend.common.base.TokenInfo;
+import com.luckybird.springbackend.common.base.UserInfo;
 import com.luckybird.springbackend.exception.BizException;
 import com.luckybird.springbackend.exception.error.ErrorInfoEnum;
 import com.luckybird.springbackend.mapper.UserMapper;
@@ -81,6 +82,17 @@ public class UserServiceImpl implements UserService {
         userVO.setOccupation(po.getOccupation());
         userVO.setRemark(po.getRemark());
         return userVO;
+    }
+
+    UserInfo toInfo(UserPO po) {
+        UserInfo userInfo = new UserInfo();
+        userInfo.setId(po.getId());
+        userInfo.setAccount(po.getAccount());
+        userInfo.setUsername(po.getUsername());
+        userInfo.setOrganizationId(po.getOrganizationId());
+        userInfo.setDepartmentId(po.getDepartmentId());
+        return userInfo;
+
     }
 
     @Override
@@ -163,7 +175,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public TokenVO login(UserLoginReq req) {
+    public TokenInfo login(UserLoginReq req) {
         // 检查用户是否存在
         UserPO existingUser = userMapper.selectOne(new LambdaQueryWrapper<UserPO>().eq(UserPO::getAccount, req.getAccount()));
         if (existingUser == null) {
@@ -177,13 +189,9 @@ public class UserServiceImpl implements UserService {
         if (existingUser.getStatus() == 1) {
             throw new BizException(ErrorInfoEnum.USER_DISABLED);
         }
-        // 检查是否重复登录
-        if (tokenService.findTokenByUserId(existingUser.getId()) != null) {
-            throw new BizException(ErrorInfoEnum.USER_ALREADY_LOGIN);
-        }
         // 登录成功，返回token
         log.info("User " + req.getAccount() + " logged in successfully");
-        return tokenService.generateToken(existingUser.getId());
+        return tokenService.generateToken(existingUser.getId(), toInfo(existingUser));
     }
 
     @Override

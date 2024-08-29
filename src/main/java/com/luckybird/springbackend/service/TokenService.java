@@ -1,6 +1,7 @@
 package com.luckybird.springbackend.service;
 
-import com.luckybird.springbackend.api.vo.TokenVO;
+import com.luckybird.springbackend.common.base.TokenInfo;
+import com.luckybird.springbackend.common.base.UserInfo;
 
 /**
  * Token服务接口
@@ -10,32 +11,30 @@ import com.luckybird.springbackend.api.vo.TokenVO;
 public interface TokenService {
 
     /**
-     * 生成token
+     * 根据用户id生成token，
+     * redis创建(accessToken → tokenInfo)和(userId → userInfo)键值对
+     *
      * @param userId 用户id
-     * @return TokenVO
+     * @return Token信息
      */
-    TokenVO generateToken(Long userId);
+    TokenInfo generateToken(Long userId, UserInfo userInfo);
 
     /**
-     * 根据用户id删除token
+     * 根据用户id删除token，
+     * redis删除(userId → userInfo)键值对
+     *
      * @param userId 用户id
      * @return 删除结果 （true：存在，删除成功，false：不存在，删除失败）
      */
     boolean deleteTokenByUserId(Long userId);
 
     /**
-     * 验证token
+     * 验证token是否有效,
+     * redis分别验证(accessToken → tokenInfo)和(userId → userInfo)键值对是否存在
+     *
      * @param token 用于验证的token
      * @return 验证结果
      */
-    TokenVO verifyToken(String token);
-
-    /**
-     * 根据用户id查询token
-     * @param userId 用户id
-     * @return accessToken
-     */
-    String findTokenByUserId(Long userId);
-
+    UserInfo verifyToken(String token);
 
 }

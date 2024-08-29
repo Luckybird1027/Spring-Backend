@@ -1,11 +1,9 @@
 package com.luckybird.springbackend.interceptor;
 
-import com.luckybird.springbackend.api.vo.TokenVO;
-import com.luckybird.springbackend.api.vo.UserVO;
 import com.luckybird.springbackend.common.annotation.NoAuth;
+import com.luckybird.springbackend.common.base.UserInfo;
 import com.luckybird.springbackend.common.util.ContextUtil;
 import com.luckybird.springbackend.service.TokenService;
-import com.luckybird.springbackend.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -21,27 +19,28 @@ import org.springframework.web.servlet.ModelAndView;
 @Component
 public class AuthInterceptor implements HandlerInterceptor {
 
-    private final UserService userService;
     private final TokenService tokenService;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
+
+        // 检查是否有 @NoAuth 注解
         HandlerMethod handlerMethod = (HandlerMethod) handler;
         NoAuth noAuth = handlerMethod.getMethodAnnotation(NoAuth.class);
         if (noAuth != null) {
             return true;
         }
+
+        // 从请求头中获取 token 并验证
         String token = request.getHeader("Authorization");
-        TokenVO tokenVO = tokenService.verifyToken(token);
-        if (tokenVO == null) {
+        UserInfo userInfo = tokenService.verifyToken(token);
+        if (userInfo == null) {
             response.setStatus(401);
             return false;
         }
-        UserVO user = userService.get(tokenVO.getUserId());
-        if (user.getStatus() != 0){
-            response.setStatus(401);
-            return false;
-        }
+
+        // 将用户信息存入上下文
+        ContextUtil.setUserInfo(userInfo);
         return true;
     }
 

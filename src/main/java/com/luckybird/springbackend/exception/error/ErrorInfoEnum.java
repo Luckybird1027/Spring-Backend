@@ -10,7 +10,7 @@ import lombok.ToString;
  */
 @Getter
 @ToString
-public enum ErrorInfoEnum{
+public enum ErrorInfoEnum {
 
     /**
      * 用户相关错误码

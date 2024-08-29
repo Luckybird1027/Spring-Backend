@@ -1,8 +1,8 @@
 package com.luckybird.springbackend.exception.handler;
 
+import com.luckybird.springbackend.common.base.ErrorResult;
 import com.luckybird.springbackend.exception.BizException;
 import com.luckybird.springbackend.exception.error.ErrorInfoEnum;
-import com.luckybird.springbackend.common.base.ErrorResult;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -46,7 +46,7 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResult handleException(Throwable e, HttpServletRequest request) {
         ErrorResult errorResult = new ErrorResult();
-        if (e.getMessage() != null){
+        if (e.getMessage() != null) {
             errorResult.setCode("99999");
             errorResult.setMessage(e.getMessage());
         } else {
