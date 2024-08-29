@@ -9,7 +9,6 @@ import lombok.Data;
  */
 @Data
 public class TokenVO {
-    // TODO: 最后实现踢人需求
 
     /**
      * token凭据

@@ -22,26 +22,25 @@ public class TokenServiceImpl implements TokenService {
 
     private final int EXPIRE_TIME = 900;
 
-    private final RedisTemplate<String, TokenInfo> tokenRedisTemplate;
-    private final RedisTemplate<String, UserInfo> userRedisTemplate;
+    private final RedisTemplate<String, Object> redisTemplate;
 
     @Override
     public TokenInfo generateToken(Long userId, UserInfo userInfo) {
         UUID uuid = UUID.randomUUID();
         String accessToken = uuid.toString();
         TokenInfo tokenInfo = new TokenInfo(accessToken, userId);
-        tokenRedisTemplate.opsForValue().set(accessToken, tokenInfo, EXPIRE_TIME, TimeUnit.SECONDS);
-        userRedisTemplate.opsForValue().set(userId.toString(), userInfo, EXPIRE_TIME, TimeUnit.SECONDS);
+        redisTemplate.opsForValue().set(accessToken, tokenInfo, EXPIRE_TIME, TimeUnit.SECONDS);
+        redisTemplate.opsForValue().set(userId.toString(), userInfo, EXPIRE_TIME, TimeUnit.SECONDS);
         return tokenInfo;
     }
 
     @Override
     public boolean deleteTokenByUserId(Long userId) {
-        UserInfo userInfo = userRedisTemplate.opsForValue().get(userId.toString());
+        UserInfo userInfo = (UserInfo) redisTemplate.opsForValue().get(userId.toString());
         if (userInfo == null) {
             return false;
         }
-        userRedisTemplate.delete(userId.toString());
+        redisTemplate.delete(userId.toString());
         return true;
     }
 
@@ -53,16 +52,16 @@ public class TokenServiceImpl implements TokenService {
         if (token.startsWith("Bearer ")) {
             token = token.substring(7);
         }
-        TokenInfo tokenInfo = tokenRedisTemplate.opsForValue().get(token);
+        TokenInfo tokenInfo = (TokenInfo) redisTemplate.opsForValue().get(token);
         if (tokenInfo == null) {
             return null;
         }
-        UserInfo userInfo = userRedisTemplate.opsForValue().get(tokenInfo.getUserId().toString());
+        UserInfo userInfo = (UserInfo) redisTemplate.opsForValue().get(tokenInfo.getUserId().toString());
         if (userInfo == null) {
             return null;
         }
-        tokenRedisTemplate.expire(token, EXPIRE_TIME, TimeUnit.SECONDS);
-        userRedisTemplate.expire(tokenInfo.getUserId().toString(), EXPIRE_TIME, TimeUnit.SECONDS);
+        redisTemplate.expire(token, EXPIRE_TIME, TimeUnit.SECONDS);
+        redisTemplate.expire(tokenInfo.getUserId().toString(), EXPIRE_TIME, TimeUnit.SECONDS);
         return userInfo;
     }
 
