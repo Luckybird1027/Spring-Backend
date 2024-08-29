@@ -13,11 +13,6 @@ import java.util.List;
 public class UserUpdateReq {
 
     /**
-     * ID
-     */
-    private Long id;
-
-    /**
      * 账号
      */
     private String account;

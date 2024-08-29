@@ -1,12 +1,12 @@
 package com.luckybird.springbackend.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.luckybird.springbackend.api.req.*;
 import com.luckybird.springbackend.api.vo.UserVO;
 import com.luckybird.springbackend.common.base.PageResult;
 import com.luckybird.springbackend.common.base.TokenInfo;
 import com.luckybird.springbackend.common.base.UserInfo;
+import com.luckybird.springbackend.common.util.ContextUtil;
 import com.luckybird.springbackend.exception.BizException;
 import com.luckybird.springbackend.exception.error.ErrorInfoEnum;
 import com.luckybird.springbackend.mapper.UserMapper;
@@ -16,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 
@@ -52,7 +53,6 @@ public class UserServiceImpl implements UserService {
 
     private UserPO toPo(UserUpdateReq req) {
         UserPO po = new UserPO();
-        po.setId(req.getId());
         po.setAccount(req.getAccount());
         po.setPassword(req.getPassword());
         po.setUsername(req.getUsername());
@@ -95,6 +95,8 @@ public class UserServiceImpl implements UserService {
 
     }
 
+
+
     @Override
     public UserVO get(Long id) {
         UserPO po = userMapper.selectById(id);
@@ -111,26 +113,35 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserVO create(UserCreateReq req) {
+        // 检查用户是否已存在
         UserPO po = toPo(req);
         LambdaQueryWrapper<UserPO> wrapper = new LambdaQueryWrapper<UserPO>().eq(UserPO::getAccount, req.getAccount());
         UserPO existingUser = userMapper.selectOne(wrapper);
         if (existingUser != null) {
             throw new BizException(ErrorInfoEnum.ACCOUNT_ALREADY_EXISTS);
         }
+        // 填充信息并创建用户
         po.setPassword(passwordEncoder.encode(po.getPassword()));
+        po.setCreatorId(ContextUtil.getUserInfo().getId());
+        po.setCreateTime(LocalDateTime.now());
         userMapper.insert(po);
         return toVO(po);
     }
 
     @Override
     public UserVO update(Long id, UserUpdateReq req) {
+        // 检查用户是否存在
         UserPO po = userMapper.selectById(id);
         if (po == null) {
             throw new BizException(ErrorInfoEnum.USER_NOT_EXIST);
         }
-        LambdaUpdateWrapper<UserPO> wrapper = new LambdaUpdateWrapper<>();
-        userMapper.update(toPo(req), wrapper);
-        return toVO(po);
+        // 更新用户信息
+        UserPO updatePo = toPo(req);
+        updatePo.setId(id);
+        updatePo.setUpdaterId(ContextUtil.getUserInfo().getId());
+        updatePo.setUpdateTime(LocalDateTime.now());
+        userMapper.updateById(updatePo);
+        return toVO(userMapper.selectById(id));
     }
 
     @Override
