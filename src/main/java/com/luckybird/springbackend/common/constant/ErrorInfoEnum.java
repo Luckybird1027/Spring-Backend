@@ -29,6 +29,7 @@ public enum ErrorInfoEnum {
     USER_DISABLED("00010", "user disabled"),
     UNAUTHORIZED_ACCESS("00011", "unauthorized access"),
     USER_NOT_LOGIN("00012", "user not login"),
+    INVALID_PARAMETER("00013", "invalid parameter"),
 
 
     /**

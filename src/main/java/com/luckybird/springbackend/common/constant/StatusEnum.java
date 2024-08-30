@@ -5,6 +5,10 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+import java.util.Arrays;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 /**
  * 用户状态枚举类
  *
@@ -15,21 +19,18 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum StatusEnum {
 
-    NORMAL((byte) 0, "正常"),
-    DISABLE((byte) 1, "禁用");
+    NORMAL(0, "正常"),
+    DISABLE(1, "禁用");
 
     @EnumValue
-    private final byte key;
+    private final Integer key;
 
     @JsonValue
     private final String display;
 
-    public static StatusEnum getByKey(byte key) {
-        for (StatusEnum status : StatusEnum.values()) {
-            if (status.getKey() == key) {
-                return status;
-            }
-        }
-        return null;
+    private static final Map<Integer, StatusEnum> MAP = Arrays.stream(StatusEnum.values()).collect(Collectors.toMap(StatusEnum::getKey, e -> e));
+
+    public static StatusEnum of(Integer key) {
+        return MAP.get(key);
     }
 }

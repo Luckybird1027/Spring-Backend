@@ -1,6 +1,5 @@
 package com.luckybird.springbackend.api.req;
 
-import com.luckybird.springbackend.common.constant.StatusEnum;
 import lombok.Data;
 
 /**
@@ -19,7 +18,7 @@ public class UserQueryReq {
     /**
      * 状态
      */
-    private StatusEnum status;
+    private Integer status;
 
     /**
      * 组织ID

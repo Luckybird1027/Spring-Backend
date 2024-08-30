@@ -2,7 +2,6 @@ package com.luckybird.springbackend.po;
 
 import com.baomidou.mybatisplus.annotation.*;
 import com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler;
-import com.luckybird.springbackend.common.constant.StatusEnum;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -52,7 +51,7 @@ public class UserPO {
     /**
      * 状态
      */
-    private StatusEnum status;
+    private Integer status;
 
     /**
      * 组织ID

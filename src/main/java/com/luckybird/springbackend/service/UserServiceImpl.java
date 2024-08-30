@@ -8,10 +8,10 @@ import com.luckybird.springbackend.api.vo.UserVO;
 import com.luckybird.springbackend.common.base.PageResult;
 import com.luckybird.springbackend.common.base.TokenInfo;
 import com.luckybird.springbackend.common.base.UserInfo;
+import com.luckybird.springbackend.common.constant.ErrorInfoEnum;
 import com.luckybird.springbackend.common.constant.StatusEnum;
 import com.luckybird.springbackend.common.util.ContextUtil;
 import com.luckybird.springbackend.exception.BizException;
-import com.luckybird.springbackend.common.constant.ErrorInfoEnum;
 import com.luckybird.springbackend.mapper.UserMapper;
 import com.luckybird.springbackend.po.UserPO;
 import lombok.RequiredArgsConstructor;
@@ -47,7 +47,7 @@ public class UserServiceImpl implements UserService {
         po.setUsername(req.getUsername());
         po.setTelephone(req.getTelephone());
         po.setEmail(req.getEmail());
-        po.setStatus(StatusEnum.getByKey(req.getStatus().getKey()));
+        po.setStatus(req.getStatus());
         po.setOrganizationId(req.getOrganizationId());
         po.setDepartmentId(req.getDepartmentId());
         po.setOccupation(req.getOccupation());
@@ -62,9 +62,6 @@ public class UserServiceImpl implements UserService {
         po.setUsername(req.getUsername());
         po.setTelephone(req.getTelephone());
         po.setEmail(req.getEmail());
-        if (req.getStatus() != null) {
-            po.setStatus(StatusEnum.getByKey(req.getStatus().getKey()));
-        }
         po.setOrganizationId(req.getOrganizationId());
         po.setDepartmentId(req.getDepartmentId());
         po.setOccupation(req.getOccupation());
@@ -80,7 +77,7 @@ public class UserServiceImpl implements UserService {
         userVO.setUsername(po.getUsername());
         userVO.setTelephone(po.getTelephone());
         userVO.setEmail(po.getEmail());
-        userVO.setStatus(StatusEnum.getByKey(po.getStatus().getKey()));
+        userVO.setStatus(po.getStatus());
         userVO.setOrganizationId(po.getOrganizationId());
         userVO.setDepartmentId(po.getDepartmentId());
         userVO.setOccupation(po.getOccupation());
@@ -109,7 +106,7 @@ public class UserServiceImpl implements UserService {
                     .or().like(UserPO::getRemark, "%" + req.getKeyword() + "%"));
         }
         if (req.getStatus() != null) {
-            wrapper.and(q -> q.eq(UserPO::getStatus, StatusEnum.getByKey(req.getStatus().getKey())));
+            wrapper.and(q -> q.eq(UserPO::getStatus, req.getStatus()));
         }
         if (req.getOrganizationId() != null) {
             wrapper.and(q -> q.eq(UserPO::getOrganizationId, req.getOrganizationId()));
@@ -140,14 +137,20 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserVO create(UserCreateReq req) {
+        // 检查用户创建请求参数是否合法
+        if (req.getStatus() == null) {
+            req.setStatus(StatusEnum.NORMAL.getKey());
+        } else if (StatusEnum.of(req.getStatus()) == null) {
+            throw new BizException(ErrorInfoEnum.INVALID_PARAMETER);
+        }
         // 检查用户是否已存在
-        UserPO po = toPo(req);
         LambdaQueryWrapper<UserPO> wrapper = new LambdaQueryWrapper<UserPO>().eq(UserPO::getAccount, req.getAccount());
         UserPO existingUser = userMapper.selectOne(wrapper);
         if (existingUser != null) {
             throw new BizException(ErrorInfoEnum.ACCOUNT_ALREADY_EXISTS);
         }
         // 填充信息并创建用户
+        UserPO po = toPo(req);
         po.setPassword(passwordEncoder.encode(po.getPassword()));
         po.setCreatorId(ContextUtil.getUserInfo().getId());
         po.setCreateTime(LocalDateTime.now());
@@ -168,6 +171,7 @@ public class UserServiceImpl implements UserService {
         updatePo.setUpdaterId(ContextUtil.getUserInfo().getId());
         updatePo.setUpdateTime(LocalDateTime.now());
         userMapper.updateById(updatePo);
+        // TODO: 不要再查一次数据库
         return toVO(userMapper.selectById(id));
     }
 
@@ -208,7 +212,7 @@ public class UserServiceImpl implements UserService {
             throw new BizException(ErrorInfoEnum.INCORRECT_USERNAME_OR_PASSWORD);
         }
         // 检查用户是否被禁用
-        if (existingUser.getStatus() == StatusEnum.DISABLE) {
+        if (StatusEnum.DISABLE.getKey().equals(existingUser.getStatus())) {
             throw new BizException(ErrorInfoEnum.USER_DISABLED);
         }
         // 登录成功，返回token
