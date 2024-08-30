@@ -2,7 +2,7 @@ package com.luckybird.springbackend.exception.handler;
 
 import com.luckybird.springbackend.common.base.ErrorResult;
 import com.luckybird.springbackend.exception.BizException;
-import com.luckybird.springbackend.exception.error.ErrorInfoEnum;
+import com.luckybird.springbackend.common.constant.ErrorInfoEnum;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.Objects;
 
-import static com.luckybird.springbackend.exception.error.ErrorInfoEnum.INTERNAL_SERVER_ERROR;
+import static com.luckybird.springbackend.common.constant.ErrorInfoEnum.INTERNAL_SERVER_ERROR;
 
 /**
  * 全局异常处理器

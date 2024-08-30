@@ -10,7 +10,7 @@ import com.luckybird.springbackend.common.base.TokenInfo;
 import com.luckybird.springbackend.common.base.UserInfo;
 import com.luckybird.springbackend.common.util.ContextUtil;
 import com.luckybird.springbackend.exception.BizException;
-import com.luckybird.springbackend.exception.error.ErrorInfoEnum;
+import com.luckybird.springbackend.common.constant.ErrorInfoEnum;
 import com.luckybird.springbackend.mapper.UserMapper;
 import com.luckybird.springbackend.po.UserPO;
 import lombok.RequiredArgsConstructor;

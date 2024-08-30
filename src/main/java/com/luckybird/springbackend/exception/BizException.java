@@ -1,6 +1,6 @@
 package com.luckybird.springbackend.exception;
 
-import com.luckybird.springbackend.exception.error.ErrorInfoEnum;
+import com.luckybird.springbackend.common.constant.ErrorInfoEnum;
 
 /**
  * 业务异常

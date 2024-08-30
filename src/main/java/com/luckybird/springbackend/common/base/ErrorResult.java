@@ -1,6 +1,6 @@
 package com.luckybird.springbackend.common.base;
 
-import com.luckybird.springbackend.exception.error.ErrorInfoEnum;
+import com.luckybird.springbackend.common.constant.ErrorInfoEnum;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 

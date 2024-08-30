@@ -1,4 +1,4 @@
-package com.luckybird.springbackend.exception.error;
+package com.luckybird.springbackend.common.constant;
 
 import lombok.Getter;
 import lombok.ToString;
