@@ -1,5 +1,6 @@
 package com.luckybird.springbackend.common.constant;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.ToString;
 
@@ -10,6 +11,7 @@ import lombok.ToString;
  */
 @Getter
 @ToString
+@AllArgsConstructor
 public enum ErrorInfoEnum {
 
     /**
@@ -43,11 +45,6 @@ public enum ErrorInfoEnum {
      * 错误信息
      */
     public final String message;
-
-    ErrorInfoEnum(final String code, final String message) {
-        this.code = code;
-        this.message = message;
-    }
 
     public static ErrorInfoEnum getInfoByMessage(String message) {
         for (ErrorInfoEnum errorInfo : ErrorInfoEnum.values()) {

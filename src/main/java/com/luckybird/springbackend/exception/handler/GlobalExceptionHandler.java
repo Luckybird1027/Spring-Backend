@@ -35,8 +35,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(BizException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResult handleBizException(BizException e, HttpServletRequest request) {
-        String msg = e.getMessage();
-        ErrorResult errorResult = new ErrorResult(Objects.requireNonNull(ErrorInfoEnum.getInfoByMessage(msg)));
+        ErrorResult errorResult = new ErrorResult(e.getErrorInfoEnum());
         log.error("BizException: " + errorResult + ", URL: " + request.getRequestURI());
         return errorResult;
     }
