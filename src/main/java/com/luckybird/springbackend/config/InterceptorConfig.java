@@ -7,6 +7,8 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 /**
+ * 拦截器配置类
+ *
  * @author 新云鸟
  */
 @Configuration
@@ -16,7 +18,7 @@ public class InterceptorConfig implements WebMvcConfigurer {
     private final AuthInterceptor authInterceptor;
 
     @Override
-    public void addInterceptors(InterceptorRegistry registry){
+    public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(authInterceptor)
                 .addPathPatterns("/v1/users/**");
     }

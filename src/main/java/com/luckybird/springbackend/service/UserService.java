@@ -1,9 +1,9 @@
 package com.luckybird.springbackend.service;
 
 import com.luckybird.springbackend.api.req.*;
-import com.luckybird.springbackend.api.vo.TokenVO;
 import com.luckybird.springbackend.api.vo.UserVO;
-import com.luckybird.springbackend.base.PageResult;
+import com.luckybird.springbackend.common.base.PageResult;
+import com.luckybird.springbackend.common.base.TokenInfo;
 
 import java.util.List;
 import java.util.Set;
@@ -72,7 +72,7 @@ public interface UserService {
      * @param searchCount 是否查询总数
      * @return PageResult<UserVO> 用户分页信息
      */
-    PageResult<UserVO> page(UserQueryReq req, int current, int pageSize, boolean searchCount);
+    PageResult<UserVO> page(UserQueryReq req, Long current, Long pageSize, boolean searchCount);
 
     /**
      * 用户登录
@@ -80,15 +80,20 @@ public interface UserService {
      * @param req 用户登录请求
      * @return UserVO 用户信息
      */
-    TokenVO login(UserLoginReq req);
+    TokenInfo login(UserLoginReq req);
 
-    void logout(String rawToken);
+    /**
+     * 用户登出
+     *
+     * @param userId 用户id
+     */
+    void logout(Long userId);
 
     /**
      * 用户修改密码
      *
-     * @param rawToken  用户id
-     * @param req 用户修改密码请求
+     * @param userId 用户id
+     * @param req    用户修改密码请求
      */
-    void changePassword(String rawToken, UserChangePasswordReq req);
+    void changePassword(Long userId, UserChangePasswordReq req);
 }

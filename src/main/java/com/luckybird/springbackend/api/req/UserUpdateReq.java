@@ -1,7 +1,5 @@
 package com.luckybird.springbackend.api.req;
 
-import com.luckybird.springbackend.converter.OccupationConverter;
-import jakarta.persistence.Convert;
 import lombok.Data;
 
 import java.util.List;
@@ -13,11 +11,6 @@ import java.util.List;
  */
 @Data
 public class UserUpdateReq {
-
-    /**
-     * ID
-     */
-    private Long id;
 
     /**
      * 账号
@@ -59,10 +52,15 @@ public class UserUpdateReq {
      */
     private Long departmentId;
 
+    // TODO：权限相关待定
+//    /**
+//     * 权限角色
+//     */
+//    private List<String> permissionRole;
+
     /**
      * 职位
      */
-    @Convert(converter = OccupationConverter.class)
     private List<String> occupation;
 
     /**

@@ -1,26 +1,26 @@
 package com.luckybird.springbackend.service;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.luckybird.springbackend.api.req.*;
-import com.luckybird.springbackend.api.vo.TokenVO;
 import com.luckybird.springbackend.api.vo.UserVO;
-import com.luckybird.springbackend.base.PageResult;
+import com.luckybird.springbackend.common.base.PageResult;
+import com.luckybird.springbackend.common.base.TokenInfo;
+import com.luckybird.springbackend.common.base.UserInfo;
+import com.luckybird.springbackend.common.util.ContextUtil;
 import com.luckybird.springbackend.exception.BizException;
-import com.luckybird.springbackend.exception.ExceptionMessages;
+import com.luckybird.springbackend.exception.error.ErrorInfoEnum;
+import com.luckybird.springbackend.mapper.UserMapper;
 import com.luckybird.springbackend.po.UserPO;
-import com.luckybird.springbackend.reposity.UserRepository;
-import jakarta.persistence.criteria.Predicate;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import java.util.ArrayList;
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -35,23 +35,41 @@ public class UserServiceImpl implements UserService {
 
     private final PasswordEncoder passwordEncoder;
 
-    private final UserRepository userRepository;
-
     private final TokenService tokenService;
 
+    private final UserMapper userMapper;
+
     private UserPO toPo(UserCreateReq req) {
-        UserPO userPO = new UserPO();
-        userPO.setAccount(req.getAccount());
-        userPO.setPassword(req.getPassword());
-        userPO.setUsername(req.getUsername());
-        userPO.setTelephone(req.getTelephone());
-        userPO.setEmail(req.getEmail());
-        userPO.setStatus(req.getStatus().byteValue());
-        userPO.setOrganizationId(req.getOrganizationId());
-        userPO.setDepartmentId(req.getDepartmentId());
-        userPO.setOccupation(req.getOccupation());
-        userPO.setRemark(req.getRemark());
-        return userPO;
+        UserPO po = new UserPO();
+        po.setAccount(req.getAccount());
+        po.setPassword(req.getPassword());
+        po.setUsername(req.getUsername());
+        po.setTelephone(req.getTelephone());
+        po.setEmail(req.getEmail());
+        po.setStatus(req.getStatus().byteValue());
+        po.setOrganizationId(req.getOrganizationId());
+        po.setDepartmentId(req.getDepartmentId());
+        po.setOccupation(req.getOccupation());
+        po.setRemark(req.getRemark());
+        return po;
+    }
+
+    private UserPO toPo(UserUpdateReq req) {
+        UserPO po = new UserPO();
+        po.setAccount(req.getAccount());
+        po.setPassword(req.getPassword());
+        po.setUsername(req.getUsername());
+        po.setTelephone(req.getTelephone());
+        po.setEmail(req.getEmail());
+        if (req.getStatus() != null) {
+            po.setStatus(req.getStatus().byteValue());
+        }
+        po.setOrganizationId(req.getOrganizationId());
+        po.setDepartmentId(req.getDepartmentId());
+        po.setOccupation(req.getOccupation());
+        po.setRemark(req.getRemark());
+        return po;
+
     }
 
     private UserVO toVO(UserPO po) {
@@ -69,158 +87,157 @@ public class UserServiceImpl implements UserService {
         return userVO;
     }
 
-    private void poUpdateByReq(UserPO po, UserUpdateReq req) {
-        Optional.ofNullable(req.getAccount()).ifPresent(po::setAccount);
-        Optional.ofNullable(req.getUsername()).ifPresent(po::setUsername);
-        Optional.ofNullable(req.getTelephone()).ifPresent(po::setTelephone);
-        Optional.ofNullable(req.getEmail()).ifPresent(po::setEmail);
-        Optional.ofNullable(req.getStatus()).ifPresent(status -> po.setStatus(status.byteValue()));
-        Optional.ofNullable(req.getOrganizationId()).ifPresent(po::setOrganizationId);
-        Optional.ofNullable(req.getDepartmentId()).ifPresent(po::setDepartmentId);
-        Optional.ofNullable(req.getOccupation()).ifPresent(po::setOccupation);
-        Optional.ofNullable(req.getRemark()).ifPresent(po::setRemark);
+    UserInfo toInfo(UserPO po) {
+        UserInfo userInfo = new UserInfo();
+        userInfo.setId(po.getId());
+        userInfo.setAccount(po.getAccount());
+        userInfo.setUsername(po.getUsername());
+        userInfo.setOrganizationId(po.getOrganizationId());
+        userInfo.setDepartmentId(po.getDepartmentId());
+        return userInfo;
+
     }
 
-    private Specification<UserPO> queryByReq(UserQueryReq req) {
-        return (root, query, cb) -> {
-            List<Predicate> predicates = new ArrayList<>();
-            if (StringUtils.hasText(req.getKeyword())) {
-                // TODO: 防注入
-                Predicate accountPredicate = cb.like(root.get("account"), "%" + req.getKeyword() + "%");
-                Predicate usernamePredicate = cb.like(root.get("username"), "%" + req.getKeyword() + "%");
-                Predicate telephonePredicate = cb.like(root.get("telephone"), "%" + req.getKeyword() + "%");
-                Predicate emailPredicate = cb.like(root.get("email"), "%" + req.getKeyword() + "%");
-                Predicate remarkPredicate = cb.like(root.get("remark"), "%" + req.getKeyword() + "%");
-                predicates.add(cb.or(accountPredicate, usernamePredicate, telephonePredicate, emailPredicate, remarkPredicate));
-            }
-            if (req.getStatus() != null) {
-                predicates.add(cb.equal(root.get("status"), req.getStatus()));
-            }
-            if (req.getOrganizationId() != null) {
-                predicates.add(cb.equal(root.get("organizationId"), req.getOrganizationId()));
-            }
-            if (req.getDepartmentId() != null) {
-                predicates.add(cb.equal(root.get("departmentId"), req.getDepartmentId()));
-            }
-            if (StringUtils.hasText(req.getOccupation())) {
-                // TODO: 用JSON方法模糊查询
-                predicates.add(cb.like(root.get("occupation"), "%" + req.getOccupation() + "%"));
-            }
-            return cb.and(predicates.toArray(new Predicate[0]));
-        };
+    private LambdaQueryWrapper<UserPO> wrapperByReq(UserQueryReq req) {
+        LambdaQueryWrapper<UserPO> wrapper = new LambdaQueryWrapper<>();
+        if (StringUtils.hasText(req.getKeyword())) {
+            wrapper.and(q -> q.like(UserPO::getAccount, "%" + req.getKeyword() + "%")
+                    .or().like(UserPO::getUsername, "%" + req.getKeyword() + "%")
+                    .or().like(UserPO::getTelephone, "%" + req.getKeyword() + "%")
+                    .or().like(UserPO::getEmail, "%" + req.getKeyword() + "%")
+                    .or().like(UserPO::getRemark, "%" + req.getKeyword() + "%"));
+        }
+        if (req.getStatus() != null) {
+            wrapper.and(q -> q.eq(UserPO::getStatus, req.getStatus().byteValue()));
+        }
+        if (req.getOrganizationId() != null) {
+            wrapper.and(q -> q.eq(UserPO::getOrganizationId, req.getOrganizationId()));
+        }
+        if (req.getDepartmentId() != null) {
+            wrapper.and(q -> q.eq(UserPO::getDepartmentId, req.getDepartmentId()));
+        }
+        if (StringUtils.hasText(req.getOccupation())) {
+
+            wrapper.and(q -> q.apply("JSON_CONTAINS(occupation, JSON_QUOTE({0}), '$')", req.getOccupation()));
+        }
+        return wrapper;
     }
 
     @Override
     public UserVO get(Long id) {
-        UserPO po = userRepository.findById(id).orElse(new UserPO());
+        UserPO po = userMapper.selectById(id);
+        if (po == null) {
+            return new UserVO();
+        }
         return toVO(po);
     }
 
     @Override
     public List<UserVO> batchGet(Set<Long> ids) {
-        return userRepository.findAllById(ids).stream().map(this::toVO).toList();
+        return userMapper.selectBatchIds(ids).stream().map(this::toVO).toList();
     }
 
     @Override
     public UserVO create(UserCreateReq req) {
+        // 检查用户是否已存在
         UserPO po = toPo(req);
-        Optional<UserPO> existingUser = userRepository.findByAccount(req.getAccount());
-        if (existingUser.isPresent()) {
-            throw new BizException(ExceptionMessages.ACCOUNT_ALREADY_EXISTS);
+        LambdaQueryWrapper<UserPO> wrapper = new LambdaQueryWrapper<UserPO>().eq(UserPO::getAccount, req.getAccount());
+        UserPO existingUser = userMapper.selectOne(wrapper);
+        if (existingUser != null) {
+            throw new BizException(ErrorInfoEnum.ACCOUNT_ALREADY_EXISTS);
         }
+        // 填充信息并创建用户
         po.setPassword(passwordEncoder.encode(po.getPassword()));
-        userRepository.save(po);
+        po.setCreatorId(ContextUtil.getUserInfo().getId());
+        po.setCreateTime(LocalDateTime.now());
+        userMapper.insert(po);
         return toVO(po);
     }
 
     @Override
     public UserVO update(Long id, UserUpdateReq req) {
-        UserPO po = userRepository.findById(id).orElseThrow(() -> new BizException(ExceptionMessages.USER_NOT_EXIST));
-        poUpdateByReq(po, req);
-        userRepository.save(po);
-        return toVO(po);
+        // 检查用户是否存在
+        UserPO po = userMapper.selectById(id);
+        if (po == null) {
+            throw new BizException(ErrorInfoEnum.USER_NOT_EXIST);
+        }
+        // 更新用户信息
+        UserPO updatePo = toPo(req);
+        updatePo.setId(id);
+        updatePo.setUpdaterId(ContextUtil.getUserInfo().getId());
+        updatePo.setUpdateTime(LocalDateTime.now());
+        userMapper.updateById(updatePo);
+        return toVO(userMapper.selectById(id));
     }
 
     @Override
     public void delete(Long id) {
-        userRepository.deleteById(id);
+        userMapper.deleteById(id);
     }
 
     @Override
     public List<UserVO> list(UserQueryReq req) {
-        return userRepository.findAll(queryByReq(req)).stream().map(this::toVO).toList();
+        List<UserPO> poList = userMapper.selectList(wrapperByReq(req));
+        return poList.stream().map(this::toVO).toList();
     }
 
     @Override
-    public PageResult<UserVO> page(UserQueryReq req, int current, int pageSize, boolean searchCount) {
-        Pageable pageable = PageRequest.of(current - 1, pageSize);
-        Specification<UserPO> spec = queryByReq(req);
-        List<UserPO> pos = userRepository.findAll(spec, pageable).getContent();
+    public PageResult<UserVO> page(UserQueryReq req, Long current, Long pageSize, boolean searchCount) {
+        IPage<UserPO> page = new Page<>(current, pageSize);
+        LambdaQueryWrapper<UserPO> wrapper = wrapperByReq(req);
+        IPage<UserPO> userPage = userMapper.selectPage(page, wrapper);
+        List<UserPO> poList = userPage.getRecords();
+        List<UserVO> voList = poList.stream().map(this::toVO).toList();
         if (searchCount) {
-            long count = userRepository.count(spec);
-            return new PageResult<>(count, pos.stream().map(this::toVO).toList());
+            return new PageResult<>(userPage.getTotal(), voList);
+        } else {
+            return new PageResult<>(voList);
         }
-        return new PageResult<>(pos.stream().map(this::toVO).toList());
     }
 
     @Override
-    public TokenVO login(UserLoginReq req) {
+    public TokenInfo login(UserLoginReq req) {
         // 检查用户是否存在
-        Optional<UserPO> existingUser = userRepository.findByAccount(req.getAccount());
-        if (existingUser.isEmpty()) {
-            throw new BizException(ExceptionMessages.INCORRECT_USERNAME_OR_PASSWORD);
+        UserPO existingUser = userMapper.selectOne(new LambdaQueryWrapper<UserPO>().eq(UserPO::getAccount, req.getAccount()));
+        if (existingUser == null) {
+            throw new BizException(ErrorInfoEnum.INCORRECT_USERNAME_OR_PASSWORD);
         }
         // 检查密码是否正确
-        UserPO po = existingUser.get();
-        if (!passwordEncoder.matches(req.getPassword(), po.getPassword())) {
-            throw new BizException(ExceptionMessages.INCORRECT_USERNAME_OR_PASSWORD);
+        if (!passwordEncoder.matches(req.getPassword(), existingUser.getPassword())) {
+            throw new BizException(ErrorInfoEnum.INCORRECT_USERNAME_OR_PASSWORD);
         }
         // 检查用户是否被禁用
-        if (existingUser.get().getStatus() == 1) {
-            throw new BizException(ExceptionMessages.USER_DISABLED);
-        }
-        // 检查是否重复登录
-        if (tokenService.findTokenByUserId(po.getId()) != null) {
-            throw new BizException(ExceptionMessages.USER_ALREADY_LOGIN);
+        if (existingUser.getStatus() == 1) {
+            throw new BizException(ErrorInfoEnum.USER_DISABLED);
         }
         // 登录成功，返回token
         log.info("User " + req.getAccount() + " logged in successfully");
-        return tokenService.generateToken(po.getId());
+        return tokenService.generateToken(existingUser.getId(), toInfo(existingUser));
     }
 
     @Override
-    public void logout(String rawToken) {
-        // 处理token头部
-        String accessToken = tokenService.extractToken(rawToken);
-        // 从token获取用户ID
-        Long userId = tokenService.verifyToken(accessToken).getUserId();
-        if (!tokenService.deleteTokenByUserId(userId)){
-            throw new BizException("user not login");
+    public void logout(Long userId) {
+        if (!tokenService.deleteTokenByUserId(userId)) {
+            throw new BizException(ErrorInfoEnum.USER_NOT_LOGIN);
         }
         log.info("User " + userId + " logged out successfully");
     }
 
     @Override
-    public void changePassword(String rawToken, UserChangePasswordReq req) {
-        // 处理token头部
-        String accessToken = tokenService.extractToken(rawToken);
-        // 从token获取用户ID
-        Long id = tokenService.verifyToken(accessToken).getUserId();
-        if (id == null){
-            throw new BizException(ExceptionMessages.UNAUTHORIZED_ACCESS);
-        }
+    public void changePassword(Long userId, UserChangePasswordReq req) {
         // 检查用户是否存在
-        Optional<UserPO> existingUser = userRepository.findById(id);
-        if (existingUser.isEmpty()) {
-            throw new BizException(ExceptionMessages.USER_NOT_EXIST);
+        UserPO existingUser = userMapper.selectById(userId);
+        if (existingUser == null) {
+            throw new BizException(ErrorInfoEnum.INCORRECT_USERNAME_OR_PASSWORD);
         }
         // 检查旧密码是否正确
-        UserPO po = existingUser.get();
-        if (!passwordEncoder.matches(req.getOldPassword(), po.getPassword())) {
-            throw new BizException(ExceptionMessages.INCORRECT_OLD_PASSWORD);
+        if (!passwordEncoder.matches(req.getOldPassword(), existingUser.getPassword())) {
+            throw new BizException(ErrorInfoEnum.INCORRECT_OLD_PASSWORD);
         }
         // 修改为新密码
-        po.setPassword(passwordEncoder.encode(req.getNewPassword()));
-        userRepository.save(po);
+        UserPO newUser = new UserPO();
+        newUser.setId(userId);
+        newUser.setPassword(passwordEncoder.encode(req.getNewPassword()));
+        userMapper.updateById(newUser);
     }
 }

@@ -1,4 +1,4 @@
-package com.luckybird.springbackend.base;
+package com.luckybird.springbackend.common.base;
 
 import lombok.Getter;
 import lombok.Setter;

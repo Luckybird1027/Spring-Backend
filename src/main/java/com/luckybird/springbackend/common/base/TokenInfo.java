@@ -1,19 +1,19 @@
-package com.luckybird.springbackend.po;
+package com.luckybird.springbackend.common.base;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * Token实体
+ * Token信息
  *
  * @author 新云鸟
  */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class TokenPO {
-    // TODO: 最后实现踢人需求
+public class TokenInfo {
+
     /**
      * token凭据
      */

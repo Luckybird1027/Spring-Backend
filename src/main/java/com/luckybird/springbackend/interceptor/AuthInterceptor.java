@@ -1,8 +1,8 @@
 package com.luckybird.springbackend.interceptor;
 
-import com.luckybird.springbackend.annotation.NoAuthRequired;
-import com.luckybird.springbackend.exception.BizException;
-import com.luckybird.springbackend.exception.ExceptionMessages;
+import com.luckybird.springbackend.common.annotation.NoAuth;
+import com.luckybird.springbackend.common.base.UserInfo;
+import com.luckybird.springbackend.common.util.ContextUtil;
 import com.luckybird.springbackend.service.TokenService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -13,6 +13,8 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
 /**
+ * 用户鉴权拦截器
+ *
  * @author 新云鸟
  */
 @RequiredArgsConstructor
@@ -23,16 +25,24 @@ public class AuthInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
+
+        // 检查是否有 @NoAuth 注解
         HandlerMethod handlerMethod = (HandlerMethod) handler;
-        NoAuthRequired noAuthRequired = handlerMethod.getMethodAnnotation(NoAuthRequired.class);
-        if (noAuthRequired != null) {
+        NoAuth noAuth = handlerMethod.getMethodAnnotation(NoAuth.class);
+        if (noAuth != null) {
             return true;
         }
-        String rawToken = request.getHeader("Authorization");
-        String accessToken = tokenService.extractToken(rawToken);
-        if (tokenService.verifyToken(accessToken) == null) {
-            throw new BizException(ExceptionMessages.UNAUTHORIZED_ACCESS);
+
+        // 从请求头中获取 token 并验证
+        String token = request.getHeader("Authorization");
+        UserInfo userInfo = tokenService.verifyToken(token);
+        if (userInfo == null) {
+            response.setStatus(401);
+            return false;
         }
+
+        // 将用户信息存入上下文
+        ContextUtil.setUserInfo(userInfo);
         return true;
     }
 
@@ -42,7 +52,7 @@ public class AuthInterceptor implements HandlerInterceptor {
     }
 
     @Override
-    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
-        HandlerInterceptor.super.afterCompletion(request, response, handler, ex);
+    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
+        ContextUtil.removeUserInfo();
     }
 }

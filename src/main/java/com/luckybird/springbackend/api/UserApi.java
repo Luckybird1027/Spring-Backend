@@ -1,8 +1,10 @@
 package com.luckybird.springbackend.api;
 
-import com.luckybird.springbackend.api.req.*;
+import com.luckybird.springbackend.api.req.UserCreateReq;
+import com.luckybird.springbackend.api.req.UserQueryReq;
+import com.luckybird.springbackend.api.req.UserUpdateReq;
 import com.luckybird.springbackend.api.vo.UserVO;
-import com.luckybird.springbackend.base.PageResult;
+import com.luckybird.springbackend.common.base.PageResult;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,6 +23,7 @@ public interface UserApi {
 
     /**
      * Get 单个查询
+     *
      * @param id 用户id
      * @return UserVO 用户信息
      */
@@ -29,6 +32,7 @@ public interface UserApi {
 
     /**
      * BatchGet 批量查询
+     *
      * @param ids 用户id数组
      * @return List<UserVO> 用户信息列表
      */
@@ -37,6 +41,7 @@ public interface UserApi {
 
     /**
      * Create 创建
+     *
      * @param req 用户创建请求
      * @return UserVO 用户信息
      */
@@ -45,7 +50,8 @@ public interface UserApi {
 
     /**
      * Update 更新
-     * @param id 用户id
+     *
+     * @param id  用户id
      * @param req 用户更新请求
      * @return UserVO 用户信息
      */
@@ -54,6 +60,7 @@ public interface UserApi {
 
     /**
      * Delete 删除
+     *
      * @param id 用户id
      */
     @DeleteMapping("/v1/users/{id}")
@@ -61,6 +68,7 @@ public interface UserApi {
 
     /**
      * List 用户名 全量查询
+     *
      * @param req 用户查询请求
      * @return List<UserVO> 用户信息列表
      */
@@ -70,16 +78,17 @@ public interface UserApi {
 
     /**
      * Page 用户名 分页查询
-     * @param current 当前页
-     * @param rows 每页条数
+     *
+     * @param current     当前页
+     * @param rows        每页条数
      * @param searchCount 是否搜索总数
-     * @param req 用户查询请求
+     * @param req         用户查询请求
      * @return PageResult<UserVO> 用户信息分页
      */
     @PostMapping("/v1/users/page")
     PageResult<UserVO> page(
-            @RequestParam(name = "current", defaultValue = "1") int current,
-            @RequestParam(name = "rows", defaultValue = "10") int rows,
+            @RequestParam(name = "current", defaultValue = "1") Long current,
+            @RequestParam(name = "rows", defaultValue = "10") Long rows,
             @RequestParam(name = "searchCount", defaultValue = "false") boolean searchCount,
             @RequestBody UserQueryReq req);
 

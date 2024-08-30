@@ -1,7 +1,5 @@
 package com.luckybird.springbackend.api.vo;
 
-import com.luckybird.springbackend.converter.OccupationConverter;
-import jakarta.persistence.Convert;
 import lombok.Data;
 
 import java.util.List;
@@ -57,7 +55,6 @@ public class UserVO {
     /**
      * 职位
      */
-    @Convert(converter = OccupationConverter.class)
     private List<String> occupation;
 
     /**

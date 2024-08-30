@@ -1,8 +1,5 @@
 package com.luckybird.springbackend.api.req;
 
-import com.luckybird.springbackend.converter.OccupationConverter;
-import com.luckybird.springbackend.exception.ExceptionMessages;
-import jakarta.persistence.Convert;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
@@ -19,13 +16,13 @@ public class UserCreateReq {
     /**
      * 账号
      */
-    @NotBlank(message = ExceptionMessages.ACCOUNT_IS_EMPTY)
+    @NotBlank(message = "ACCOUNT_IS_EMPTY")
     private String account;
 
     /**
      * 密码
      */
-    @NotBlank(message = ExceptionMessages.PASSWORD_IS_EMPTY)
+    @NotBlank(message = "PASSWORD_IS_EMPTY")
     private String password;
 
     /**
@@ -61,8 +58,13 @@ public class UserCreateReq {
     /**
      * 职位
      */
-    @Convert(converter = OccupationConverter.class)
     private List<String> occupation;
+
+    // TODO：权限相关待定
+//    /**
+//     * 权限角色
+//     */
+//    private List<String> permissionRole;
 
     /**
      * 备注

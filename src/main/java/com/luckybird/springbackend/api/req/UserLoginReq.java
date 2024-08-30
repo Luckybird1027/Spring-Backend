@@ -1,6 +1,5 @@
 package com.luckybird.springbackend.api.req;
 
-import com.luckybird.springbackend.exception.ExceptionMessages;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
@@ -15,12 +14,12 @@ public class UserLoginReq {
     /**
      * 账号
      */
-    @NotBlank(message = ExceptionMessages.ACCOUNT_IS_EMPTY)
+    @NotBlank(message = "ACCOUNT_IS_EMPTY")
     private String account;
 
     /**
      * 密码
      */
-    @NotBlank(message = ExceptionMessages.PASSWORD_IS_EMPTY)
+    @NotBlank(message = "PASSWORD_IS_EMPTY")
     private String password;
 }
