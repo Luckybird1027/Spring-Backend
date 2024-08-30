@@ -13,6 +13,8 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
 /**
+ * 用户鉴权拦截器
+ *
  * @author 新云鸟
  */
 @RequiredArgsConstructor

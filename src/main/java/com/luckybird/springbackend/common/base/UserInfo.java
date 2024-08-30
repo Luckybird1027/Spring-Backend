@@ -2,8 +2,6 @@ package com.luckybird.springbackend.common.base;
 
 import lombok.Data;
 
-import java.util.List;
-
 /**
  * 用户信息（用于传递上下文信息）
  *
@@ -37,13 +35,14 @@ public class UserInfo {
      */
     private Long departmentId;
 
-    /**
-     * 权限角色
-     */
-    private List<String> permissionRole;
-
-    /**
-     * 用户权限
-     */
-    private List<String> permission;
+    // TODO: 权限相关待定
+//    /**
+//     * 权限角色
+//     */
+//    private List<String> permissionRole;
+//
+//    /**
+//     * 用户权限
+//     */
+//    private List<String> permission;
 }

@@ -1,6 +1,8 @@
 package com.luckybird.springbackend.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.luckybird.springbackend.api.req.*;
 import com.luckybird.springbackend.api.vo.UserVO;
 import com.luckybird.springbackend.common.base.PageResult;
@@ -15,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -95,7 +98,30 @@ public class UserServiceImpl implements UserService {
 
     }
 
+    private LambdaQueryWrapper<UserPO> wrapperByReq(UserQueryReq req) {
+        LambdaQueryWrapper<UserPO> wrapper = new LambdaQueryWrapper<>();
+        if (StringUtils.hasText(req.getKeyword())) {
+            wrapper.and(q -> q.like(UserPO::getAccount, "%" + req.getKeyword() + "%")
+                    .or().like(UserPO::getUsername, "%" + req.getKeyword() + "%")
+                    .or().like(UserPO::getTelephone, "%" + req.getKeyword() + "%")
+                    .or().like(UserPO::getEmail, "%" + req.getKeyword() + "%")
+                    .or().like(UserPO::getRemark, "%" + req.getKeyword() + "%"));
+        }
+        if (req.getStatus() != null) {
+            wrapper.and(q -> q.eq(UserPO::getStatus, req.getStatus().byteValue()));
+        }
+        if (req.getOrganizationId() != null) {
+            wrapper.and(q -> q.eq(UserPO::getOrganizationId, req.getOrganizationId()));
+        }
+        if (req.getDepartmentId() != null) {
+            wrapper.and(q -> q.eq(UserPO::getDepartmentId, req.getDepartmentId()));
+        }
+        if (StringUtils.hasText(req.getOccupation())) {
 
+            wrapper.and(q -> q.apply("JSON_CONTAINS(occupation, JSON_QUOTE({0}), '$')", req.getOccupation()));
+        }
+        return wrapper;
+    }
 
     @Override
     public UserVO get(Long id) {
@@ -151,35 +177,19 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<UserVO> list(UserQueryReq req) {
-        List<UserPO> poList = userMapper.selectByConditions(
-                req.getKeyword(),
-                req.getStatus(),
-                req.getOrganizationId(),
-                req.getDepartmentId(),
-                req.getOccupation());
-
+        List<UserPO> poList = userMapper.selectList(wrapperByReq(req));
         return poList.stream().map(this::toVO).toList();
     }
 
     @Override
     public PageResult<UserVO> page(UserQueryReq req, Long current, Long pageSize, boolean searchCount) {
-        List<UserPO> poList = userMapper.selectByConditionsWithPage(
-                req.getKeyword(),
-                req.getStatus(),
-                req.getOrganizationId(),
-                req.getDepartmentId(),
-                req.getOccupation(),
-                (current - 1) * pageSize,
-                pageSize);
+        IPage<UserPO> page = new Page<>(current, pageSize);
+        LambdaQueryWrapper<UserPO> wrapper = wrapperByReq(req);
+        IPage<UserPO> userPage = userMapper.selectPage(page, wrapper);
+        List<UserPO> poList = userPage.getRecords();
         List<UserVO> voList = poList.stream().map(this::toVO).toList();
         if (searchCount) {
-            return new PageResult<>(userMapper.countByConditions(
-                    req.getKeyword(),
-                    req.getStatus(),
-                    req.getOrganizationId(),
-                    req.getDepartmentId(),
-                    req.getOccupation()
-            ), voList);
+            return new PageResult<>(userPage.getTotal(), voList);
         } else {
             return new PageResult<>(voList);
         }

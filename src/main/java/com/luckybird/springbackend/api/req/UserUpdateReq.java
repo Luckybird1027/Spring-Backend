@@ -52,10 +52,11 @@ public class UserUpdateReq {
      */
     private Long departmentId;
 
-    /**
-     * 权限角色
-     */
-    private List<String> permissionRole;
+    // TODO：权限相关待定
+//    /**
+//     * 权限角色
+//     */
+//    private List<String> permissionRole;
 
     /**
      * 职位

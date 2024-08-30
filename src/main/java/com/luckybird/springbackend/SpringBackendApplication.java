@@ -4,6 +4,8 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 /**
+ * Spring Boot 启动类
+ *
  * @author 新云鸟
  */
 @SpringBootApplication

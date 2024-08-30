@@ -17,6 +17,8 @@ import java.text.SimpleDateFormat;
 import java.util.TimeZone;
 
 /**
+ * Redis配置类
+ *
  * @author 新云鸟
  */
 @Configuration

@@ -7,6 +7,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 
 /**
+ * Jackson配置类
+ *
  * @author 新云鸟
  */
 @Configuration

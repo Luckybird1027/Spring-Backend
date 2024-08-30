@@ -8,6 +8,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
+ * MybatisPlus配置类
+ *
  * @author 新云鸟
  */
 @Configuration

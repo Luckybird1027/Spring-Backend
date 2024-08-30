@@ -4,6 +4,8 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 /**
+ * 用户更改密码请求
+ *
  * @author 新云鸟
  */
 @Data

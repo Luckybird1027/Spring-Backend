@@ -69,11 +69,12 @@ public class UserPO {
     @TableField(typeHandler = JacksonTypeHandler.class)
     private List<String> occupation;
 
-    /**
-     * 权限角色
-     */
-    @TableField(typeHandler = JacksonTypeHandler.class)
-    private List<String> permissionRole;
+    // TODO：权限系统待定
+//    /**
+//     * 权限角色
+//     */
+//    @TableField(typeHandler = JacksonTypeHandler.class)
+//    private List<String> permissionRole;
 
     /**
      * 备注
