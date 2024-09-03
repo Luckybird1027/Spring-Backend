@@ -2,7 +2,7 @@ package com.luckybird.springbackend.interceptor;
 
 import com.luckybird.springbackend.common.annotation.NoAuth;
 import com.luckybird.springbackend.common.base.UserInfo;
-import com.luckybird.springbackend.common.util.ContextUtil;
+import com.luckybird.springbackend.common.utils.ContextUtils;
 import com.luckybird.springbackend.service.TokenService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -42,7 +42,7 @@ public class AuthInterceptor implements HandlerInterceptor {
         }
 
         // 将用户信息存入上下文
-        ContextUtil.setUserInfo(userInfo);
+        ContextUtils.setUserInfo(userInfo);
         return true;
     }
 
@@ -53,6 +53,6 @@ public class AuthInterceptor implements HandlerInterceptor {
 
     @Override
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
-        ContextUtil.removeUserInfo();
+        ContextUtils.removeUserInfo();
     }
 }

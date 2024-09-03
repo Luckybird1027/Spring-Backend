@@ -14,7 +14,7 @@ public class UserLoginReq {
     /**
      * 账号
      */
-    @NotBlank(message = "ACCOUNT_IS_EMPTY")
+    @NotBlank(message = "EMPTY_ACCOUNT")
     private String account;
 
     /**

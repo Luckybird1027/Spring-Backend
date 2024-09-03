@@ -6,7 +6,7 @@ import com.luckybird.springbackend.api.vo.UserVO;
 import com.luckybird.springbackend.common.annotation.NoAuth;
 import com.luckybird.springbackend.common.base.PageResult;
 import com.luckybird.springbackend.common.base.TokenInfo;
-import com.luckybird.springbackend.common.util.ContextUtil;
+import com.luckybird.springbackend.common.utils.ContextUtils;
 import com.luckybird.springbackend.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -136,7 +136,7 @@ public class UserController implements UserApi {
      */
     @PostMapping("/v1/users/logout")
     public void logout() {
-        userService.logout(ContextUtil.getUserInfo().getId());
+        userService.logout(ContextUtils.getUserInfo().getId());
     }
 
     /**
@@ -146,7 +146,7 @@ public class UserController implements UserApi {
      */
     @PostMapping("/v1/users/changePassword")
     public void changePassword(@RequestBody @Valid UserChangePasswordReq req) {
-        userService.changePassword(ContextUtil.getUserInfo().getId(), req);
+        userService.changePassword(ContextUtils.getUserInfo().getId(), req);
     }
 
 }

@@ -1,6 +1,5 @@
 package com.luckybird.springbackend.exception;
 
-import com.luckybird.springbackend.common.constant.ErrorInfoEnum;
 import lombok.Getter;
 
 /**
@@ -10,10 +9,8 @@ import lombok.Getter;
  */
 @Getter
 public class BizException extends RuntimeException {
-    protected final ErrorInfoEnum errorInfoEnum;
 
-    public BizException(ErrorInfoEnum errorInfo) {
-        super(errorInfo.getMessage());
-        this.errorInfoEnum = errorInfo;
+    public BizException(String message) {
+        super(message);
     }
 }

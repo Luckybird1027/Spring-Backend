@@ -8,9 +8,9 @@ import com.luckybird.springbackend.api.vo.UserVO;
 import com.luckybird.springbackend.common.base.PageResult;
 import com.luckybird.springbackend.common.base.TokenInfo;
 import com.luckybird.springbackend.common.base.UserInfo;
-import com.luckybird.springbackend.common.constant.ErrorInfoEnum;
 import com.luckybird.springbackend.common.constant.StatusEnum;
-import com.luckybird.springbackend.common.util.ContextUtil;
+import com.luckybird.springbackend.common.utils.ContextUtils;
+import com.luckybird.springbackend.common.utils.StringResourceUtils;
 import com.luckybird.springbackend.exception.BizException;
 import com.luckybird.springbackend.mapper.UserMapper;
 import com.luckybird.springbackend.po.UserPO;
@@ -141,18 +141,18 @@ public class UserServiceImpl implements UserService {
         if (req.getStatus() == null) {
             req.setStatus(StatusEnum.NORMAL.getKey());
         } else if (StatusEnum.of(req.getStatus()) == null) {
-            throw new BizException(ErrorInfoEnum.INVALID_PARAMETER);
+            throw new BizException(StringResourceUtils.format("INVALID_PARAMETER"));
         }
         // 检查用户是否已存在
         LambdaQueryWrapper<UserPO> wrapper = new LambdaQueryWrapper<UserPO>().eq(UserPO::getAccount, req.getAccount());
         UserPO existingUser = userMapper.selectOne(wrapper);
         if (existingUser != null) {
-            throw new BizException(ErrorInfoEnum.ACCOUNT_ALREADY_EXISTS);
+            throw new BizException(StringResourceUtils.format("ACCOUNT_ALREADY_EXISTS"));
         }
         // 填充信息并创建用户
         UserPO po = toPo(req);
         po.setPassword(passwordEncoder.encode(po.getPassword()));
-        po.setCreatorId(ContextUtil.getUserInfo().getId());
+        po.setCreatorId(ContextUtils.getUserInfo().getId());
         po.setCreateTime(LocalDateTime.now());
         userMapper.insert(po);
         return toVO(po);
@@ -163,12 +163,12 @@ public class UserServiceImpl implements UserService {
         // 检查用户是否存在
         UserPO po = userMapper.selectById(id);
         if (po == null) {
-            throw new BizException(ErrorInfoEnum.USER_NOT_EXIST);
+            throw new BizException(StringResourceUtils.format("USER_NOT_EXIST"));
         }
         // 更新用户信息
         UserPO updatePo = toPo(req);
         updatePo.setId(id);
-        updatePo.setUpdaterId(ContextUtil.getUserInfo().getId());
+        updatePo.setUpdaterId(ContextUtils.getUserInfo().getId());
         updatePo.setUpdateTime(LocalDateTime.now());
         userMapper.updateById(updatePo);
         // TODO: 不要再查一次数据库
@@ -205,15 +205,15 @@ public class UserServiceImpl implements UserService {
         // 检查用户是否存在
         UserPO existingUser = userMapper.selectOne(new LambdaQueryWrapper<UserPO>().eq(UserPO::getAccount, req.getAccount()));
         if (existingUser == null) {
-            throw new BizException(ErrorInfoEnum.INCORRECT_USERNAME_OR_PASSWORD);
+            throw new BizException(StringResourceUtils.format("INCORRECT_ACCOUNT_OR_PASSWORD"));
         }
         // 检查密码是否正确
         if (!passwordEncoder.matches(req.getPassword(), existingUser.getPassword())) {
-            throw new BizException(ErrorInfoEnum.INCORRECT_USERNAME_OR_PASSWORD);
+            throw new BizException(StringResourceUtils.format("INCORRECT_ACCOUNT_OR_PASSWORD"));
         }
         // 检查用户是否被禁用
         if (StatusEnum.DISABLE.getKey().equals(existingUser.getStatus())) {
-            throw new BizException(ErrorInfoEnum.USER_DISABLED);
+            throw new BizException(StringResourceUtils.format("USER_DISABLED"));
         }
         // 登录成功，返回token
         log.info("User " + req.getAccount() + " logged in successfully");
@@ -223,7 +223,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void logout(Long userId) {
         if (!tokenService.deleteTokenByUserId(userId)) {
-            throw new BizException(ErrorInfoEnum.USER_NOT_LOGIN);
+            throw new BizException(StringResourceUtils.format("USER_NOT_LOGIN"));
         }
         log.info("User " + userId + " logged out successfully");
     }
@@ -233,11 +233,11 @@ public class UserServiceImpl implements UserService {
         // 检查用户是否存在
         UserPO existingUser = userMapper.selectById(userId);
         if (existingUser == null) {
-            throw new BizException(ErrorInfoEnum.INCORRECT_USERNAME_OR_PASSWORD);
+            throw new BizException(StringResourceUtils.format("INCORRECT_ACCOUNT_OR_PASSWORD"));
         }
         // 检查旧密码是否正确
         if (!passwordEncoder.matches(req.getOldPassword(), existingUser.getPassword())) {
-            throw new BizException(ErrorInfoEnum.INCORRECT_OLD_PASSWORD);
+            throw new BizException(StringResourceUtils.format("INCORRECT_OLD_PASSWORD"));
         }
         // 修改为新密码
         UserPO newUser = new UserPO();

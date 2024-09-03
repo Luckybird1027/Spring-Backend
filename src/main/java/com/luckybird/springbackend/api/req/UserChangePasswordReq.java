@@ -14,12 +14,12 @@ public class UserChangePasswordReq {
     /**
      * 旧密码
      */
-    @NotBlank(message = "PASSWORD_IS_EMPTY")
+    @NotBlank(message = "EMPTY_PASSWORD")
     private String oldPassword;
 
     /**
      * 新密码
      */
-    @NotBlank(message = "PASSWORD_IS_EMPTY")
+    @NotBlank(message = "EMPTY_PASSWORD")
     private String newPassword;
 }

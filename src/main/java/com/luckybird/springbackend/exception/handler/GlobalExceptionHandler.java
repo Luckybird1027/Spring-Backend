@@ -1,8 +1,8 @@
 package com.luckybird.springbackend.exception.handler;
 
 import com.luckybird.springbackend.common.base.ErrorResult;
+import com.luckybird.springbackend.common.utils.StringResourceUtils;
 import com.luckybird.springbackend.exception.BizException;
-import com.luckybird.springbackend.common.constant.ErrorInfoEnum;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -12,8 +12,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.Objects;
-
-import static com.luckybird.springbackend.common.constant.ErrorInfoEnum.INTERNAL_SERVER_ERROR;
 
 /**
  * 全局异常处理器
@@ -27,7 +25,7 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResult handleBindException(BindException e, HttpServletRequest request) {
         String msg = Objects.requireNonNull(e.getBindingResult().getFieldError()).getDefaultMessage();
-        ErrorResult errorResult = new ErrorResult(Objects.requireNonNull(ErrorInfoEnum.getInfoByMessage(msg)));
+        ErrorResult errorResult = new ErrorResult(msg);
         log.error("BindException: " + errorResult + ", URL: " + request.getRequestURI());
         return errorResult;
     }
@@ -35,7 +33,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(BizException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResult handleBizException(BizException e, HttpServletRequest request) {
-        ErrorResult errorResult = new ErrorResult(e.getErrorInfoEnum());
+        ErrorResult errorResult = new ErrorResult(e.getMessage());
         log.error("BizException: " + errorResult + ", URL: " + request.getRequestURI());
         return errorResult;
     }
@@ -46,14 +44,12 @@ public class GlobalExceptionHandler {
     public ErrorResult handleException(Throwable e, HttpServletRequest request) {
         ErrorResult errorResult = new ErrorResult();
         if (e.getMessage() != null) {
-            errorResult.setCode("99999");
             errorResult.setMessage(e.getMessage());
         } else {
-            errorResult.setCode("99999");
             errorResult.setMessage(e.getCause().getMessage());
         }
         log.error("Exception: " + errorResult + ", URL: " + request.getRequestURI(), e);
-        return new ErrorResult(INTERNAL_SERVER_ERROR);
+        return new ErrorResult(StringResourceUtils.format("INTERNAL_SERVER_ERROR"));
     }
 
 }

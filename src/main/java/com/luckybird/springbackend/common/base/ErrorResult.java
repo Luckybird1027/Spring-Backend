@@ -1,6 +1,6 @@
 package com.luckybird.springbackend.common.base;
 
-import com.luckybird.springbackend.common.constant.ErrorInfoEnum;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -12,20 +12,12 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 public class ErrorResult {
-
-    /**
-     * 错误码
-     */
-    private String code;
 
     /**
      * 错误信息
      */
     private String message;
 
-    public ErrorResult(ErrorInfoEnum errorInfoEnum) {
-        this.code = errorInfoEnum.getCode();
-        this.message = errorInfoEnum.getMessage();
-    }
 }

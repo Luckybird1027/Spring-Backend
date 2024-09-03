@@ -1,6 +1,7 @@
-package com.luckybird.springbackend.common.util;
+package com.luckybird.springbackend.common.utils;
 
 import com.luckybird.springbackend.common.base.UserInfo;
+import org.springframework.stereotype.Component;
 
 /**
  * 上下文工具类
@@ -8,7 +9,8 @@ import com.luckybird.springbackend.common.base.UserInfo;
  * @author 新云鸟
  */
 
-public class ContextUtil {
+@Component
+public class ContextUtils {
     private static final ThreadLocal<UserInfo> THREAD_LOCAL = new ThreadLocal<>();
 
     /**
