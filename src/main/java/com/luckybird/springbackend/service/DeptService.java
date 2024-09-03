@@ -78,12 +78,14 @@ public interface DeptService {
 
     /**
      * 获取完整部门树
+     *
      * @return DeptTreeVO 部门树
      */
     List<DeptTreeVO> getDeptTree();
 
     /**
      * 获取指定部门的子部门树
+     *
      * @param id 部门id
      * @return DeptTreeVO 部门树
      */

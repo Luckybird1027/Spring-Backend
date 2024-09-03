@@ -9,7 +9,15 @@ import com.luckybird.springbackend.common.base.PageResult;
 import com.luckybird.springbackend.service.DeptService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.Set;
@@ -88,8 +96,7 @@ public class DeptController {
      * @return List<DeptVO> 部门信息列表
      */
     @PostMapping("/v1/dept/list")
-    public List<DeptVO> list(
-            @RequestBody DeptQueryReq req) {
+    public List<DeptVO> list(@RequestBody DeptQueryReq req) {
         return deptService.list(req);
     }
 

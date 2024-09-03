@@ -3,7 +3,11 @@ package com.luckybird.springbackend.service;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.luckybird.springbackend.api.req.*;
+import com.luckybird.springbackend.api.req.UserChangePasswordReq;
+import com.luckybird.springbackend.api.req.UserCreateReq;
+import com.luckybird.springbackend.api.req.UserLoginReq;
+import com.luckybird.springbackend.api.req.UserQueryReq;
+import com.luckybird.springbackend.api.req.UserUpdateReq;
 import com.luckybird.springbackend.api.vo.UserVO;
 import com.luckybird.springbackend.common.base.PageResult;
 import com.luckybird.springbackend.common.base.TokenInfo;
@@ -165,7 +169,6 @@ public class UserServiceImpl implements UserService {
         }
         // 更新用户信息
         UserPO updatePo = updateByReq(po, req);
-        updatePo.setId(id);
         updatePo.setUpdaterId(ContextUtils.getUserInfo().getId());
         updatePo.setUpdateTime(LocalDateTime.now());
         userMapper.updateById(updatePo);

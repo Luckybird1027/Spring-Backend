@@ -1,7 +1,11 @@
 package com.luckybird.springbackend.controller;
 
 import com.luckybird.springbackend.api.UserApi;
-import com.luckybird.springbackend.api.req.*;
+import com.luckybird.springbackend.api.req.UserChangePasswordReq;
+import com.luckybird.springbackend.api.req.UserCreateReq;
+import com.luckybird.springbackend.api.req.UserLoginReq;
+import com.luckybird.springbackend.api.req.UserQueryReq;
+import com.luckybird.springbackend.api.req.UserUpdateReq;
 import com.luckybird.springbackend.api.vo.UserVO;
 import com.luckybird.springbackend.common.annotation.NoAuth;
 import com.luckybird.springbackend.common.base.PageResult;
@@ -10,7 +14,15 @@ import com.luckybird.springbackend.common.utils.ContextUtils;
 import com.luckybird.springbackend.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.Set;
