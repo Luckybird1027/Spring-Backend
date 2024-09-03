@@ -1,5 +1,6 @@
 package com.luckybird.springbackend.api.req;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 /**
@@ -13,6 +14,7 @@ public class DeptCreateReq {
     /**
      * 部门名称
      */
+    @NotBlank(message = "EMPTY_DEPT_NAME")
     private String name;
 
     /**

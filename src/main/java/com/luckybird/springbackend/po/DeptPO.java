@@ -63,6 +63,6 @@ public class DeptPO {
     /**
      * 逻辑删除
      */
-    @TableLogic(value = "0", delval = "id")
+    @TableLogic(value = "-1", delval = "id")
     private Long deleted;
 }
