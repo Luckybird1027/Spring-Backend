@@ -23,7 +23,7 @@ public class StringResourceUtils {
      * @return 字符串资源
      */
     public static String format(String code) {
-        return messageSource.getMessage(code, null, Locale.getDefault());
+        return messageSource.getMessage(code, null, null, Locale.getDefault());
     }
 
     /**
@@ -34,18 +34,19 @@ public class StringResourceUtils {
      * @return 字符串资源
      */
     public static String format(String code, Object[] args) {
-        return messageSource.getMessage(code, args, Locale.getDefault());
+        return messageSource.getMessage(code, args, null, Locale.getDefault());
     }
 
     /**
      * 获取字符串资源
+     * TODO: 尚未开放其他语言
      *
      * @param code   字符串资源编码
      * @param locale 语言
      * @return 字符串资源
      */
     public static String format(String code, Locale locale) {
-        return messageSource.getMessage(code, null, locale);
+        return messageSource.getMessage(code, null, null, locale);
     }
 
     @Resource
