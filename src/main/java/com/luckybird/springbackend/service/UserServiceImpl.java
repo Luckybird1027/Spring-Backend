@@ -22,6 +22,7 @@ import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -55,21 +56,6 @@ public class UserServiceImpl implements UserService {
         return po;
     }
 
-    private UserPO toPo(UserUpdateReq req) {
-        UserPO po = new UserPO();
-        po.setAccount(req.getAccount());
-        po.setPassword(req.getPassword());
-        po.setUsername(req.getUsername());
-        po.setTelephone(req.getTelephone());
-        po.setEmail(req.getEmail());
-        po.setOrganizationId(req.getOrganizationId());
-        po.setDepartmentId(req.getDepartmentId());
-        po.setOccupation(req.getOccupation());
-        po.setRemark(req.getRemark());
-        return po;
-
-    }
-
     private UserVO toVO(UserPO po) {
         UserVO userVO = new UserVO();
         userVO.setId(po.getId());
@@ -83,6 +69,18 @@ public class UserServiceImpl implements UserService {
         userVO.setOccupation(po.getOccupation());
         userVO.setRemark(po.getRemark());
         return userVO;
+    }
+
+    private UserPO updateByReq(UserPO po, UserUpdateReq req) {
+        Optional.ofNullable(req.getAccount()).ifPresent(po::setAccount);
+        Optional.ofNullable(req.getUsername()).ifPresent(po::setUsername);
+        Optional.ofNullable(req.getTelephone()).ifPresent(po::setTelephone);
+        Optional.ofNullable(req.getEmail()).ifPresent(po::setEmail);
+        Optional.ofNullable(req.getOrganizationId()).ifPresent(po::setOrganizationId);
+        Optional.ofNullable(req.getDepartmentId()).ifPresent(po::setDepartmentId);
+        Optional.ofNullable(req.getOccupation()).ifPresent(po::setOccupation);
+        Optional.ofNullable(req.getRemark()).ifPresent(po::setRemark);
+        return po;
     }
 
     UserInfo toInfo(UserPO po) {
@@ -166,13 +164,12 @@ public class UserServiceImpl implements UserService {
             throw new BizException(StringResourceUtils.format("USER_NOT_EXIST"));
         }
         // 更新用户信息
-        UserPO updatePo = toPo(req);
+        UserPO updatePo = updateByReq(po, req);
         updatePo.setId(id);
         updatePo.setUpdaterId(ContextUtils.getUserInfo().getId());
         updatePo.setUpdateTime(LocalDateTime.now());
         userMapper.updateById(updatePo);
-        // TODO: 不要再查一次数据库
-        return toVO(userMapper.selectById(id));
+        return toVO(updatePo);
     }
 
     @Override

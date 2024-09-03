@@ -20,9 +20,4 @@ public class DeptQueryReq {
      */
     private Long parentId;
 
-    /**
-     * 部门层级
-     */
-    private Integer level;
-
 }

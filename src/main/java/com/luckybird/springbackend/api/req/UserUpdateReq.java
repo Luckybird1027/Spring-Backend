@@ -18,11 +18,6 @@ public class UserUpdateReq {
     private String account;
 
     /**
-     * 密码
-     */
-    private String password;
-
-    /**
      * 昵称
      */
     private String username;

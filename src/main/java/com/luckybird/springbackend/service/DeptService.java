@@ -3,6 +3,7 @@ package com.luckybird.springbackend.service;
 import com.luckybird.springbackend.api.req.DeptCreateReq;
 import com.luckybird.springbackend.api.req.DeptQueryReq;
 import com.luckybird.springbackend.api.req.DeptUpdateReq;
+import com.luckybird.springbackend.api.vo.DeptTreeVO;
 import com.luckybird.springbackend.api.vo.DeptVO;
 import com.luckybird.springbackend.common.base.PageResult;
 
@@ -74,4 +75,17 @@ public interface DeptService {
      * @return PageResult<DeptVO> 部门分页信息
      */
     PageResult<DeptVO> page(DeptQueryReq req, Long current, Long pageSize, boolean searchCount);
+
+    /**
+     * 获取完整部门树
+     * @return DeptTreeVO 部门树
+     */
+    DeptTreeVO getDeptTree();
+
+    /**
+     * 获取指定部门的子部门树
+     * @param id 部门id
+     * @return DeptTreeVO 部门树
+     */
+    DeptTreeVO getDeptTree(Long id);
 }
