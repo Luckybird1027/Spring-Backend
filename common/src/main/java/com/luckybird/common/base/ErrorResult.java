@@ -16,6 +16,11 @@ import lombok.NoArgsConstructor;
 public class ErrorResult {
 
     /**
+     * 错误代码
+     */
+    private String code;
+
+    /**
      * 错误信息
      */
     private String message;

@@ -1,11 +1,11 @@
 package com.luckybird.dept.api;
 
+import com.luckybird.common.base.PageResult;
 import com.luckybird.dept.api.req.DeptCreateReq;
 import com.luckybird.dept.api.req.DeptQueryReq;
 import com.luckybird.dept.api.req.DeptUpdateReq;
 import com.luckybird.dept.api.vo.DeptTreeVO;
 import com.luckybird.dept.api.vo.DeptVO;
-import com.luckybird.common.base.PageResult;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;

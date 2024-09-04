@@ -1,8 +1,8 @@
 package com.luckybird.common.exception.handler;
 
 import com.luckybird.common.base.ErrorResult;
-import com.luckybird.common.utils.StringResourceUtils;
 import com.luckybird.common.exception.BizException;
+import com.luckybird.common.utils.StringResourceUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -10,8 +10,6 @@ import org.springframework.validation.BindException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-
-import java.util.Objects;
 
 /**
  * 全局异常处理器
@@ -24,8 +22,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(BindException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResult handleBindException(BindException e, HttpServletRequest request) {
-        String msg = Objects.requireNonNull(e.getBindingResult().getFieldError()).getDefaultMessage();
-        ErrorResult errorResult = new ErrorResult(msg);
+        ErrorResult errorResult = new ErrorResult("BIND_EXCEPTION", e.getMessage());
         log.error("BindException: " + errorResult + ", URL: " + request.getRequestURI());
         return errorResult;
     }
@@ -33,7 +30,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(BizException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResult handleBizException(BizException e, HttpServletRequest request) {
-        ErrorResult errorResult = new ErrorResult(e.getMessage());
+        ErrorResult errorResult = new ErrorResult(e.getCode(), e.getMessage());
         log.error("BizException: " + errorResult + ", URL: " + request.getRequestURI());
         return errorResult;
     }
@@ -49,7 +46,7 @@ public class GlobalExceptionHandler {
             errorResult.setMessage(e.getCause().getMessage());
         }
         log.error("Exception: " + errorResult + ", URL: " + request.getRequestURI(), e);
-        return new ErrorResult(StringResourceUtils.format("INTERNAL_SERVER_ERROR"));
+        return new ErrorResult("INTERNAL_SERVER_ERROR", StringResourceUtils.format("INTERNAL_SERVER_ERROR"));
     }
 
 }

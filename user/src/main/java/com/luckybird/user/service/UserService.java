@@ -1,13 +1,13 @@
 package com.luckybird.user.service;
 
+import com.luckybird.common.base.PageResult;
+import com.luckybird.token.base.TokenInfo;
 import com.luckybird.user.api.req.UserChangePasswordReq;
 import com.luckybird.user.api.req.UserCreateReq;
 import com.luckybird.user.api.req.UserLoginReq;
 import com.luckybird.user.api.req.UserQueryReq;
 import com.luckybird.user.api.req.UserUpdateReq;
 import com.luckybird.user.api.vo.UserVO;
-import com.luckybird.common.base.PageResult;
-import com.luckybird.common.base.TokenInfo;
 
 import java.util.List;
 import java.util.Set;

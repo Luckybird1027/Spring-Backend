@@ -1,10 +1,10 @@
 package com.luckybird.user.api;
 
+import com.luckybird.common.base.PageResult;
 import com.luckybird.user.api.req.UserCreateReq;
 import com.luckybird.user.api.req.UserQueryReq;
 import com.luckybird.user.api.req.UserUpdateReq;
 import com.luckybird.user.api.vo.UserVO;
-import com.luckybird.common.base.PageResult;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;

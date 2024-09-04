@@ -1,11 +1,11 @@
 package com.luckybird.dept.service;
 
+import com.luckybird.common.base.PageResult;
 import com.luckybird.dept.api.req.DeptCreateReq;
 import com.luckybird.dept.api.req.DeptQueryReq;
 import com.luckybird.dept.api.req.DeptUpdateReq;
 import com.luckybird.dept.api.vo.DeptTreeVO;
 import com.luckybird.dept.api.vo.DeptVO;
-import com.luckybird.common.base.PageResult;
 
 import java.util.List;
 import java.util.Set;
