@@ -1,8 +1,8 @@
-package com.luckybird.token.config;
+package com.luckybird.auth.config;
 
-import com.luckybird.token.interceptor.AuthInterceptor;
+import com.luckybird.auth.interceptor.AuthInterceptor;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -11,7 +11,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
  *
  * @author 新云鸟
  */
-@Configuration
+@AutoConfiguration
 @RequiredArgsConstructor
 public class InterceptorConfig implements WebMvcConfigurer {
 
@@ -19,8 +19,6 @@ public class InterceptorConfig implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(authInterceptor)
-                .addPathPatterns("/v1/users/**")
-                .addPathPatterns("/v1/dept/**");
+        registry.addInterceptor(authInterceptor);
     }
 }

@@ -1,7 +1,7 @@
 package com.luckybird.user.service;
 
 import com.luckybird.common.base.PageResult;
-import com.luckybird.token.base.TokenInfo;
+import com.luckybird.auth.base.TokenInfo;
 import com.luckybird.user.api.req.UserChangePasswordReq;
 import com.luckybird.user.api.req.UserCreateReq;
 import com.luckybird.user.api.req.UserLoginReq;

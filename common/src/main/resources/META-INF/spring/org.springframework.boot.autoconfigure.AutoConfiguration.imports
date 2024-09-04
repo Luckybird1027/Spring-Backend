@@ -1,0 +1,3 @@
+com.luckybird.common.config.JacksonConfig
+com.luckybird.common.config.MybatisPlusConfig
+com.luckybird.common.config.RedisConfig

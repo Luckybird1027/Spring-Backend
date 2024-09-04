@@ -1,9 +1,9 @@
-package com.luckybird.token.interceptor;
+package com.luckybird.auth.interceptor;
 
 import com.luckybird.common.base.UserInfo;
 import com.luckybird.common.utils.ContextUtils;
-import com.luckybird.token.annotation.NoAuth;
-import com.luckybird.token.service.TokenService;
+import com.luckybird.auth.annotation.NoAuth;
+import com.luckybird.auth.service.TokenService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;

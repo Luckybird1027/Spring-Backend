@@ -2,8 +2,8 @@ package com.luckybird.user.controller;
 
 import com.luckybird.common.base.PageResult;
 import com.luckybird.common.utils.ContextUtils;
-import com.luckybird.token.annotation.NoAuth;
-import com.luckybird.token.base.TokenInfo;
+import com.luckybird.auth.annotation.NoAuth;
+import com.luckybird.auth.base.TokenInfo;
 import com.luckybird.user.api.UserApi;
 import com.luckybird.user.api.req.UserChangePasswordReq;
 import com.luckybird.user.api.req.UserCreateReq;

@@ -1,4 +1,4 @@
-package com.luckybird.token.base;
+package com.luckybird.auth.base;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
