@@ -17,7 +17,7 @@ public class UserCreateReq {
     /**
      * 账号
      */
-    @NotBlank(message = "EMPTY_ACCOUNT")
+    @NotBlank(message = "{}")
     private String account;
 
     /**

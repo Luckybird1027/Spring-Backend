@@ -12,6 +12,7 @@ import com.luckybird.dept.api.req.DeptQueryReq;
 import com.luckybird.dept.api.req.DeptUpdateReq;
 import com.luckybird.dept.api.vo.DeptTreeVO;
 import com.luckybird.dept.api.vo.DeptVO;
+import com.luckybird.dept.base.DeptTreeInfo;
 import com.luckybird.dept.mapper.DeptMapper;
 import com.luckybird.dept.po.DeptPO;
 import jakarta.validation.constraints.NotNull;
@@ -21,9 +22,11 @@ import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Queue;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -66,6 +69,16 @@ public class DeptServiceImpl implements DeptService {
 
     }
 
+    private DeptTreeInfo toDeptTreeInfo(DeptPO po) {
+        DeptTreeInfo deptTreeInfo = new DeptTreeInfo();
+        deptTreeInfo.setId(po.getId());
+        deptTreeInfo.setName(po.getName());
+        deptTreeInfo.setParentId(po.getParentId());
+        deptTreeInfo.setRemark(po.getRemark());
+        return deptTreeInfo;
+
+    }
+
     private DeptPO updateByReq(DeptPO po, DeptUpdateReq req) {
         Optional.ofNullable(req.getName()).ifPresent(po::setName);
         Optional.ofNullable(req.getParentId()).ifPresent(po::setParentId);
@@ -92,6 +105,24 @@ public class DeptServiceImpl implements DeptService {
         List<DeptTreeVO> children = parent.getChildren();
         children.add(child);
         parent.setChildren(children);
+    }
+
+    private void addChild(DeptTreeInfo parent, DeptTreeInfo child) {
+        if (parent.getChildren() == null) {
+            parent.setChildren(new ArrayList<>());
+        }
+        List<DeptTreeInfo> children = parent.getChildren();
+        children.add(child);
+        parent.setChildren(children);
+    }
+
+    private void addChildId(DeptTreeInfo parent, Long childId) {
+        if (parent.getChildIds() == null) {
+            parent.setChildIds(new ArrayList<>());
+        }
+        List<Long> childIds = parent.getChildIds();
+        childIds.add(childId);
+        parent.setChildIds(childIds);
     }
 
     private List<DeptTreeVO> buildDeptTree(List<DeptPO> deptList) {
@@ -207,12 +238,16 @@ public class DeptServiceImpl implements DeptService {
 
     @Override
     public List<DeptTreeVO> getDeptTree() {
+
         // 查询所有部门
         List<DeptPO> deptList = deptMapper.selectList(new LambdaQueryWrapper<DeptPO>().ne(DeptPO::getParentId, (long) -1));
         List<DeptTreeVO> deptTreeList = deptList.stream().map(this::toDeptTreeVO).toList();
+
+        // 构建映射表
         Map<Long, DeptTreeVO> departmentMap = deptTreeList.stream()
                 .collect(Collectors.toMap(DeptTreeVO::getId, Function.identity()));
-        // 构建部门树
+
+        // 遍历所有部门，构建部门树
         List<DeptTreeVO> rootDepartments = new ArrayList<>();
         for (DeptTreeVO deptTree : deptTreeList) {
             if (deptTree.getParentId().equals(0L)) {
@@ -226,22 +261,53 @@ public class DeptServiceImpl implements DeptService {
             }
         }
         return rootDepartments;
+
     }
 
     @Override
-    // TODO: 优化查询效率，能够在数据库中就查到需要的部门信息
-    public DeptTreeVO getDeptTree(Long id) {
-        // 检查查询对象是否为根部门
-        if (id == 0) {
-            return null;
-        }
-        // 构建部门树
+    public DeptTreeInfo getDeptTree(Long id) {
+
+        // 检查部门是否存在
         DeptPO dept = deptMapper.selectById(id);
         if (dept == null) {
             return null;
         }
-        return setTree(dept);
-    }
 
+        // 查询所有部门
+        List<DeptPO> deptList = deptMapper.selectList(new LambdaQueryWrapper<>());
+        List<DeptTreeInfo> deptTreeInfoList = deptList.stream().map(this::toDeptTreeInfo).toList();
+
+        // 构建映射表
+        Map<Long, DeptTreeInfo> departmentMap = deptTreeInfoList.stream()
+                .collect(Collectors.toMap(DeptTreeInfo::getId, Function.identity()));
+
+        // 遍历deptTreeInfoList，填充childId
+        for (DeptTreeInfo deptTreeInfo : deptTreeInfoList) {
+            if (deptTreeInfo.getParentId() != null) {
+                DeptTreeInfo parentDeptTree = departmentMap.get(deptTreeInfo.getParentId());
+                if (parentDeptTree == null) {
+                    continue;
+                }
+                addChildId(parentDeptTree, deptTreeInfo.getId());
+            }
+        }
+
+        // 采用DFS思想利用队列根据childId构建部门树
+        DeptTreeInfo rootTreeInfo = departmentMap.get(id);
+        Queue<DeptTreeInfo> queue = new LinkedList<>();
+        queue.add(rootTreeInfo);
+        while (!queue.isEmpty()) {
+            DeptTreeInfo parentTreeInfo = queue.peek();
+            queue.poll();
+            List<Long> childIds = parentTreeInfo.getChildIds();
+            if (childIds != null) {
+                for (DeptTreeInfo treeInfo : childIds.stream().map(departmentMap::get).toList()) {
+                    queue.add(treeInfo);
+                    addChild(parentTreeInfo, treeInfo);
+                }
+            }
+        }
+        return rootTreeInfo;
+    }
 
 }
