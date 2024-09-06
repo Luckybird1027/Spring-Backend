@@ -7,7 +7,6 @@ import com.luckybird.dept.api.req.DeptQueryReq;
 import com.luckybird.dept.api.req.DeptUpdateReq;
 import com.luckybird.dept.api.vo.DeptTreeVO;
 import com.luckybird.dept.api.vo.DeptVO;
-import com.luckybird.dept.base.DeptTreeInfo;
 import com.luckybird.dept.service.DeptService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -146,7 +145,7 @@ public class DeptController implements DeptApi {
      */
     @Override
     @PostMapping("/v1/dept/tree/{id}")
-    public DeptTreeInfo getTree(@PathVariable Long id) {
+    public DeptTreeVO getTree(@PathVariable Long id) {
         return deptService.getDeptTree(id);
     }
 }

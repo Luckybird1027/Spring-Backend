@@ -34,6 +34,10 @@ public class DeptPO {
      */
     private Long parentId;
 
+    /**
+     * 部门路径
+     */
+    private String path;
 
     /**
      * 备注

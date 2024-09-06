@@ -6,7 +6,6 @@ import com.luckybird.dept.api.req.DeptQueryReq;
 import com.luckybird.dept.api.req.DeptUpdateReq;
 import com.luckybird.dept.api.vo.DeptTreeVO;
 import com.luckybird.dept.api.vo.DeptVO;
-import com.luckybird.dept.base.DeptTreeInfo;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -113,6 +112,6 @@ public interface DeptApi {
      * @return DeptTreeVO 部门树
      */
     @PostMapping("/v1/dept/tree/{id}")
-    DeptTreeInfo getTree(@PathVariable Long id);
+    DeptTreeVO getTree(@PathVariable Long id);
 
 }

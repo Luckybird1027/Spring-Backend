@@ -11,7 +11,7 @@ import lombok.Getter;
 @Getter
 public class BizException extends RuntimeException {
 
-    private String code;
+    private final String code;
 
     public BizException(String code, String message) {
         super(message);

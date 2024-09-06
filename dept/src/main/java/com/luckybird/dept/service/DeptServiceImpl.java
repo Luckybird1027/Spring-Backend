@@ -6,13 +6,11 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.luckybird.common.base.PageResult;
 import com.luckybird.common.exception.BizException;
 import com.luckybird.common.utils.ContextUtils;
-import com.luckybird.common.utils.StringResourceUtils;
 import com.luckybird.dept.api.req.DeptCreateReq;
 import com.luckybird.dept.api.req.DeptQueryReq;
 import com.luckybird.dept.api.req.DeptUpdateReq;
 import com.luckybird.dept.api.vo.DeptTreeVO;
 import com.luckybird.dept.api.vo.DeptVO;
-import com.luckybird.dept.base.DeptTreeInfo;
 import com.luckybird.dept.mapper.DeptMapper;
 import com.luckybird.dept.po.DeptPO;
 import jakarta.validation.constraints.NotNull;
@@ -22,11 +20,9 @@ import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Queue;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -47,6 +43,7 @@ public class DeptServiceImpl implements DeptService {
         vo.setId(po.getId());
         vo.setName(po.getName());
         vo.setParentId(po.getParentId());
+        vo.setPath(po.getPath());
         vo.setRemark(po.getRemark());
         return vo;
     }
@@ -56,6 +53,7 @@ public class DeptServiceImpl implements DeptService {
         vo.setId(po.getId());
         vo.setName(po.getName());
         vo.setParentId(po.getParentId());
+        vo.setPath(po.getPath());
         vo.setRemark(po.getRemark());
         return vo;
     }
@@ -66,17 +64,6 @@ public class DeptServiceImpl implements DeptService {
         po.setParentId(req.getParentId());
         po.setRemark(req.getRemark());
         return po;
-
-    }
-
-    private DeptTreeInfo toDeptTreeInfo(DeptPO po) {
-        DeptTreeInfo deptTreeInfo = new DeptTreeInfo();
-        deptTreeInfo.setId(po.getId());
-        deptTreeInfo.setName(po.getName());
-        deptTreeInfo.setParentId(po.getParentId());
-        deptTreeInfo.setRemark(po.getRemark());
-        return deptTreeInfo;
-
     }
 
     private DeptPO updateByReq(DeptPO po, DeptUpdateReq req) {
@@ -107,24 +94,6 @@ public class DeptServiceImpl implements DeptService {
         parent.setChildren(children);
     }
 
-    private void addChild(DeptTreeInfo parent, DeptTreeInfo child) {
-        if (parent.getChildren() == null) {
-            parent.setChildren(new ArrayList<>());
-        }
-        List<DeptTreeInfo> children = parent.getChildren();
-        children.add(child);
-        parent.setChildren(children);
-    }
-
-    private void addChildId(DeptTreeInfo parent, Long childId) {
-        if (parent.getChildIds() == null) {
-            parent.setChildIds(new ArrayList<>());
-        }
-        List<Long> childIds = parent.getChildIds();
-        childIds.add(childId);
-        parent.setChildIds(childIds);
-    }
-
     private List<DeptTreeVO> buildDeptTree(List<DeptPO> deptList) {
         return deptList.stream().map(this::setTree).toList();
     }
@@ -135,6 +104,7 @@ public class DeptServiceImpl implements DeptService {
         deptTree.setId(dept.getId());
         deptTree.setName(dept.getName());
         deptTree.setParentId(dept.getParentId());
+        deptTree.setPath(dept.getPath());
         deptTree.setRemark(dept.getRemark());
         deptTree.setChildren(buildDeptTree(deptMapper.selectList(new LambdaQueryWrapper<DeptPO>()
                 .eq(DeptPO::getParentId, dept.getId()))));
@@ -158,10 +128,10 @@ public class DeptServiceImpl implements DeptService {
     @Override
     public DeptVO create(DeptCreateReq req) {
         // 检查父部门是否存在
+        DeptPO parentDept = deptMapper.selectById(req.getParentId());
         if (req.getParentId() != null) {
-            DeptPO parentDept = deptMapper.selectById(req.getParentId());
             if (parentDept == null) {
-                throw new BizException(StringResourceUtils.format("PARENT_DEPT_NOT_EXIST"));
+                throw new BizException("PARENT_DEPT_NOT_EXIST");
             }
         }
         // 填充信息并插入数据库
@@ -169,25 +139,31 @@ public class DeptServiceImpl implements DeptService {
         po.setCreatorId(ContextUtils.getUserInfo().getId());
         po.setCreateTime(LocalDateTime.now());
         deptMapper.insert(po);
+        po.setPath(parentDept.getPath() + "/" + po.getId());
+        deptMapper.updateById(po);
         return toVO(po);
     }
 
     @Override
     public DeptVO update(Long id, DeptUpdateReq req) {
-        // 检查更新对象是否为根部门
+        // 检查该部门是否为根部门
         if (id == 0) {
-            throw new BizException(StringResourceUtils.format("ROOT_DEPT_CANNOT_UPDATE"));
+            throw new BizException("ROOT_DEPT_CANNOT_UPDATE");
         }
-        // 检查部门是否存在
+        // 检查该部门是否存在
         DeptPO po = deptMapper.selectById(id);
         if (po == null) {
-            throw new BizException(StringResourceUtils.format("DEPT_NOT_EXIST"));
+            throw new BizException("DEPT_NOT_EXIST");
         }
-        // 检查父部门是否存在
+        // 如果需要更新parent_id
         if (req.getParentId() != null) {
-            DeptPO parentDept = deptMapper.selectById(req.getParentId());
-            if (parentDept == null) {
-                throw new BizException(StringResourceUtils.format("PARENT_DEPT_NOT_EXIST"));
+            // 如果该部门存在子部门，则不允许更新
+            if (deptMapper.selectList(new LambdaQueryWrapper<DeptPO>().eq(DeptPO::getParentId, id)) != null) {
+                throw new BizException("CHILD_DEPT_EXIST");
+            }
+            // 如果要指向的父部门不存在，则不允许更新
+            if (deptMapper.selectById(req.getParentId()) == null) {
+                throw new BizException("PARENT_DEPT_NOT_EXIST");
             }
         }
         // 更新部门信息
@@ -201,16 +177,13 @@ public class DeptServiceImpl implements DeptService {
 
     @Override
     public void delete(Long id) {
-        // 检查删除对象是否为根部门
+        // 检查该部门是否为根部门
         if (id == 0) {
-            throw new BizException(StringResourceUtils.format("ROOT_DEPT_CANNOT_DELETE"));
+            throw new BizException("ROOT_DEPT_CANNOT_DELETE");
         }
-        // 检查该部门是否有子部门，如果有，将所有子部门的parentId指向根部门
-        List<DeptPO> childrenPo = deptMapper.selectList(new LambdaQueryWrapper<DeptPO>().eq(DeptPO::getParentId, id));
-        if (!childrenPo.isEmpty()) {
-            DeptPO updatePo = new DeptPO();
-            updatePo.setParentId(0L);
-            deptMapper.update(updatePo, new LambdaQueryWrapper<DeptPO>().eq(DeptPO::getParentId, id));
+        // 检查该部门的子部门是否存在
+        if (deptMapper.selectList(new LambdaQueryWrapper<DeptPO>().eq(DeptPO::getParentId, id)) != null) {
+            throw new BizException("CHILD_DEPT_EXIST");
         }
         // 删除部门
         deptMapper.deleteById(id);
@@ -238,15 +211,12 @@ public class DeptServiceImpl implements DeptService {
 
     @Override
     public List<DeptTreeVO> getDeptTree() {
-
         // 查询所有部门
         List<DeptPO> deptList = deptMapper.selectList(new LambdaQueryWrapper<DeptPO>().ne(DeptPO::getParentId, (long) -1));
         List<DeptTreeVO> deptTreeList = deptList.stream().map(this::toDeptTreeVO).toList();
-
         // 构建映射表
         Map<Long, DeptTreeVO> departmentMap = deptTreeList.stream()
                 .collect(Collectors.toMap(DeptTreeVO::getId, Function.identity()));
-
         // 遍历所有部门，构建部门树
         List<DeptTreeVO> rootDepartments = new ArrayList<>();
         for (DeptTreeVO deptTree : deptTreeList) {
@@ -255,59 +225,49 @@ public class DeptServiceImpl implements DeptService {
             } else {
                 DeptTreeVO parentDeptTree = departmentMap.get(deptTree.getParentId());
                 if (parentDeptTree == null) {
-                    throw new BizException(StringResourceUtils.format("PARENT_DEPT_NOT_EXIST"));
+                    throw new BizException("PARENT_DEPT_NOT_EXIST");
                 }
                 addChild(parentDeptTree, deptTree);
             }
         }
         return rootDepartments;
-
     }
 
     @Override
-    public DeptTreeInfo getDeptTree(Long id) {
-
+    public DeptTreeVO getDeptTree(Long id) {
         // 检查部门是否存在
         DeptPO dept = deptMapper.selectById(id);
         if (dept == null) {
             return null;
         }
-
-        // 查询所有部门
-        List<DeptPO> deptList = deptMapper.selectList(new LambdaQueryWrapper<>());
-        List<DeptTreeInfo> deptTreeInfoList = deptList.stream().map(this::toDeptTreeInfo).toList();
-
+        DeptTreeVO rootDept = toDeptTreeVO(dept);
+        // 根据path获取当前部门下的所有部门
+        List<DeptPO> deptList = deptMapper.selectList(new LambdaQueryWrapper<DeptPO>()
+                .likeRight(DeptPO::getPath, dept.getPath() + "/%"));
+        List<DeptTreeVO> deptTreeList = deptList.stream().map(this::toDeptTreeVO).toList();
         // 构建映射表
-        Map<Long, DeptTreeInfo> departmentMap = deptTreeInfoList.stream()
-                .collect(Collectors.toMap(DeptTreeInfo::getId, Function.identity()));
-
-        // 遍历deptTreeInfoList，填充childId
-        for (DeptTreeInfo deptTreeInfo : deptTreeInfoList) {
-            if (deptTreeInfo.getParentId() != null) {
-                DeptTreeInfo parentDeptTree = departmentMap.get(deptTreeInfo.getParentId());
+        Map<Long, DeptTreeVO> departmentMap = deptTreeList.stream().collect(Collectors.toMap(DeptTreeVO::getId, Function.identity()));
+        // 遍历deptTreeList，构建部门树
+        List<DeptTreeVO> secondDepartments = new ArrayList<>();
+        for (DeptTreeVO deptTree : deptTreeList) {
+            if (deptTree.getParentId().equals(id)) {
+                secondDepartments.add(deptTree);
+            } else {
+                DeptTreeVO parentDeptTree = departmentMap.get(deptTree.getParentId());
                 if (parentDeptTree == null) {
-                    continue;
+                    throw new BizException("PARENT_DEPT_NOT_EXIST");
                 }
-                addChildId(parentDeptTree, deptTreeInfo.getId());
+                addChild(parentDeptTree, deptTree);
             }
         }
-
-        // 采用DFS思想利用队列根据childId构建部门树
-        DeptTreeInfo rootTreeInfo = departmentMap.get(id);
-        Queue<DeptTreeInfo> queue = new LinkedList<>();
-        queue.add(rootTreeInfo);
-        while (!queue.isEmpty()) {
-            DeptTreeInfo parentTreeInfo = queue.peek();
-            queue.poll();
-            List<Long> childIds = parentTreeInfo.getChildIds();
-            if (childIds != null) {
-                for (DeptTreeInfo treeInfo : childIds.stream().map(departmentMap::get).toList()) {
-                    queue.add(treeInfo);
-                    addChild(parentTreeInfo, treeInfo);
-                }
-            }
+        for (DeptTreeVO deptTree : secondDepartments) {
+            addChild(rootDept, deptTree);
         }
-        return rootTreeInfo;
+        return rootDept;
     }
 
+    @Override
+    public void moveDept(Long id, Long targetDeptId) {
+        // TODO: 待实现
+    }
 }

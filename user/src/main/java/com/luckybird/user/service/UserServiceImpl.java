@@ -3,13 +3,12 @@ package com.luckybird.user.service;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.luckybird.auth.base.TokenInfo;
+import com.luckybird.auth.service.TokenService;
 import com.luckybird.common.base.PageResult;
 import com.luckybird.common.base.UserInfo;
 import com.luckybird.common.exception.BizException;
 import com.luckybird.common.utils.ContextUtils;
-import com.luckybird.common.utils.StringResourceUtils;
-import com.luckybird.auth.base.TokenInfo;
-import com.luckybird.auth.service.TokenService;
 import com.luckybird.user.api.req.UserChangePasswordReq;
 import com.luckybird.user.api.req.UserCreateReq;
 import com.luckybird.user.api.req.UserLoginReq;
@@ -144,13 +143,13 @@ public class UserServiceImpl implements UserService {
         if (req.getStatus() == null) {
             req.setStatus(StatusEnum.NORMAL.getKey());
         } else if (StatusEnum.of(req.getStatus()) == null) {
-            throw new BizException(StringResourceUtils.format("INVALID_PARAMETER"));
+            throw new BizException("INVALID_PARAMETER");
         }
         // 检查用户是否已存在
         LambdaQueryWrapper<UserPO> wrapper = new LambdaQueryWrapper<UserPO>().eq(UserPO::getAccount, req.getAccount());
         UserPO existingUser = userMapper.selectOne(wrapper);
         if (existingUser != null) {
-            throw new BizException(StringResourceUtils.format("ACCOUNT_ALREADY_EXISTS"));
+            throw new BizException("ACCOUNT_ALREADY_EXISTS");
         }
         // 填充信息并创建用户
         UserPO po = toPo(req);
@@ -166,7 +165,7 @@ public class UserServiceImpl implements UserService {
         // 检查用户是否存在
         UserPO po = userMapper.selectById(id);
         if (po == null) {
-            throw new BizException(StringResourceUtils.format("USER_NOT_EXIST"));
+            throw new BizException("USER_NOT_EXIST");
         }
         // 更新用户信息
         UserPO updatePo = updateByReq(po, req);
@@ -206,15 +205,15 @@ public class UserServiceImpl implements UserService {
         // 检查用户是否存在
         UserPO existingUser = userMapper.selectOne(new LambdaQueryWrapper<UserPO>().eq(UserPO::getAccount, req.getAccount()));
         if (existingUser == null) {
-            throw new BizException(StringResourceUtils.format("INCORRECT_ACCOUNT_OR_PASSWORD"));
+            throw new BizException("INCORRECT_ACCOUNT_OR_PASSWORD");
         }
         // 检查密码是否正确
         if (!passwordEncoder.matches(req.getPassword(), existingUser.getPassword())) {
-            throw new BizException(StringResourceUtils.format("INCORRECT_ACCOUNT_OR_PASSWORD"));
+            throw new BizException("INCORRECT_ACCOUNT_OR_PASSWORD");
         }
         // 检查用户是否被禁用
         if (StatusEnum.DISABLE.getKey().equals(existingUser.getStatus())) {
-            throw new BizException(StringResourceUtils.format("USER_DISABLED"));
+            throw new BizException("USER_DISABLED");
         }
         // 登录成功，返回token
         log.info("User " + req.getAccount() + " logged in successfully");
@@ -224,7 +223,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void logout(Long userId) {
         if (!tokenService.deleteTokenByUserId(userId)) {
-            throw new BizException(StringResourceUtils.format("USER_NOT_LOGIN"));
+            throw new BizException("USER_NOT_LOGIN");
         }
         log.info("User " + userId + " logged out successfully");
     }
@@ -234,11 +233,11 @@ public class UserServiceImpl implements UserService {
         // 检查用户是否存在
         UserPO existingUser = userMapper.selectById(userId);
         if (existingUser == null) {
-            throw new BizException(StringResourceUtils.format("INCORRECT_ACCOUNT_OR_PASSWORD"));
+            throw new BizException("INCORRECT_ACCOUNT_OR_PASSWORD");
         }
         // 检查旧密码是否正确
         if (!passwordEncoder.matches(req.getOldPassword(), existingUser.getPassword())) {
-            throw new BizException(StringResourceUtils.format("INCORRECT_OLD_PASSWORD"));
+            throw new BizException("INCORRECT_OLD_PASSWORD");
         }
         // 修改为新密码
         UserPO newUser = new UserPO();

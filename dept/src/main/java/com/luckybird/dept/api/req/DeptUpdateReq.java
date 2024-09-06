@@ -1,6 +1,5 @@
 package com.luckybird.dept.api.req;
 
-import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 /**
@@ -14,7 +13,6 @@ public class DeptUpdateReq {
     /**
      * 部门名称
      */
-    @NotBlank(message = "EMPTY_DEPT_NAME")
     private String name;
 
     /**

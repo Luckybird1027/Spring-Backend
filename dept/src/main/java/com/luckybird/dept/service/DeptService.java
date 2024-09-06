@@ -6,7 +6,6 @@ import com.luckybird.dept.api.req.DeptQueryReq;
 import com.luckybird.dept.api.req.DeptUpdateReq;
 import com.luckybird.dept.api.vo.DeptTreeVO;
 import com.luckybird.dept.api.vo.DeptVO;
-import com.luckybird.dept.base.DeptTreeInfo;
 
 import java.util.List;
 import java.util.Set;
@@ -90,5 +89,13 @@ public interface DeptService {
      * @param id 部门id
      * @return DeptTreeVO 部门树
      */
-    DeptTreeInfo getDeptTree(Long id);
+    DeptTreeVO getDeptTree(Long id);
+
+    /**
+     * 移动部门至指定部门下
+     *
+     * @param id           进行移动的部门id
+     * @param targetDeptId 目标部门id
+     */
+    void moveDept(Long id, Long targetDeptId);
 }
