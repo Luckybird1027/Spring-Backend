@@ -7,6 +7,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindException;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -22,7 +23,12 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(BindException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResult handleBindException(BindException e, HttpServletRequest request) {
-        ErrorResult errorResult = new ErrorResult("BIND_EXCEPTION", e.getMessage());
+        FieldError fieldError = e.getFieldErrors().isEmpty() ? null : e.getFieldErrors().getFirst();
+        String message = fieldError != null ?
+                "Field error in object '" + fieldError.getObjectName() + "' on field '" +
+                        fieldError.getField() + "': rejected value [" + fieldError.getRejectedValue() + "]" :
+                "No specific field error provided";
+        ErrorResult errorResult = new ErrorResult("BIND_EXCEPTION", message);
         log.error("BindException: " + errorResult + ", URL: " + request.getRequestURI());
         return errorResult;
     }
@@ -34,7 +40,6 @@ public class GlobalExceptionHandler {
         log.error("BizException: " + errorResult + ", URL: " + request.getRequestURI());
         return errorResult;
     }
-
 
     @ExceptionHandler(Throwable.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
