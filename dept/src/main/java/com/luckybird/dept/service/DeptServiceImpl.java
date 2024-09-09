@@ -136,11 +136,10 @@ public class DeptServiceImpl implements DeptService {
         }
         // 填充信息并插入数据库
         DeptPO po = toPO(req);
+        po.setPath(parentDept.getPath() + "/" + parentDept.getId());
         po.setCreatorId(ContextUtils.getUserInfo().getId());
         po.setCreateTime(LocalDateTime.now());
         deptMapper.insert(po);
-        po.setPath(parentDept.getPath() + "/" + po.getId());
-        deptMapper.updateById(po);
         return toVO(po);
     }
 
@@ -179,7 +178,7 @@ public class DeptServiceImpl implements DeptService {
     public void delete(Long id) {
         // 检查该部门是否为根部门
         if (id == 0) {
-            throw new BizException("ROOT_DEPT_CANNOT_DELETE");
+            return;
         }
         // 检查该部门的子部门是否存在
         if (deptMapper.selectList(new LambdaQueryWrapper<DeptPO>().eq(DeptPO::getParentId, id)) != null) {
@@ -243,7 +242,7 @@ public class DeptServiceImpl implements DeptService {
         DeptTreeVO rootDept = toDeptTreeVO(dept);
         // 根据path获取当前部门下的所有部门
         List<DeptPO> deptList = deptMapper.selectList(new LambdaQueryWrapper<DeptPO>()
-                .likeRight(DeptPO::getPath, dept.getPath() + "/%"));
+                .likeRight(DeptPO::getPath, dept.getPath() + "/"));
         List<DeptTreeVO> deptTreeList = deptList.stream().map(this::toDeptTreeVO).toList();
         // 构建映射表
         Map<Long, DeptTreeVO> departmentMap = deptTreeList.stream().collect(Collectors.toMap(DeptTreeVO::getId, Function.identity()));
