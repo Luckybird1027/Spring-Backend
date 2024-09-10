@@ -3,6 +3,7 @@ package com.luckybird.dept.controller;
 import com.luckybird.common.base.PageResult;
 import com.luckybird.dept.api.DeptApi;
 import com.luckybird.dept.api.req.DeptCreateReq;
+import com.luckybird.dept.api.req.DeptMoveReq;
 import com.luckybird.dept.api.req.DeptQueryReq;
 import com.luckybird.dept.api.req.DeptUpdateReq;
 import com.luckybird.dept.api.vo.DeptTreeVO;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
 
 /**
  * 部门管理
@@ -132,7 +134,7 @@ public class DeptController implements DeptApi {
      * @return List<DeptTreeVO> 部门树
      */
     @Override
-    @PostMapping("/v1/dept/tree")
+    @GetMapping("/v1/dept/tree")
     public List<DeptTreeVO> getTree() {
         return deptService.getDeptTree();
     }
@@ -144,8 +146,21 @@ public class DeptController implements DeptApi {
      * @return DeptTreeVO 部门树
      */
     @Override
-    @PostMapping("/v1/dept/tree/{id}")
+    @GetMapping("/v1/dept/tree/{id}")
     public DeptTreeVO getTree(@PathVariable Long id) {
         return deptService.getDeptTree(id);
+    }
+
+    /**
+     * 移动部门
+     *
+     * @param id  部门id
+     * @param req 部门移动请求
+     * @return DeptTreeVO 移动后的部门树
+     */
+    @Override
+    @PostMapping("/v1/dept/tree/{id}")
+    public DeptTreeVO moveTree(@PathVariable Long id, @RequestBody DeptMoveReq req) throws ExecutionException, InterruptedException {
+        return deptService.moveDept(id, req).get();
     }
 }

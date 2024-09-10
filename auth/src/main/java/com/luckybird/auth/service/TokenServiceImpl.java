@@ -1,7 +1,7 @@
 package com.luckybird.auth.service;
 
-import com.luckybird.common.base.UserInfo;
 import com.luckybird.auth.base.TokenInfo;
+import com.luckybird.common.base.UserInfo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;

@@ -2,6 +2,7 @@ package com.luckybird.dept.service;
 
 import com.luckybird.common.base.PageResult;
 import com.luckybird.dept.api.req.DeptCreateReq;
+import com.luckybird.dept.api.req.DeptMoveReq;
 import com.luckybird.dept.api.req.DeptQueryReq;
 import com.luckybird.dept.api.req.DeptUpdateReq;
 import com.luckybird.dept.api.vo.DeptTreeVO;
@@ -9,6 +10,7 @@ import com.luckybird.dept.api.vo.DeptVO;
 
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * 部门服务接口
@@ -92,10 +94,11 @@ public interface DeptService {
     DeptTreeVO getDeptTree(Long id);
 
     /**
-     * 移动部门至指定部门下
+     * 移动部门
      *
-     * @param id           进行移动的部门id
-     * @param targetDeptId 目标部门id
+     * @param id  部门id
+     * @param req 移动请求
+     * @return DeptTreeVO 移动后的部门树
      */
-    void moveDept(Long id, Long targetDeptId);
+    CompletableFuture<DeptTreeVO> moveDept(Long id, DeptMoveReq req);
 }

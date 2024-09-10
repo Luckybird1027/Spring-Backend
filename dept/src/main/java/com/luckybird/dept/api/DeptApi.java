@@ -2,6 +2,7 @@ package com.luckybird.dept.api;
 
 import com.luckybird.common.base.PageResult;
 import com.luckybird.dept.api.req.DeptCreateReq;
+import com.luckybird.dept.api.req.DeptMoveReq;
 import com.luckybird.dept.api.req.DeptQueryReq;
 import com.luckybird.dept.api.req.DeptUpdateReq;
 import com.luckybird.dept.api.vo.DeptTreeVO;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
 
 /**
  * 部门管理API
@@ -102,7 +104,7 @@ public interface DeptApi {
      *
      * @return List<DeptTreeVO> 部门树
      */
-    @PostMapping("/v1/dept/tree")
+    @GetMapping("/v1/dept/tree")
     List<DeptTreeVO> getTree();
 
     /**
@@ -111,7 +113,16 @@ public interface DeptApi {
      * @param id 部门id
      * @return DeptTreeVO 部门树
      */
-    @PostMapping("/v1/dept/tree/{id}")
+    @GetMapping("/v1/dept/tree/{id}")
     DeptTreeVO getTree(@PathVariable Long id);
 
+    /**
+     * 移动部门
+     *
+     * @param id  部门id
+     * @param req 部门移动请求
+     * @return DeptTreeVO 移动后的部门树
+     */
+    @PostMapping("/v1/dept/tree/{id}")
+    DeptTreeVO moveTree(@PathVariable Long id, @RequestBody DeptMoveReq req) throws ExecutionException, InterruptedException;
 }
