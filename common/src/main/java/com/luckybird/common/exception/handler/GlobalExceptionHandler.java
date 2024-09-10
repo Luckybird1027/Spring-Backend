@@ -24,13 +24,13 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResult handleBindException(BindException e, HttpServletRequest request) {
         FieldError fieldError = e.getFieldErrors().isEmpty() ? null : e.getFieldErrors().getFirst();
-        String message = fieldError != null ?
-                "Field error in object '" + fieldError.getObjectName() + "' on field '" +
-                        fieldError.getField() + "': rejected value [" + fieldError.getRejectedValue() + "]" :
-                "No specific field error provided";
-        ErrorResult errorResult = new ErrorResult("BIND_EXCEPTION", message);
-        log.error("BindException: " + errorResult + ", URL: " + request.getRequestURI());
-        return errorResult;
+        if (fieldError != null) {
+            String message = fieldError.getDefaultMessage();
+            ErrorResult errorResult = new ErrorResult(message, StringResourceUtils.format(message));
+            log.error("BindException: " + errorResult + ", URL: " + request.getRequestURI());
+            return errorResult;
+        }
+        return new ErrorResult("BIND_EXCEPTION", StringResourceUtils.format("BIND_EXCEPTION"));
     }
 
     @ExceptionHandler(BizException.class)

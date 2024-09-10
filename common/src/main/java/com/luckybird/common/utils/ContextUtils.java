@@ -3,6 +3,8 @@ package com.luckybird.common.utils;
 import com.luckybird.common.base.UserInfo;
 import org.springframework.stereotype.Component;
 
+import java.util.Locale;
+
 /**
  * 上下文工具类
  *
@@ -11,7 +13,8 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class ContextUtils {
-    private static final ThreadLocal<UserInfo> THREAD_LOCAL = new ThreadLocal<>();
+    private static final ThreadLocal<UserInfo> USER_THREAD_LOCAL = new ThreadLocal<>();
+    private static final ThreadLocal<Locale> LOCALE_THREAD_LOCAL = new ThreadLocal<>();
 
     /**
      * 设置上下文用户信息
@@ -19,7 +22,7 @@ public class ContextUtils {
      * @param userInfo 用户信息
      */
     public static void setUserInfo(UserInfo userInfo) {
-        THREAD_LOCAL.set(userInfo);
+        USER_THREAD_LOCAL.set(userInfo);
     }
 
     /**
@@ -28,16 +31,44 @@ public class ContextUtils {
      * @return 用户信息
      */
     public static UserInfo getUserInfo() {
-        if (THREAD_LOCAL.get() == null) {
-            THREAD_LOCAL.set(new UserInfo());
+        if (USER_THREAD_LOCAL.get() == null) {
+            USER_THREAD_LOCAL.set(new UserInfo());
         }
-        return THREAD_LOCAL.get();
+        return USER_THREAD_LOCAL.get();
     }
 
     /**
      * 移除上下文用户信息
      */
     public static void removeUserInfo() {
-        THREAD_LOCAL.remove();
+        USER_THREAD_LOCAL.remove();
+    }
+
+    /**
+     * 设置上下文语言环境
+     *
+     * @param locale 语言环境
+     */
+    public static void setLocale(Locale locale) {
+        LOCALE_THREAD_LOCAL.set(locale);
+    }
+
+    /**
+     * 获取上下文语言环境
+     *
+     * @return 语言环境
+     */
+    public static Locale getLocale() {
+        if (LOCALE_THREAD_LOCAL.get() == null) {
+            LOCALE_THREAD_LOCAL.set(Locale.getDefault());
+        }
+        return LOCALE_THREAD_LOCAL.get();
+    }
+
+    /**
+     * 移除上下文语言环境
+     */
+    public static void removeLocale() {
+        LOCALE_THREAD_LOCAL.remove();
     }
 }

@@ -23,7 +23,7 @@ public class StringResourceUtils {
      * @return 字符串资源
      */
     public static String format(String code) {
-        return messageSource.getMessage(code, null, code, Locale.getDefault());
+        return messageSource.getMessage(code, null, code, ContextUtils.getLocale());
     }
 
     /**
@@ -34,7 +34,7 @@ public class StringResourceUtils {
      * @return 字符串资源
      */
     public static String format(String code, Object[] args) {
-        return messageSource.getMessage(code, args, code, Locale.getDefault());
+        return messageSource.getMessage(code, args, code, ContextUtils.getLocale());
     }
 
     /**
