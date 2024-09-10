@@ -10,7 +10,6 @@ import com.luckybird.dept.api.vo.DeptVO;
 
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.CompletableFuture;
 
 /**
  * 部门服务接口
@@ -100,5 +99,5 @@ public interface DeptService {
      * @param req 移动请求
      * @return DeptTreeVO 移动后的部门树
      */
-    CompletableFuture<DeptTreeVO> moveDept(Long id, DeptMoveReq req);
+    DeptTreeVO moveDept(Long id, DeptMoveReq req);
 }

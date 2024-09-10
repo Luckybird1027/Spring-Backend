@@ -16,9 +16,8 @@ import com.luckybird.dept.mapper.DeptMapper;
 import com.luckybird.dept.po.DeptPO;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.support.TransactionTemplate;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
@@ -27,7 +26,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -41,8 +39,6 @@ import java.util.stream.Collectors;
 public class DeptServiceImpl implements DeptService {
 
     private final DeptMapper deptMapper;
-
-    private final TransactionTemplate transactionTemplate;
 
     private DeptVO toVO(DeptPO po) {
         DeptVO vo = new DeptVO();
@@ -102,6 +98,20 @@ public class DeptServiceImpl implements DeptService {
 
     private List<DeptTreeVO> buildDeptTree(List<DeptPO> deptList) {
         return deptList.stream().map(this::setTree).toList();
+    }
+
+    private DeptTreeVO buildRootDeptTree(Long id, List<DeptPO> childDeptList, DeptTreeVO rootDept) {
+        List<DeptTreeVO> deptTreeList = childDeptList.stream().map(this::toDeptTreeVO).toList();
+        // 构建映射表
+        Map<Long, DeptTreeVO> departmentMap = deptTreeList.stream().collect(Collectors.toMap(DeptTreeVO::getId, Function.identity()));
+        departmentMap.put(id, rootDept);
+        // 构建子一级部门的部门树
+        List<DeptTreeVO> secondDepartments = buildSecondDepartments(id, deptTreeList, departmentMap);
+        // 构建当前根部门的部门树
+        for (DeptTreeVO deptTree : secondDepartments) {
+            addChild(rootDept, deptTree);
+        }
+        return rootDept;
     }
 
     private List<DeptTreeVO> buildSecondDepartments(Long id, List<DeptTreeVO> deptTreeList, Map<Long, DeptTreeVO> departmentMap) {
@@ -265,23 +275,14 @@ public class DeptServiceImpl implements DeptService {
         }
         DeptTreeVO rootDept = toDeptTreeVO(dept);
         // 根据path获取当前部门下的所有部门
-        List<DeptPO> deptList = deptMapper.selectList(new LambdaQueryWrapper<DeptPO>()
+        List<DeptPO> childDeptList = deptMapper.selectList(new LambdaQueryWrapper<DeptPO>()
                 .likeRight(DeptPO::getPath, dept.getPath() + "/" + dept.getId()));
-        List<DeptTreeVO> deptTreeList = deptList.stream().map(this::toDeptTreeVO).toList();
-        // 构建映射表
-        Map<Long, DeptTreeVO> departmentMap = deptTreeList.stream().collect(Collectors.toMap(DeptTreeVO::getId, Function.identity()));
-        departmentMap.put(id, rootDept);
-        // 遍历deptTreeList，构建部门树
-        List<DeptTreeVO> secondDepartments = buildSecondDepartments(id, deptTreeList, departmentMap);
-        for (DeptTreeVO deptTree : secondDepartments) {
-            addChild(rootDept, deptTree);
-        }
-        return rootDept;
+        return buildRootDeptTree(id, childDeptList, rootDept);
     }
 
     @Override
-    @Async
-    public CompletableFuture<DeptTreeVO> moveDept(Long id, DeptMoveReq req) {
+    @Transactional(rollbackFor = Throwable.class)
+    public DeptTreeVO moveDept(Long id, DeptMoveReq req) {
         Long targetDeptId = req.getTargetDeptId();
         DeptPO dept = deptMapper.selectById(id);
         DeptPO targetDept = deptMapper.selectById(targetDeptId);
@@ -291,49 +292,41 @@ public class DeptServiceImpl implements DeptService {
         }
         // 检查当前部门是否有子部门
         if (deptMapper.selectList(new LambdaQueryWrapper<DeptPO>().eq(DeptPO::getParentId, id)) == null) {
-            // 直接移动当前部门
+            // 若不存在子部门，则直接移动当前部门即可
             dept.setParentId(targetDeptId);
             dept.setPath(targetDept.getPath() + "/" + targetDept.getId());
+            dept.setUpdaterId(ContextUtils.getUserInfo().getId());
+            dept.setUpdateTime(LocalDateTime.now());
             deptMapper.updateById(dept);
-            return CompletableFuture.completedFuture(toDeptTreeVO(dept));
+            return toDeptTreeVO(dept);
         }
-        // 同一事务下移动当前部门和子部门
-        var ref = new Object() {
-            DeptTreeVO rootDept;
-        };
+
+        // 若当前部门存在子部门，则需移动当前部门及以下所有部门
         String deptPath = dept.getPath();
-        transactionTemplate.execute(status -> {
-            // 1. 移动当前部门
-            dept.setParentId(targetDeptId);
-            dept.setPath(targetDept.getPath() + "/" + targetDept.getId());
-            deptMapper.updateById(dept);
-            ref.rootDept = toDeptTreeVO(dept);
+        // 1. 移动当前部门
+        dept.setParentId(targetDeptId);
+        dept.setPath(targetDept.getPath() + "/" + targetDept.getId());
+        dept.setUpdaterId(ContextUtils.getUserInfo().getId());
+        dept.setUpdateTime(LocalDateTime.now());
+        deptMapper.updateById(dept);
+        DeptTreeVO rootDept = toDeptTreeVO(dept);
 
-            // 2. 移动子部门及以下部门
-            // 将所有开头为当前部门path的部门的前面path部门替换为目标部门的path+目标部门的id
-            // 比如当前部门的id为2，当前部门的path为/0/1，目标部门的id为13，目标部门的path为/0/1/5，
-            // 当前的子部门及以下部门的其中一个部门的path为/0/1/2/21，
-            // 则需要将其替换成/0/1/5/13/2/21
+        // 2. 移动子部门及以下所有部门
+        // 将所有开头为当前部门path的部门的前面path部门替换为目标部门的path+目标部门的id
+        // 比如当前部门的id为2，当前部门的path为/0/1，目标部门的id为13，目标部门的path为/0/1/5，
+        // 当前的子部门及以下部门的其中一个部门的path为/0/1/2/21，
+        // 则需要将其替换成/0/1/5/13/2/21
 
-            // 先查询到所有子部门及以下部门
-            List<DeptPO> childDeptList = deptMapper.selectList(new LambdaQueryWrapper<DeptPO>()
-                    .likeRight(DeptPO::getPath, deptPath + "/" + id));
-            // 遍历子部门及以下部门，更新path
-            for (DeptPO childDept : childDeptList) {
-                childDept.setPath(targetDept.getPath() + "/" + targetDept.getId() + childDept.getPath().substring(deptPath.length()));
-                deptMapper.updateById(childDept);
-            }
-            // 构建映射表
-            List<DeptTreeVO> deptTreeList = childDeptList.stream().map(this::toDeptTreeVO).toList();
-            Map<Long, DeptTreeVO> departmentMap = deptTreeList.stream().collect(Collectors.toMap(DeptTreeVO::getId, Function.identity()));
-            departmentMap.put(id, ref.rootDept);
-            // 遍历deptTreeList，构建部门树
-            List<DeptTreeVO> secondDepartments = buildSecondDepartments(id, deptTreeList, departmentMap);
-            for (DeptTreeVO deptTree : secondDepartments) {
-                addChild(ref.rootDept, deptTree);
-            }
-            return true;
-        });
-        return CompletableFuture.completedFuture(ref.rootDept);
+        // 先查询所有子部门及以下所有部门
+        List<DeptPO> childDeptList = deptMapper.selectList(new LambdaQueryWrapper<DeptPO>()
+                .likeRight(DeptPO::getPath, deptPath + "/" + id));
+        // 遍历子部门及以下所有部门，更新path
+        for (DeptPO childDept : childDeptList) {
+            childDept.setPath(targetDept.getPath() + "/" + targetDept.getId() + childDept.getPath().substring(deptPath.length()));
+            childDept.setUpdaterId(ContextUtils.getUserInfo().getId());
+            childDept.setUpdateTime(LocalDateTime.now());
+            deptMapper.updateById(childDept);
+        }
+        return buildRootDeptTree(id, childDeptList, rootDept);
     }
 }

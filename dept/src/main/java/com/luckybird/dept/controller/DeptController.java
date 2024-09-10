@@ -23,7 +23,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.ExecutionException;
 
 /**
  * 部门管理
@@ -160,7 +159,7 @@ public class DeptController implements DeptApi {
      */
     @Override
     @PostMapping("/v1/dept/tree/{id}")
-    public DeptTreeVO moveTree(@PathVariable Long id, @RequestBody DeptMoveReq req) throws ExecutionException, InterruptedException {
-        return deptService.moveDept(id, req).get();
+    public DeptTreeVO moveTree(@PathVariable Long id, @RequestBody DeptMoveReq req) {
+        return deptService.moveDept(id, req);
     }
 }
