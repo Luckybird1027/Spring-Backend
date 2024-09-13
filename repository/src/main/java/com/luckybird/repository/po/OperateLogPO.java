@@ -1,8 +1,10 @@
 package com.luckybird.repository.po;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler;
 import com.luckybird.common.base.Difference;
 import lombok.Data;
 
@@ -43,11 +45,13 @@ public class OperateLogPO {
     /**
      * 数据摘要
      */
+    @TableField(typeHandler = JacksonTypeHandler.class)
     private Object dataBrief;
 
     /**
      * 数据差异
      */
+    @TableField(typeHandler = JacksonTypeHandler.class)
     private List<Difference> dataDifference;
 
     /**

@@ -9,9 +9,11 @@ import jakarta.annotation.Resource;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.lang.reflect.Field;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * 日志工具类
@@ -31,6 +33,8 @@ public class LogUtils {
         LogUtils.operateLogMapper = operateLogMapper;
     }
 
+    private static final List<String> IGNORE_FIELDS = List.of("createTime", "creatorId", "updateTime", "updaterId", "deleted");
+
     /**
      * 日志记录方法-修改
      *
@@ -40,7 +44,6 @@ public class LogUtils {
      * @param oldValue 旧数据
      * @param newValue 新数据
      */
-
     public static void log(String module, String type, String feature, Object oldValue, Object newValue) {
 
         OperateLogPO log = new OperateLogPO();
@@ -55,18 +58,25 @@ public class LogUtils {
         if (oldClass != newClass) {
             throw new BizException("INVALID_PARAMETER");
         }
-        for (int i = 0; i < oldValue.getClass().getDeclaredFields().length; i++) {
+        Field[] fields = oldClass.getDeclaredFields();
+        for (Field field : fields) {
+            if (IGNORE_FIELDS.contains(field.getName())) {
+                continue;
+            }
             try {
-                String fieldName = oldClass.getDeclaredFields()[i].getName();
-                Object oldFieldValue = oldClass.getDeclaredField(fieldName).get(oldValue);
-                Object newFieldValue = newClass.getDeclaredField(fieldName).get(newValue);
-                if (!oldFieldValue.equals(newFieldValue)) {
-                    differences.add(new Difference(fieldName, oldFieldValue, newFieldValue));
+                field.setAccessible(true);
+                Object oldFieldValue = field.get(oldValue);
+                Object newFieldValue = field.get(newValue);
+                if (!Objects.equals(oldFieldValue, newFieldValue)) {
+                    differences.add(new Difference(field.getName(), oldFieldValue, newFieldValue));
                 }
-            } catch (NoSuchFieldException | IllegalAccessException ignored) {
+            } catch (IllegalAccessException ignored) {
+                return;
             }
         }
-
+        if (differences.isEmpty()) {
+            return;
+        }
         log.setOperateModule(module);
         log.setOperateType(type);
         log.setOperateFeature(feature);
@@ -98,5 +108,6 @@ public class LogUtils {
         if (value != null) {
             log.setDataBrief(value);
         }
+        operateLogMapper.insert(log);
     }
 }

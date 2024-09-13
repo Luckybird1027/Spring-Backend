@@ -9,7 +9,9 @@ import com.luckybird.common.base.PageResult;
 import com.luckybird.common.base.UserInfo;
 import com.luckybird.common.exception.BizException;
 import com.luckybird.common.utils.ContextUtils;
-import com.luckybird.common.utils.StringResourceUtils;
+import com.luckybird.common.utils.DeepCloneUtils;
+import com.luckybird.logutil.constant.OperateTypeEnum;
+import com.luckybird.logutil.utils.LogUtils;
 import com.luckybird.repository.constant.UserStatusEnum;
 import com.luckybird.repository.mapper.UserMapper;
 import com.luckybird.repository.po.UserPO;
@@ -46,7 +48,7 @@ public class UserServiceImpl implements UserService {
 
     private final UserMapper userMapper;
 
-    private final String CURRENT_MODULE = StringResourceUtils.format("USER");
+    private final String CURRENT_MODULE = "user";
 
     private UserPO toPo(UserCreateReq req) {
         UserPO po = new UserPO();
@@ -160,6 +162,7 @@ public class UserServiceImpl implements UserService {
         po.setCreatorId(ContextUtils.getUserInfo().getId());
         po.setCreateTime(LocalDateTime.now());
         userMapper.insert(po);
+        LogUtils.log(CURRENT_MODULE, OperateTypeEnum.CREATE.getValue(), "user.create", toVO(po));
         return toVO(po);
     }
 
@@ -170,17 +173,24 @@ public class UserServiceImpl implements UserService {
         if (po == null) {
             throw new BizException("USER_NOT_EXIST");
         }
+        UserPO oldPo = DeepCloneUtils.deepClone(po);
         // 更新用户信息
-        UserPO updatePo = updateByReq(po, req);
-        updatePo.setUpdaterId(ContextUtils.getUserInfo().getId());
-        updatePo.setUpdateTime(LocalDateTime.now());
-        userMapper.updateById(updatePo);
-        return toVO(updatePo);
+        UserPO newPo = updateByReq(po, req);
+        newPo.setUpdaterId(ContextUtils.getUserInfo().getId());
+        newPo.setUpdateTime(LocalDateTime.now());
+        userMapper.updateById(newPo);
+        LogUtils.log(CURRENT_MODULE, OperateTypeEnum.UPDATE.getValue(), "user.update", oldPo, newPo);
+        return toVO(newPo);
     }
 
     @Override
     public void delete(Long id) {
+        UserPO po = userMapper.selectById(id);
+        if (po == null) {
+            return;
+        }
         userMapper.deleteById(id);
+        LogUtils.log(CURRENT_MODULE, OperateTypeEnum.DELETE.getValue(), "user.delete", toVO(po));
     }
 
     @Override
@@ -219,16 +229,18 @@ public class UserServiceImpl implements UserService {
             throw new BizException("USER_DISABLED");
         }
         // 登录成功，返回token
-        log.info("User " + req.getAccount() + " logged in successfully");
         return tokenService.generateToken(existingUser.getId(), toInfo(existingUser));
     }
 
     @Override
     public void logout(Long userId) {
+        UserPO existingUser = userMapper.selectById(userId);
+        if (existingUser == null) {
+            throw new BizException("USER_NOT_EXIST");
+        }
         if (!tokenService.deleteTokenByUserId(userId)) {
             throw new BizException("USER_NOT_LOGIN");
         }
-        log.info("User " + userId + " logged out successfully");
     }
 
     @Override
@@ -247,5 +259,6 @@ public class UserServiceImpl implements UserService {
         newUser.setId(userId);
         newUser.setPassword(passwordEncoder.encode(req.getNewPassword()));
         userMapper.updateById(newUser);
+        LogUtils.log(CURRENT_MODULE, OperateTypeEnum.UPDATE.getValue(), "user.change_password", toVO(newUser));
     }
 }

@@ -1,6 +1,5 @@
 package com.luckybird.logutil.constant;
 
-import com.luckybird.common.utils.StringResourceUtils;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -13,10 +12,9 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum OperateTypeEnum {
 
-    CREATE(StringResourceUtils.format("CREATE")),
-    DELETE(StringResourceUtils.format("DELETE")),
-    UPDATE(StringResourceUtils.format("UPDATE")),
-    QUERY(StringResourceUtils.format("QUERY"));
+    CREATE("create"),
+    DELETE("delete"),
+    UPDATE("update");
 
     private final String value;
 
