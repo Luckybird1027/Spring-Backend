@@ -2,6 +2,7 @@ package com.luckybird.repository.constant;
 
 import com.baomidou.mybatisplus.annotation.EnumValue;
 import com.fasterxml.jackson.annotation.JsonValue;
+import com.luckybird.common.utils.StringResourceUtils;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -19,8 +20,8 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public enum UserStatusEnum {
 
-    NORMAL(0, "正常"),
-    DISABLE(1, "禁用");
+    NORMAL(0, StringResourceUtils.format("NORMAL")),
+    DISABLE(1, StringResourceUtils.format("DISABLE"));
 
     @EnumValue
     private final Integer key;

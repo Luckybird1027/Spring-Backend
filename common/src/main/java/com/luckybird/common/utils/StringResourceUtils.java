@@ -16,6 +16,11 @@ import java.util.Locale;
 public class StringResourceUtils {
     private static MessageSource messageSource;
 
+    @Resource
+    public void setMessageSource(MessageSource messageSource) {
+        StringResourceUtils.messageSource = messageSource;
+    }
+
     /**
      * 获取字符串资源
      *
@@ -49,8 +54,4 @@ public class StringResourceUtils {
         return messageSource.getMessage(code, null, code, locale);
     }
 
-    @Resource
-    public void setMessageSource(MessageSource messageSource) {
-        StringResourceUtils.messageSource = messageSource;
-    }
 }

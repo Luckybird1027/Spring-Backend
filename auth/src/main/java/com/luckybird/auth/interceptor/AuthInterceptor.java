@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
@@ -40,6 +41,15 @@ public class AuthInterceptor implements HandlerInterceptor {
             response.setStatus(401);
             return false;
         }
+
+        // 获取用户ip及ua并存入上下文
+        String ip = request.getRemoteAddr();
+        if (!StringUtils.hasText(ip)) {
+            ip = "0.0.0.0";
+        }
+        String ua = request.getHeader("User-Agent");
+        userInfo.setIp(ip);
+        userInfo.setUa(ua);
 
         // 将用户信息存入上下文
         ContextUtils.setUserInfo(userInfo);

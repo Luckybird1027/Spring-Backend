@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.luckybird.common.base.PageResult;
 import com.luckybird.common.exception.BizException;
 import com.luckybird.common.utils.ContextUtils;
+import com.luckybird.common.utils.StringResourceUtils;
 import com.luckybird.dept.api.req.DeptCreateReq;
 import com.luckybird.dept.api.req.DeptMoveReq;
 import com.luckybird.dept.api.req.DeptQueryReq;
@@ -39,6 +40,8 @@ import java.util.stream.Collectors;
 public class DeptServiceImpl implements DeptService {
 
     private final DeptMapper deptMapper;
+
+    private final String CURRENT_MODULE = StringResourceUtils.format("DEPT");
 
     private DeptVO toVO(DeptPO po) {
         DeptVO vo = new DeptVO();

@@ -9,6 +9,7 @@ import com.luckybird.common.base.PageResult;
 import com.luckybird.common.base.UserInfo;
 import com.luckybird.common.exception.BizException;
 import com.luckybird.common.utils.ContextUtils;
+import com.luckybird.common.utils.StringResourceUtils;
 import com.luckybird.repository.constant.UserStatusEnum;
 import com.luckybird.repository.mapper.UserMapper;
 import com.luckybird.repository.po.UserPO;
@@ -44,6 +45,8 @@ public class UserServiceImpl implements UserService {
     private final TokenService tokenService;
 
     private final UserMapper userMapper;
+
+    private final String CURRENT_MODULE = StringResourceUtils.format("USER");
 
     private UserPO toPo(UserCreateReq req) {
         UserPO po = new UserPO();
