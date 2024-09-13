@@ -1,6 +1,6 @@
 package com.luckybird.user.api.req;
 
-import com.luckybird.user.constant.StatusEnum;
+import com.luckybird.repository.constant.UserStatusEnum;
 import lombok.Data;
 
 /**
@@ -19,7 +19,7 @@ public class UserQueryReq {
     /**
      * 状态
      *
-     * @see StatusEnum
+     * @see UserStatusEnum
      */
     private Integer status;
 

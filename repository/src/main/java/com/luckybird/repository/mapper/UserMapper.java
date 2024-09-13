@@ -1,7 +1,7 @@
-package com.luckybird.user.mapper;
+package com.luckybird.repository.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.luckybird.user.po.UserPO;
+import com.luckybird.repository.po.UserPO;
 import org.apache.ibatis.annotations.Mapper;
 
 /**

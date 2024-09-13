@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.ExecutionException;
 
 /**
  * 部门管理API
@@ -124,5 +123,5 @@ public interface DeptApi {
      * @return DeptTreeVO 移动后的部门树
      */
     @PostMapping("/v1/dept/tree/{id}")
-    DeptTreeVO moveTree(@PathVariable Long id, @RequestBody DeptMoveReq req) throws ExecutionException, InterruptedException;
+    DeptTreeVO moveTree(@PathVariable Long id, @RequestBody DeptMoveReq req);
 }

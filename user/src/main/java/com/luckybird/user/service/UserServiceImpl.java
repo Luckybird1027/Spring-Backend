@@ -9,15 +9,15 @@ import com.luckybird.common.base.PageResult;
 import com.luckybird.common.base.UserInfo;
 import com.luckybird.common.exception.BizException;
 import com.luckybird.common.utils.ContextUtils;
+import com.luckybird.repository.constant.UserStatusEnum;
+import com.luckybird.repository.mapper.UserMapper;
+import com.luckybird.repository.po.UserPO;
 import com.luckybird.user.api.req.UserChangePasswordReq;
 import com.luckybird.user.api.req.UserCreateReq;
 import com.luckybird.user.api.req.UserLoginReq;
 import com.luckybird.user.api.req.UserQueryReq;
 import com.luckybird.user.api.req.UserUpdateReq;
 import com.luckybird.user.api.vo.UserVO;
-import com.luckybird.user.constant.StatusEnum;
-import com.luckybird.user.mapper.UserMapper;
-import com.luckybird.user.po.UserPO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -141,8 +141,8 @@ public class UserServiceImpl implements UserService {
     public UserVO create(UserCreateReq req) {
         // 检查用户创建请求参数是否合法
         if (req.getStatus() == null) {
-            req.setStatus(StatusEnum.NORMAL.getKey());
-        } else if (StatusEnum.of(req.getStatus()) == null) {
+            req.setStatus(UserStatusEnum.NORMAL.getKey());
+        } else if (UserStatusEnum.of(req.getStatus()) == null) {
             throw new BizException("INVALID_PARAMETER");
         }
         // 检查用户是否已存在
@@ -212,7 +212,7 @@ public class UserServiceImpl implements UserService {
             throw new BizException("INCORRECT_ACCOUNT_OR_PASSWORD");
         }
         // 检查用户是否被禁用
-        if (StatusEnum.DISABLE.getKey().equals(existingUser.getStatus())) {
+        if (UserStatusEnum.DISABLE.getKey().equals(existingUser.getStatus())) {
             throw new BizException("USER_DISABLED");
         }
         // 登录成功，返回token

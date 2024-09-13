@@ -1,4 +1,4 @@
-package com.luckybird.dept.po;
+package com.luckybird.repository.po;
 
 
 import com.baomidou.mybatisplus.annotation.IdType;

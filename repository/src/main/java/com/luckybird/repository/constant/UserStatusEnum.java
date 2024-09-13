@@ -1,4 +1,4 @@
-package com.luckybird.user.constant;
+package com.luckybird.repository.constant;
 
 import com.baomidou.mybatisplus.annotation.EnumValue;
 import com.fasterxml.jackson.annotation.JsonValue;
@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 
 @Getter
 @AllArgsConstructor
-public enum StatusEnum {
+public enum UserStatusEnum {
 
     NORMAL(0, "正常"),
     DISABLE(1, "禁用");
@@ -28,9 +28,9 @@ public enum StatusEnum {
     @JsonValue
     private final String display;
 
-    private static final Map<Integer, StatusEnum> MAP = Arrays.stream(StatusEnum.values()).collect(Collectors.toMap(StatusEnum::getKey, e -> e));
+    private static final Map<Integer, UserStatusEnum> MAP = Arrays.stream(UserStatusEnum.values()).collect(Collectors.toMap(UserStatusEnum::getKey, e -> e));
 
-    public static StatusEnum of(Integer key) {
+    public static UserStatusEnum of(Integer key) {
         return MAP.get(key);
     }
 }
