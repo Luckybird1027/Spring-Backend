@@ -3,20 +3,25 @@ package com.luckybird.dept.service;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.luckybird.common.base.Difference;
 import com.luckybird.common.base.PageResult;
 import com.luckybird.common.context.utils.ContextUtils;
 import com.luckybird.common.exception.BizException;
 import com.luckybird.common.i18n.utils.StringResourceUtils;
+import com.luckybird.common.json.utils.JsonUtils;
 import com.luckybird.dept.api.req.DeptCreateReq;
 import com.luckybird.dept.api.req.DeptMoveReq;
 import com.luckybird.dept.api.req.DeptQueryReq;
 import com.luckybird.dept.api.req.DeptUpdateReq;
 import com.luckybird.dept.api.vo.DeptTreeVO;
 import com.luckybird.dept.api.vo.DeptVO;
+import com.luckybird.logutil.constant.OperateTypeEnum;
+import com.luckybird.logutil.utils.LogUtils;
 import com.luckybird.repository.mapper.DeptMapper;
 import com.luckybird.repository.po.DeptPO;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -146,6 +151,31 @@ public class DeptServiceImpl implements DeptService {
         return deptTree;
     }
 
+    @Async
+    protected void differenceLog(DeptPO oldPo, DeptPO newPo, String feature) {
+        if (oldPo == null || newPo == null) {
+            return;
+        }
+        List<Difference> differences = new ArrayList<>();
+        if (!oldPo.getName().equals(newPo.getName())) {
+            differences.add(new Difference("name", oldPo.getName(), newPo.getName()));
+        }
+        if (!oldPo.getParentId().equals(newPo.getParentId())) {
+            differences.add(new Difference("parentId", oldPo.getParentId(), newPo.getParentId()));
+        }
+        if (!oldPo.getRemark().equals(newPo.getRemark())) {
+            differences.add(new Difference("remark", oldPo.getRemark(), newPo.getRemark()));
+        }
+        if (!differences.isEmpty()) {
+            LogUtils.log(CURRENT_MODULE, OperateTypeEnum.UPDATE.getValue(), feature, differences);
+        }
+    }
+
+    @Async
+    protected void briefLog(DeptVO vo, String type, String feature) {
+        LogUtils.log(CURRENT_MODULE, type, feature, vo);
+    }
+
     @Override
     public DeptVO get(Long id) {
         DeptPO po = deptMapper.selectById(id);
@@ -175,6 +205,7 @@ public class DeptServiceImpl implements DeptService {
         po.setCreatorId(ContextUtils.getUserInfo().getId());
         po.setCreateTime(LocalDateTime.now());
         deptMapper.insert(po);
+        briefLog(toVo(po), OperateTypeEnum.CREATE.getValue(), "dept.create");
         return toVo(po);
     }
 
@@ -189,7 +220,8 @@ public class DeptServiceImpl implements DeptService {
         if (po == null) {
             throw new BizException("DEPT_NOT_EXIST");
         }
-        DeptPO updatePo = updateByReq(po, req);
+        DeptPO oldPo = JsonUtils.deepClone(po);
+        DeptPO newPo = updateByReq(po, req);
         // 如果需要更新parent_id
         if (req.getParentId() != null) {
             // 如果该部门存在子部门，则不允许更新
@@ -201,14 +233,15 @@ public class DeptServiceImpl implements DeptService {
                 throw new BizException("PARENT_DEPT_NOT_EXIST");
             }
             // 更新path
-            updatePo.setPath(deptMapper.selectById(req.getParentId()).getPath() + "/" + req.getParentId());
+            newPo.setPath(deptMapper.selectById(req.getParentId()).getPath() + "/" + req.getParentId());
         }
         // 更新其他部门信息
-        updatePo.setId(id);
-        updatePo.setUpdaterId(ContextUtils.getUserInfo().getId());
-        updatePo.setUpdateTime(LocalDateTime.now());
-        deptMapper.updateById(updatePo);
-        return toVo(updatePo);
+        newPo.setId(id);
+        newPo.setUpdaterId(ContextUtils.getUserInfo().getId());
+        newPo.setUpdateTime(LocalDateTime.now());
+        deptMapper.updateById(newPo);
+        differenceLog(oldPo, newPo, "dept.update");
+        return toVo(newPo);
     }
 
     @Override
@@ -217,12 +250,17 @@ public class DeptServiceImpl implements DeptService {
         if (id == 0) {
             return;
         }
+        DeptPO po = deptMapper.selectById(id);
+        if (po == null) {
+            return;
+        }
         // 检查该部门的子部门是否存在
         if (deptMapper.selectList(new LambdaQueryWrapper<DeptPO>().eq(DeptPO::getParentId, id)) != null) {
             throw new BizException("CHILD_DEPT_EXIST");
         }
         // 删除部门
         deptMapper.deleteById(id);
+        briefLog(toVo(po), OperateTypeEnum.DELETE.getValue(), "dept.delete");
     }
 
     @Override
@@ -293,6 +331,7 @@ public class DeptServiceImpl implements DeptService {
         if (dept == null || targetDept == null) {
             throw new BizException("DEPT_NOT_EXIST");
         }
+        DeptPO oldDept = JsonUtils.deepClone(dept);
         // 检查当前部门是否有子部门
         if (deptMapper.selectList(new LambdaQueryWrapper<DeptPO>().eq(DeptPO::getParentId, id)) == null) {
             // 若不存在子部门，则直接移动当前部门即可
@@ -301,6 +340,7 @@ public class DeptServiceImpl implements DeptService {
             dept.setUpdaterId(ContextUtils.getUserInfo().getId());
             dept.setUpdateTime(LocalDateTime.now());
             deptMapper.updateById(dept);
+            differenceLog(oldDept, dept, "dept.move");
             return toDeptTreeVO(dept);
         }
 
@@ -330,6 +370,7 @@ public class DeptServiceImpl implements DeptService {
             childDept.setUpdateTime(LocalDateTime.now());
             deptMapper.updateById(childDept);
         }
+        differenceLog(oldDept, dept, "dept.move");
         return buildRootDeptTree(id, childDeptList, rootDept);
     }
 }

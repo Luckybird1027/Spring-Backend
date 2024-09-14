@@ -131,6 +131,46 @@ public class UserServiceImpl implements UserService {
         return wrapper;
     }
 
+    @Async
+    protected void differenceLog(UserPO oldPo, UserPO newPo, String feature) {
+        if (oldPo == null || newPo == null) {
+            return;
+        }
+        List<Difference> differences = new ArrayList<>();
+        if (!oldPo.getAccount().equals(newPo.getAccount())) {
+            differences.add(new Difference("account", oldPo.getAccount(), newPo.getAccount()));
+        }
+        if (!oldPo.getUsername().equals(newPo.getUsername())) {
+            differences.add(new Difference("username", oldPo.getUsername(), newPo.getUsername()));
+        }
+        if (!oldPo.getTelephone().equals(newPo.getTelephone())) {
+            differences.add(new Difference("telephone", oldPo.getTelephone(), newPo.getTelephone()));
+        }
+        if (!oldPo.getEmail().equals(newPo.getEmail())) {
+            differences.add(new Difference("email", oldPo.getEmail(), newPo.getEmail()));
+        }
+        if (!oldPo.getOrganizationId().equals(newPo.getOrganizationId())) {
+            differences.add(new Difference("organizationId", oldPo.getOrganizationId(), newPo.getOrganizationId()));
+        }
+        if (!oldPo.getDepartmentId().equals(newPo.getDepartmentId())) {
+            differences.add(new Difference("departmentId", oldPo.getDepartmentId(), newPo.getDepartmentId()));
+        }
+        if (!oldPo.getOccupation().equals(newPo.getOccupation())) {
+            differences.add(new Difference("occupation", oldPo.getOccupation(), newPo.getOccupation()));
+        }
+        if (!oldPo.getRemark().equals(newPo.getRemark())) {
+            differences.add(new Difference("remark", oldPo.getRemark(), newPo.getRemark()));
+        }
+        if (!differences.isEmpty()) {
+            LogUtils.log(CURRENT_MODULE, OperateTypeEnum.UPDATE.getValue(), feature, differences);
+        }
+    }
+
+    @Async
+    protected void briefLog(UserVO vo, String type, String feature) {
+        LogUtils.log(CURRENT_MODULE, type, feature, vo);
+    }
+
     @Override
     public UserVO get(Long id) {
         UserPO po = userMapper.selectById(id);
@@ -165,7 +205,7 @@ public class UserServiceImpl implements UserService {
         po.setCreatorId(ContextUtils.getUserInfo().getId());
         po.setCreateTime(LocalDateTime.now());
         userMapper.insert(po);
-        LogUtils.log(CURRENT_MODULE, OperateTypeEnum.CREATE.getValue(), "user.create", toVo(po));
+        briefLog(toVo(po), OperateTypeEnum.CREATE.getValue(), "user.create");
         return toVo(po);
     }
 
@@ -182,44 +222,10 @@ public class UserServiceImpl implements UserService {
         newPo.setUpdaterId(ContextUtils.getUserInfo().getId());
         newPo.setUpdateTime(LocalDateTime.now());
         userMapper.updateById(newPo);
-        logUpdate(oldPo, newPo);
+        differenceLog(oldPo, newPo, "user.update");
         return toVo(newPo);
     }
 
-    @Async
-    protected void logUpdate(UserPO oldPo, UserPO newPo){
-        if (oldPo == null || newPo == null){
-            return;
-        }
-        List<Difference> differences = new ArrayList<>();
-        if (!oldPo.getAccount().equals(newPo.getAccount())){
-            differences.add(new Difference("account", oldPo.getAccount(), newPo.getAccount()));
-        }
-        if (!oldPo.getUsername().equals(newPo.getUsername())){
-            differences.add(new Difference("username", oldPo.getUsername(), newPo.getUsername()));
-        }
-        if (!oldPo.getTelephone().equals(newPo.getTelephone())){
-            differences.add(new Difference("telephone", oldPo.getTelephone(), newPo.getTelephone()));
-        }
-        if (!oldPo.getEmail().equals(newPo.getEmail())){
-            differences.add(new Difference("email", oldPo.getEmail(), newPo.getEmail()));
-        }
-        if (!oldPo.getOrganizationId().equals(newPo.getOrganizationId())){
-            differences.add(new Difference("organizationId", oldPo.getOrganizationId(), newPo.getOrganizationId()));
-        }
-        if (!oldPo.getDepartmentId().equals(newPo.getDepartmentId())){
-            differences.add(new Difference("departmentId", oldPo.getDepartmentId(), newPo.getDepartmentId()));
-        }
-        if (!oldPo.getOccupation().equals(newPo.getOccupation())){
-            differences.add(new Difference("occupation", oldPo.getOccupation(), newPo.getOccupation()));
-        }
-        if (!oldPo.getRemark().equals(newPo.getRemark())){
-            differences.add(new Difference("remark", oldPo.getRemark(), newPo.getRemark()));
-        }
-        if (!differences.isEmpty()){
-            LogUtils.log(CURRENT_MODULE, OperateTypeEnum.UPDATE.getValue(), "user.update", differences);
-        }
-    }
 
     @Override
     public void delete(Long id) {
@@ -228,7 +234,7 @@ public class UserServiceImpl implements UserService {
             return;
         }
         userMapper.deleteById(id);
-        LogUtils.log(CURRENT_MODULE, OperateTypeEnum.DELETE.getValue(), "user.delete", toVo(po));
+        briefLog(toVo(po), OperateTypeEnum.DELETE.getValue(), "user.delete");
     }
 
     @Override
@@ -297,6 +303,6 @@ public class UserServiceImpl implements UserService {
         newUser.setId(userId);
         newUser.setPassword(passwordEncoder.encode(req.getNewPassword()));
         userMapper.updateById(newUser);
-        LogUtils.log(CURRENT_MODULE, OperateTypeEnum.UPDATE.getValue(), "user.change_password", toVo(newUser));
+        differenceLog(existingUser, newUser, "user.change_password");
     }
 }
