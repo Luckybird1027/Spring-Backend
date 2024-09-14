@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.luckybird.auth.base.TokenInfo;
 import com.luckybird.auth.service.TokenService;
+import com.luckybird.common.base.Difference;
 import com.luckybird.common.base.PageResult;
 import com.luckybird.common.base.UserInfo;
 import com.luckybird.common.context.utils.ContextUtils;
@@ -23,11 +24,13 @@ import com.luckybird.user.api.req.UserUpdateReq;
 import com.luckybird.user.api.vo.UserVO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -179,8 +182,43 @@ public class UserServiceImpl implements UserService {
         newPo.setUpdaterId(ContextUtils.getUserInfo().getId());
         newPo.setUpdateTime(LocalDateTime.now());
         userMapper.updateById(newPo);
-        LogUtils.log(CURRENT_MODULE, OperateTypeEnum.UPDATE.getValue(), "user.update", oldPo, newPo);
+        logUpdate(oldPo, newPo);
         return toVo(newPo);
+    }
+
+    @Async
+    protected void logUpdate(UserPO oldPo, UserPO newPo){
+        if (oldPo == null || newPo == null){
+            return;
+        }
+        List<Difference> differences = new ArrayList<>();
+        if (!oldPo.getAccount().equals(newPo.getAccount())){
+            differences.add(new Difference("account", oldPo.getAccount(), newPo.getAccount()));
+        }
+        if (!oldPo.getUsername().equals(newPo.getUsername())){
+            differences.add(new Difference("username", oldPo.getUsername(), newPo.getUsername()));
+        }
+        if (!oldPo.getTelephone().equals(newPo.getTelephone())){
+            differences.add(new Difference("telephone", oldPo.getTelephone(), newPo.getTelephone()));
+        }
+        if (!oldPo.getEmail().equals(newPo.getEmail())){
+            differences.add(new Difference("email", oldPo.getEmail(), newPo.getEmail()));
+        }
+        if (!oldPo.getOrganizationId().equals(newPo.getOrganizationId())){
+            differences.add(new Difference("organizationId", oldPo.getOrganizationId(), newPo.getOrganizationId()));
+        }
+        if (!oldPo.getDepartmentId().equals(newPo.getDepartmentId())){
+            differences.add(new Difference("departmentId", oldPo.getDepartmentId(), newPo.getDepartmentId()));
+        }
+        if (!oldPo.getOccupation().equals(newPo.getOccupation())){
+            differences.add(new Difference("occupation", oldPo.getOccupation(), newPo.getOccupation()));
+        }
+        if (!oldPo.getRemark().equals(newPo.getRemark())){
+            differences.add(new Difference("remark", oldPo.getRemark(), newPo.getRemark()));
+        }
+        if (!differences.isEmpty()){
+            LogUtils.log(CURRENT_MODULE, OperateTypeEnum.UPDATE.getValue(), "user.update", differences);
+        }
     }
 
     @Override

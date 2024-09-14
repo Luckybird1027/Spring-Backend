@@ -2,18 +2,14 @@ package com.luckybird.logutil.utils;
 
 import com.luckybird.common.base.Difference;
 import com.luckybird.common.context.utils.ContextUtils;
-import com.luckybird.common.exception.BizException;
 import com.luckybird.repository.mapper.OperateLogMapper;
 import com.luckybird.repository.po.OperateLogPO;
 import jakarta.annotation.Resource;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import java.lang.reflect.Field;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * 日志工具类
@@ -33,50 +29,17 @@ public class LogUtils {
         LogUtils.operateLogMapper = operateLogMapper;
     }
 
-    private static final List<String> IGNORE_FIELDS = List.of("createTime", "creatorId", "updateTime", "updaterId", "deleted");
-
     /**
      * 日志记录方法-修改
      *
-     * @param module   操作模块
-     * @param type     操作类型
-     * @param feature  操作功能
-     * @param oldValue 旧数据
-     * @param newValue 新数据
+     * @param module      操作模块
+     * @param type        操作类型
+     * @param feature     操作功能
+     * @param differences 差异字段列表
      */
-    public static void log(String module, String type, String feature, Object oldValue, Object newValue) {
+    public static void log(String module, String type, String feature, List<Difference> differences) {
 
         OperateLogPO log = new OperateLogPO();
-
-        // 依次比较新旧数据的各个字段数据，生成差异数据
-        if (oldValue == null || newValue == null) {
-            throw new BizException("INVALID_PARAMETER");
-        }
-        List<Difference> differences = new ArrayList<>();
-        Class<?> oldClass = oldValue.getClass();
-        Class<?> newClass = newValue.getClass();
-        if (oldClass != newClass) {
-            throw new BizException("INVALID_PARAMETER");
-        }
-        Field[] fields = oldClass.getDeclaredFields();
-        for (Field field : fields) {
-            if (IGNORE_FIELDS.contains(field.getName())) {
-                continue;
-            }
-            try {
-                field.setAccessible(true);
-                Object oldFieldValue = field.get(oldValue);
-                Object newFieldValue = field.get(newValue);
-                if (!Objects.equals(oldFieldValue, newFieldValue)) {
-                    differences.add(new Difference(field.getName(), oldFieldValue, newFieldValue));
-                }
-            } catch (IllegalAccessException ignored) {
-                return;
-            }
-        }
-        if (differences.isEmpty()) {
-            return;
-        }
         log.setOperateModule(module);
         log.setOperateType(type);
         log.setOperateFeature(feature);
@@ -85,6 +48,9 @@ public class LogUtils {
         log.setOperateTime(LocalDateTime.now());
         log.setClientIp(ContextUtils.getUserInfo().getIp());
         log.setClientUa(ContextUtils.getUserInfo().getUa());
+        if (differences.isEmpty()){
+            return;
+        }
         operateLogMapper.insert(log);
     }
 

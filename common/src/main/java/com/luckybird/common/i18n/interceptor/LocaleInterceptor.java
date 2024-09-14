@@ -3,12 +3,14 @@ package com.luckybird.common.i18n.interceptor;
 import com.luckybird.common.context.utils.ContextUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 
 /**
@@ -20,13 +22,14 @@ import java.util.Locale;
 @Component
 public class LocaleInterceptor implements HandlerInterceptor {
 
+    private final static List<String> LOCALE_LIST = Arrays.asList("zh_CN", "en_US");
 
     @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
+    public boolean preHandle(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull Object handler) {
 
         // 从请求头中获取语言设置并存入上下文
         String stringLocale = request.getHeader("Accept-Language");
-        if (StringUtils.hasText(stringLocale)) {
+        if (LOCALE_LIST.contains(stringLocale)) {
             String[] split = stringLocale.split("_");
             Locale locale = Locale.of(split[0], split[1]);
             ContextUtils.setLocale(locale);
@@ -37,12 +40,12 @@ public class LocaleInterceptor implements HandlerInterceptor {
     }
 
     @Override
-    public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
+    public void postHandle(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull Object handler, ModelAndView modelAndView) throws Exception {
         HandlerInterceptor.super.postHandle(request, response, handler, modelAndView);
     }
 
     @Override
-    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
+    public void afterCompletion(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull Object handler, Exception ex) {
         ContextUtils.removeLocale();
     }
 }

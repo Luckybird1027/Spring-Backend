@@ -2,6 +2,7 @@ package com.luckybird.common.base;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * 差异计算存储类
@@ -10,6 +11,7 @@ import lombok.Data;
  */
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class Difference {
     /**
      * 字段名称

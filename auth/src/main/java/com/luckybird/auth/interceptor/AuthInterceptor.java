@@ -6,6 +6,7 @@ import com.luckybird.common.base.UserInfo;
 import com.luckybird.common.context.utils.ContextUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -25,7 +26,7 @@ public class AuthInterceptor implements HandlerInterceptor {
     private final TokenService tokenService;
 
     @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
+    public boolean preHandle(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull Object handler) {
 
         // 检查是否有 @NoAuth 注解
         HandlerMethod handlerMethod = (HandlerMethod) handler;
@@ -57,12 +58,12 @@ public class AuthInterceptor implements HandlerInterceptor {
     }
 
     @Override
-    public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
+    public void postHandle(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull Object handler, ModelAndView modelAndView) throws Exception {
         HandlerInterceptor.super.postHandle(request, response, handler, modelAndView);
     }
 
     @Override
-    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
+    public void afterCompletion(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull Object handler, Exception ex) {
         ContextUtils.removeUserInfo();
     }
 }
