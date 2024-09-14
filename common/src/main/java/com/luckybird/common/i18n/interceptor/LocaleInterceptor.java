@@ -9,9 +9,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 /**
  * 用户鉴权拦截器
@@ -22,7 +21,8 @@ import java.util.Locale;
 @Component
 public class LocaleInterceptor implements HandlerInterceptor {
 
-    private final static List<String> LOCALE_LIST = Arrays.asList("zh_CN", "en_US");
+    // TODO: 安全性问题、性能问题
+    private final static Set<String> LOCALE_LIST = Set.of("zh_CN", "en_US");
 
     @Override
     public boolean preHandle(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull Object handler) {
