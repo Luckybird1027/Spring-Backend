@@ -24,7 +24,7 @@
         </dependency>
         <dependency>
             <groupId>com.luckybird</groupId>
-            <artifactId>log-util</artifactId>
+            <artifactId>log</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

@@ -1,4 +1,4 @@
-package com.luckybird.repository.po;
+package com.luckybird.repository.operateLog;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;

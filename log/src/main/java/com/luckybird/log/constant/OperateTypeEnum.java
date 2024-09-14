@@ -1,4 +1,4 @@
-package com.luckybird.logutil.constant;
+package com.luckybird.log.constant;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

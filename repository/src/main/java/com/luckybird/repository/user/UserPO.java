@@ -1,4 +1,4 @@
-package com.luckybird.repository.po;
+package com.luckybird.repository.user;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
@@ -6,7 +6,6 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler;
-import com.luckybird.repository.constant.UserStatusEnum;
 import lombok.Data;
 
 import java.time.LocalDateTime;

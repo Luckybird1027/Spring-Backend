@@ -1,6 +1,6 @@
 package com.luckybird.user.api.req;
 
-import com.luckybird.repository.constant.UserStatusEnum;
+import com.luckybird.repository.user.UserStatusEnum;
 import lombok.Data;
 
 /**

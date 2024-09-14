@@ -1,6 +1,6 @@
 package com.luckybird.user.api.vo;
 
-import com.luckybird.repository.constant.UserStatusEnum;
+import com.luckybird.repository.user.UserStatusEnum;
 import lombok.Data;
 
 import java.util.List;

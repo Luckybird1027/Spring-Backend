@@ -1,4 +1,4 @@
-package com.luckybird.repository.constant;
+package com.luckybird.repository.user;
 
 import com.baomidou.mybatisplus.annotation.EnumValue;
 import com.fasterxml.jackson.annotation.JsonValue;

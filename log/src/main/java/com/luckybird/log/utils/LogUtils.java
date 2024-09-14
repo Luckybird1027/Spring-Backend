@@ -1,9 +1,9 @@
-package com.luckybird.logutil.utils;
+package com.luckybird.log.utils;
 
 import com.luckybird.common.base.Difference;
 import com.luckybird.common.context.utils.ContextUtils;
-import com.luckybird.repository.mapper.OperateLogMapper;
-import com.luckybird.repository.po.OperateLogPO;
+import com.luckybird.repository.operateLog.OperateLogMapper;
+import com.luckybird.repository.operateLog.OperateLogPO;
 import jakarta.annotation.Resource;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -48,7 +48,7 @@ public class LogUtils {
         log.setOperateTime(LocalDateTime.now());
         log.setClientIp(ContextUtils.getUserInfo().getIp());
         log.setClientUa(ContextUtils.getUserInfo().getUa());
-        if (differences.isEmpty()){
+        if (differences.isEmpty()) {
             return;
         }
         operateLogMapper.insert(log);

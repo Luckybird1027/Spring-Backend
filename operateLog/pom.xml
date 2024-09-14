@@ -9,14 +9,20 @@
         <version>0.0.1-SNAPSHOT</version>
     </parent>
 
-    <artifactId>log-util</artifactId>
+    <artifactId>operateLog</artifactId>
 
     <dependencies>
+        <dependency>
+            <groupId>com.luckybird</groupId>
+            <artifactId>auth</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         <dependency>
             <groupId>com.luckybird</groupId>
             <artifactId>repository</artifactId>
             <version>${project.version}</version>
         </dependency>
+
     </dependencies>
 
 </project>
