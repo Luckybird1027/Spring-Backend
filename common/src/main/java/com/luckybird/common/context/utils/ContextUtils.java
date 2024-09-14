@@ -1,4 +1,4 @@
-package com.luckybird.common.utils;
+package com.luckybird.common.context.utils;
 
 import com.luckybird.common.base.UserInfo;
 import org.springframework.stereotype.Component;

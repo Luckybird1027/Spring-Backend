@@ -1,4 +1,4 @@
-package com.luckybird.common.json;
+package com.luckybird.common.json.other;
 
 import com.fasterxml.jackson.core.json.PackageVersion;
 import com.fasterxml.jackson.databind.module.SimpleModule;

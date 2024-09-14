@@ -7,9 +7,9 @@ import com.luckybird.auth.base.TokenInfo;
 import com.luckybird.auth.service.TokenService;
 import com.luckybird.common.base.PageResult;
 import com.luckybird.common.base.UserInfo;
+import com.luckybird.common.context.utils.ContextUtils;
 import com.luckybird.common.exception.BizException;
-import com.luckybird.common.utils.ContextUtils;
-import com.luckybird.common.utils.DeepCloneUtils;
+import com.luckybird.common.json.utils.JsonUtils;
 import com.luckybird.logutil.constant.OperateTypeEnum;
 import com.luckybird.logutil.utils.LogUtils;
 import com.luckybird.repository.constant.UserStatusEnum;
@@ -65,7 +65,7 @@ public class UserServiceImpl implements UserService {
         return po;
     }
 
-    private UserVO toVO(UserPO po) {
+    private UserVO toVo(UserPO po) {
         UserVO userVO = new UserVO();
         userVO.setId(po.getId());
         userVO.setAccount(po.getAccount());
@@ -134,12 +134,12 @@ public class UserServiceImpl implements UserService {
         if (po == null) {
             return new UserVO();
         }
-        return toVO(po);
+        return toVo(po);
     }
 
     @Override
     public List<UserVO> batchGet(Set<Long> ids) {
-        return userMapper.selectBatchIds(ids).stream().map(this::toVO).toList();
+        return userMapper.selectBatchIds(ids).stream().map(this::toVo).toList();
     }
 
     @Override
@@ -162,8 +162,8 @@ public class UserServiceImpl implements UserService {
         po.setCreatorId(ContextUtils.getUserInfo().getId());
         po.setCreateTime(LocalDateTime.now());
         userMapper.insert(po);
-        LogUtils.log(CURRENT_MODULE, OperateTypeEnum.CREATE.getValue(), "user.create", toVO(po));
-        return toVO(po);
+        LogUtils.log(CURRENT_MODULE, OperateTypeEnum.CREATE.getValue(), "user.create", toVo(po));
+        return toVo(po);
     }
 
     @Override
@@ -173,14 +173,14 @@ public class UserServiceImpl implements UserService {
         if (po == null) {
             throw new BizException("USER_NOT_EXIST");
         }
-        UserPO oldPo = DeepCloneUtils.deepClone(po);
+        UserPO oldPo = JsonUtils.deepClone(po);
         // 更新用户信息
         UserPO newPo = updateByReq(po, req);
         newPo.setUpdaterId(ContextUtils.getUserInfo().getId());
         newPo.setUpdateTime(LocalDateTime.now());
         userMapper.updateById(newPo);
         LogUtils.log(CURRENT_MODULE, OperateTypeEnum.UPDATE.getValue(), "user.update", oldPo, newPo);
-        return toVO(newPo);
+        return toVo(newPo);
     }
 
     @Override
@@ -190,13 +190,13 @@ public class UserServiceImpl implements UserService {
             return;
         }
         userMapper.deleteById(id);
-        LogUtils.log(CURRENT_MODULE, OperateTypeEnum.DELETE.getValue(), "user.delete", toVO(po));
+        LogUtils.log(CURRENT_MODULE, OperateTypeEnum.DELETE.getValue(), "user.delete", toVo(po));
     }
 
     @Override
     public List<UserVO> list(UserQueryReq req) {
         List<UserPO> poList = userMapper.selectList(wrapperByReq(req));
-        return poList.stream().map(this::toVO).toList();
+        return poList.stream().map(this::toVo).toList();
     }
 
     @Override
@@ -205,7 +205,7 @@ public class UserServiceImpl implements UserService {
         LambdaQueryWrapper<UserPO> wrapper = wrapperByReq(req);
         IPage<UserPO> userPage = userMapper.selectPage(page, wrapper);
         List<UserPO> poList = userPage.getRecords();
-        List<UserVO> voList = poList.stream().map(this::toVO).toList();
+        List<UserVO> voList = poList.stream().map(this::toVo).toList();
         if (searchCount) {
             return new PageResult<>(userPage.getTotal(), voList);
         } else {
@@ -259,6 +259,6 @@ public class UserServiceImpl implements UserService {
         newUser.setId(userId);
         newUser.setPassword(passwordEncoder.encode(req.getNewPassword()));
         userMapper.updateById(newUser);
-        LogUtils.log(CURRENT_MODULE, OperateTypeEnum.UPDATE.getValue(), "user.change_password", toVO(newUser));
+        LogUtils.log(CURRENT_MODULE, OperateTypeEnum.UPDATE.getValue(), "user.change_password", toVo(newUser));
     }
 }

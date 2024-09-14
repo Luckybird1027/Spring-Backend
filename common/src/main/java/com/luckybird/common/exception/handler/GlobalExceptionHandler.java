@@ -2,7 +2,7 @@ package com.luckybird.common.exception.handler;
 
 import com.luckybird.common.base.ErrorResult;
 import com.luckybird.common.exception.BizException;
-import com.luckybird.common.utils.StringResourceUtils;
+import com.luckybird.common.i18n.utils.StringResourceUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;

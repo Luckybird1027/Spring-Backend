@@ -1,6 +1,6 @@
-package com.luckybird.common.interceptor;
+package com.luckybird.common.i18n.interceptor;
 
-import com.luckybird.common.utils.ContextUtils;
+import com.luckybird.common.context.utils.ContextUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;

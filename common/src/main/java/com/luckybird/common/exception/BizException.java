@@ -1,6 +1,6 @@
 package com.luckybird.common.exception;
 
-import com.luckybird.common.utils.StringResourceUtils;
+import com.luckybird.common.i18n.utils.StringResourceUtils;
 import lombok.Getter;
 
 /**

@@ -4,9 +4,9 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.luckybird.common.base.PageResult;
+import com.luckybird.common.context.utils.ContextUtils;
 import com.luckybird.common.exception.BizException;
-import com.luckybird.common.utils.ContextUtils;
-import com.luckybird.common.utils.StringResourceUtils;
+import com.luckybird.common.i18n.utils.StringResourceUtils;
 import com.luckybird.dept.api.req.DeptCreateReq;
 import com.luckybird.dept.api.req.DeptMoveReq;
 import com.luckybird.dept.api.req.DeptQueryReq;
@@ -43,7 +43,7 @@ public class DeptServiceImpl implements DeptService {
 
     private final String CURRENT_MODULE = StringResourceUtils.format("DEPT");
 
-    private DeptVO toVO(DeptPO po) {
+    private DeptVO toVo(DeptPO po) {
         DeptVO vo = new DeptVO();
         vo.setId(po.getId());
         vo.setName(po.getName());
@@ -63,7 +63,7 @@ public class DeptServiceImpl implements DeptService {
         return vo;
     }
 
-    private DeptPO toPO(DeptCreateReq req) {
+    private DeptPO toPo(DeptCreateReq req) {
         DeptPO po = new DeptPO();
         po.setName(req.getName());
         po.setParentId(req.getParentId());
@@ -152,12 +152,12 @@ public class DeptServiceImpl implements DeptService {
         if (po == null) {
             return new DeptVO();
         }
-        return toVO(po);
+        return toVo(po);
     }
 
     @Override
     public List<DeptVO> batchGet(Set<Long> ids) {
-        return deptMapper.selectBatchIds(ids).stream().map(this::toVO).toList();
+        return deptMapper.selectBatchIds(ids).stream().map(this::toVo).toList();
     }
 
     @Override
@@ -170,12 +170,12 @@ public class DeptServiceImpl implements DeptService {
             }
         }
         // 填充信息并插入数据库
-        DeptPO po = toPO(req);
+        DeptPO po = toPo(req);
         po.setPath(parentDept.getPath() + "/" + parentDept.getId());
         po.setCreatorId(ContextUtils.getUserInfo().getId());
         po.setCreateTime(LocalDateTime.now());
         deptMapper.insert(po);
-        return toVO(po);
+        return toVo(po);
     }
 
     @Override
@@ -208,7 +208,7 @@ public class DeptServiceImpl implements DeptService {
         updatePo.setUpdaterId(ContextUtils.getUserInfo().getId());
         updatePo.setUpdateTime(LocalDateTime.now());
         deptMapper.updateById(updatePo);
-        return toVO(updatePo);
+        return toVo(updatePo);
     }
 
     @Override
@@ -228,7 +228,7 @@ public class DeptServiceImpl implements DeptService {
     @Override
     public List<DeptVO> list(DeptQueryReq req) {
         List<DeptPO> poList = deptMapper.selectList(wrapperByReq(req));
-        return poList.stream().map(this::toVO).toList();
+        return poList.stream().map(this::toVo).toList();
     }
 
     @Override
@@ -237,7 +237,7 @@ public class DeptServiceImpl implements DeptService {
         LambdaQueryWrapper<DeptPO> wrapper = wrapperByReq(req);
         IPage<DeptPO> deptPage = deptMapper.selectPage(page, wrapper);
         List<DeptPO> poList = deptPage.getRecords();
-        List<DeptVO> voList = poList.stream().map(this::toVO).toList();
+        List<DeptVO> voList = poList.stream().map(this::toVo).toList();
         if (searchCount) {
             return new PageResult<>(deptPage.getTotal(), voList);
         } else {

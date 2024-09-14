@@ -1,5 +1,6 @@
-package com.luckybird.common.utils;
+package com.luckybird.common.i18n.utils;
 
+import com.luckybird.common.context.utils.ContextUtils;
 import jakarta.annotation.Resource;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Component;

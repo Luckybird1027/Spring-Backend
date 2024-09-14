@@ -1,6 +1,6 @@
-package com.luckybird.common.config;
+package com.luckybird.common.i18n.config;
 
-import com.luckybird.common.interceptor.LocaleInterceptor;
+import com.luckybird.common.i18n.interceptor.LocaleInterceptor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;

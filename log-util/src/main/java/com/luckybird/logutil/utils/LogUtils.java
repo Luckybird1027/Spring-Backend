@@ -1,8 +1,8 @@
 package com.luckybird.logutil.utils;
 
 import com.luckybird.common.base.Difference;
+import com.luckybird.common.context.utils.ContextUtils;
 import com.luckybird.common.exception.BizException;
-import com.luckybird.common.utils.ContextUtils;
 import com.luckybird.repository.mapper.OperateLogMapper;
 import com.luckybird.repository.po.OperateLogPO;
 import jakarta.annotation.Resource;
