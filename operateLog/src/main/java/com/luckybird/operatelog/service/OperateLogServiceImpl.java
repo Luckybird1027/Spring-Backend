@@ -1,6 +1,7 @@
 package com.luckybird.operatelog.service;
 
 import com.luckybird.common.base.PageResult;
+import com.luckybird.common.exception.BizException;
 import com.luckybird.operatelog.api.req.OperateLogQueryReq;
 import com.luckybird.operatelog.api.vo.OperateLogVO;
 import com.luckybird.repository.operateLog.OperateLogMapper;
@@ -11,8 +12,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * 操作日志服务实现类
@@ -27,6 +31,7 @@ public class OperateLogServiceImpl implements OperateLogService {
 
     private final UserMapper userMapper;
 
+    // TODO: VO需通过i18n渲染成对应的语言
     private OperateLogVO toVo(OperateLogPO po) {
         OperateLogVO operateLogVO = new OperateLogVO();
         operateLogVO.setId(po.getId());
@@ -40,6 +45,29 @@ public class OperateLogServiceImpl implements OperateLogService {
         operateLogVO.setClientUa(po.getClientUa());
         return operateLogVO;
 
+    }
+
+    private List<OperateLogVO> batchRenderVo(List<OperateLogPO> pos) {
+        List<Long> operatorIds = new ArrayList<>();
+        for (OperateLogPO po : pos) {
+            operatorIds.add(po.getOperatorId());
+        }
+        List<UserPO> operators = userMapper.selectBatchIds(operatorIds);
+        Map<Long, UserPO> operatorMap = operators.stream().collect(Collectors.toMap(UserPO::getId, user -> user));
+        List<OperateLogVO> vos = new ArrayList<>();
+        for (OperateLogPO po : pos) {
+            OperateLogVO operateLogVO = toVo(po);
+            UserPO operator = operatorMap.get(po.getOperatorId());
+            if (operator == null) {
+                throw new BizException("OPERATOR_NOT_EXIST");
+            }
+            if (StringUtils.hasText(operator.getUsername())) {
+                operateLogVO.setOperatorName(operator.getUsername());
+            } else {
+                operateLogVO.setOperatorName(operator.getAccount());
+            }
+        }
+        return vos;
     }
 
     @Override
@@ -61,7 +89,11 @@ public class OperateLogServiceImpl implements OperateLogService {
 
     @Override
     public List<OperateLogVO> batchGet(Set<Long> ids) {
-        return null;
+        List<OperateLogPO> pos = operateLogMapper.selectBatchIds(ids);
+        if (pos == null || pos.isEmpty()){
+            return new ArrayList<>();
+        }
+        return batchRenderVo(pos);
     }
 
     @Override

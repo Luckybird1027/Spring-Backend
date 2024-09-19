@@ -45,7 +45,6 @@ public class StringResourceUtils {
 
     /**
      * 获取字符串资源
-     * TODO: 尚未开放其他语言
      *
      * @param code   字符串资源编码
      * @param locale 语言
