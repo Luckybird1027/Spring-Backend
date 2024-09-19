@@ -1,3 +1,4 @@
 com.luckybird.common.i18n.config.InterceptorConfig
 com.luckybird.common.config.JacksonConfig
 com.luckybird.common.config.RedisConfig
+com.luckybird.common.threadPool.config.AsyncTaskThreadPoolConfig
