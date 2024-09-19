@@ -38,7 +38,6 @@ public class OperateLogServiceImpl implements OperateLogService {
 
     private final UserMapper userMapper;
 
-    // TODO: VO需通过i18n渲染成对应的语言
     private OperateLogVO toVo(OperateLogPO po) {
         OperateLogVO operateLogVO = new OperateLogVO();
         operateLogVO.setId(po.getId());

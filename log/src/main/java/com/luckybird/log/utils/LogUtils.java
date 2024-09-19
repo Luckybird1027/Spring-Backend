@@ -21,8 +21,6 @@ import java.util.List;
 @Component
 public class LogUtils {
 
-    // TODO: 需要转为异步处理，减少对主业务的影响
-
     private static OperateLogMapper operateLogMapper;
 
     @Resource
