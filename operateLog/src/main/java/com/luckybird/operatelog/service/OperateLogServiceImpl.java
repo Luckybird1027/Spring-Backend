@@ -1,7 +1,9 @@
 package com.luckybird.operatelog.service;
 
+import com.luckybird.common.base.Difference;
+import com.luckybird.common.base.KeyValue;
 import com.luckybird.common.base.PageResult;
-import com.luckybird.common.exception.BizException;
+import com.luckybird.common.i18n.utils.StringResourceUtils;
 import com.luckybird.operatelog.api.req.OperateLogQueryReq;
 import com.luckybird.operatelog.api.vo.OperateLogVO;
 import com.luckybird.repository.operateLog.OperateLogMapper;
@@ -13,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -35,11 +38,21 @@ public class OperateLogServiceImpl implements OperateLogService {
     private OperateLogVO toVo(OperateLogPO po) {
         OperateLogVO operateLogVO = new OperateLogVO();
         operateLogVO.setId(po.getId());
-        operateLogVO.setOperateModule(po.getOperateModule());
-        operateLogVO.setOperateType(po.getOperateType());
-        operateLogVO.setOperateFeature(po.getOperateFeature());
-        operateLogVO.setDataBrief(po.getDataBrief());
-        operateLogVO.setDataDifference(po.getDataDifference());
+        operateLogVO.setOperateModule(StringResourceUtils.format(po.getOperateModule()));
+        operateLogVO.setOperateType(StringResourceUtils.format(po.getOperateType()));
+        operateLogVO.setOperateFeature(StringResourceUtils.format(po.getOperateFeature()));
+        if (po.getDataBrief() != null) {
+            List<KeyValue> keyValues = po.getDataBrief();
+            for (KeyValue keyValue : keyValues) {
+                keyValue.setKey(StringResourceUtils.format(keyValue.getKey()));
+            }
+        }
+        if (po.getDataDifference() != null) {
+            List<Difference> differences = po.getDataDifference();
+            for (Difference difference : differences) {
+                difference.setFieldName(StringResourceUtils.format(difference.getFieldName()));
+            }
+        }
         operateLogVO.setOperateTime(po.getOperateTime());
         operateLogVO.setClientIp(po.getClientIp());
         operateLogVO.setClientUa(po.getClientUa());
@@ -48,7 +61,7 @@ public class OperateLogServiceImpl implements OperateLogService {
     }
 
     private List<OperateLogVO> batchRenderVo(List<OperateLogPO> pos) {
-        List<Long> operatorIds = new ArrayList<>();
+        Set<Long> operatorIds = new HashSet<>();
         for (OperateLogPO po : pos) {
             operatorIds.add(po.getOperatorId());
         }
@@ -58,13 +71,14 @@ public class OperateLogServiceImpl implements OperateLogService {
         for (OperateLogPO po : pos) {
             OperateLogVO operateLogVO = toVo(po);
             UserPO operator = operatorMap.get(po.getOperatorId());
-            if (operator == null) {
-                throw new BizException("OPERATOR_NOT_EXIST");
-            }
-            if (StringUtils.hasText(operator.getUsername())) {
-                operateLogVO.setOperatorName(operator.getUsername());
+            if (operator != null) {
+                if (StringUtils.hasText(operator.getUsername())) {
+                    operateLogVO.setOperatorName(operator.getUsername());
+                } else {
+                    operateLogVO.setOperatorName(operator.getAccount());
+                }
             } else {
-                operateLogVO.setOperatorName(operator.getAccount());
+                operateLogVO.setOperatorName(StringResourceUtils.format("unknown"));
             }
         }
         return vos;
@@ -76,21 +90,24 @@ public class OperateLogServiceImpl implements OperateLogService {
         if (po == null) {
             return new OperateLogVO();
         }
-        UserPO operator = userMapper.selectById(po.getOperatorId());
         OperateLogVO operateLogVO = toVo(po);
-        if (StringUtils.hasText(operator.getUsername())) {
-            operateLogVO.setOperatorName(operator.getUsername());
+        UserPO operator = userMapper.selectById(po.getOperatorId());
+        if (operator != null) {
+            if (StringUtils.hasText(operator.getUsername())) {
+                operateLogVO.setOperatorName(operator.getUsername());
+            } else {
+                operateLogVO.setOperatorName(operator.getAccount());
+            }
         } else {
-            operateLogVO.setOperatorName(operator.getAccount());
+            operateLogVO.setOperatorName(StringResourceUtils.format("unknown"));
         }
-
         return operateLogVO;
     }
 
     @Override
     public List<OperateLogVO> batchGet(Set<Long> ids) {
         List<OperateLogPO> pos = operateLogMapper.selectBatchIds(ids);
-        if (pos == null || pos.isEmpty()){
+        if (pos == null || pos.isEmpty()) {
             return new ArrayList<>();
         }
         return batchRenderVo(pos);

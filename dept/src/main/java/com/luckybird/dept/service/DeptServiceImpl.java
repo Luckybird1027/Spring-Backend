@@ -4,10 +4,10 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.luckybird.common.base.Difference;
+import com.luckybird.common.base.KeyValue;
 import com.luckybird.common.base.PageResult;
 import com.luckybird.common.context.utils.ContextUtils;
 import com.luckybird.common.exception.BizException;
-import com.luckybird.common.i18n.utils.StringResourceUtils;
 import com.luckybird.common.json.utils.JsonUtils;
 import com.luckybird.dept.api.req.DeptCreateReq;
 import com.luckybird.dept.api.req.DeptMoveReq;
@@ -46,7 +46,7 @@ public class DeptServiceImpl implements DeptService {
 
     private final DeptMapper deptMapper;
 
-    private final String CURRENT_MODULE = StringResourceUtils.format("DEPT");
+    private final String CURRENT_MODULE = "dept";
 
     private DeptVO toVo(DeptPO po) {
         DeptVO vo = new DeptVO();
@@ -167,13 +167,19 @@ public class DeptServiceImpl implements DeptService {
             differences.add(new Difference("remark", oldPo.getRemark(), newPo.getRemark()));
         }
         if (!differences.isEmpty()) {
-            LogUtils.log(CURRENT_MODULE, OperateTypeEnum.UPDATE.getValue(), feature, differences);
+            LogUtils.differenceLog(CURRENT_MODULE, OperateTypeEnum.UPDATE.getValue(), feature, differences);
         }
     }
 
     @Async
     protected void briefLog(DeptVO vo, String type, String feature) {
-        LogUtils.log(CURRENT_MODULE, type, feature, vo);
+        List<KeyValue> keyValues = new ArrayList<>();
+        keyValues.add(new KeyValue("id", vo.getId()));
+        keyValues.add(new KeyValue("name", vo.getName()));
+        keyValues.add(new KeyValue("parentId", vo.getParentId()));
+        keyValues.add(new KeyValue("path", vo.getPath()));
+        keyValues.add(new KeyValue("remark", vo.getRemark()));
+        LogUtils.briefLog(CURRENT_MODULE, type, feature, keyValues);
     }
 
     @Override

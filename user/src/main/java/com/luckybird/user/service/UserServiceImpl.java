@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.luckybird.auth.base.TokenInfo;
 import com.luckybird.auth.service.TokenService;
 import com.luckybird.common.base.Difference;
+import com.luckybird.common.base.KeyValue;
 import com.luckybird.common.base.PageResult;
 import com.luckybird.common.base.UserInfo;
 import com.luckybird.common.context.utils.ContextUtils;
@@ -162,13 +163,24 @@ public class UserServiceImpl implements UserService {
             differences.add(new Difference("remark", oldPo.getRemark(), newPo.getRemark()));
         }
         if (!differences.isEmpty()) {
-            LogUtils.log(CURRENT_MODULE, OperateTypeEnum.UPDATE.getValue(), feature, differences);
+            LogUtils.differenceLog(CURRENT_MODULE, OperateTypeEnum.UPDATE.getValue(), feature, differences);
         }
     }
 
     @Async
     protected void briefLog(UserVO vo, String type, String feature) {
-        LogUtils.log(CURRENT_MODULE, type, feature, vo);
+        List<KeyValue> keyValues = new ArrayList<>();
+        keyValues.add(new KeyValue("id", vo.getId()));
+        keyValues.add(new KeyValue("account", vo.getAccount()));
+        keyValues.add(new KeyValue("username", vo.getUsername()));
+        keyValues.add(new KeyValue("telephone", vo.getTelephone()));
+        keyValues.add(new KeyValue("email", vo.getEmail()));
+        keyValues.add(new KeyValue("status", vo.getStatus()));
+        keyValues.add(new KeyValue("organizationId", vo.getOrganizationId()));
+        keyValues.add(new KeyValue("departmentId", vo.getDepartmentId()));
+        keyValues.add(new KeyValue("occupation", vo.getOccupation()));
+        keyValues.add(new KeyValue("remark", vo.getRemark()));
+        LogUtils.briefLog(CURRENT_MODULE, type, feature, keyValues);
     }
 
     @Override

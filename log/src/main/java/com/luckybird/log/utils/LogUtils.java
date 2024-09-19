@@ -1,6 +1,7 @@
 package com.luckybird.log.utils;
 
 import com.luckybird.common.base.Difference;
+import com.luckybird.common.base.KeyValue;
 import com.luckybird.common.context.utils.ContextUtils;
 import com.luckybird.repository.operateLog.OperateLogMapper;
 import com.luckybird.repository.operateLog.OperateLogPO;
@@ -37,7 +38,7 @@ public class LogUtils {
      * @param feature     操作功能
      * @param differences 差异字段列表
      */
-    public static void log(String module, String type, String feature, List<Difference> differences) {
+    public static void differenceLog(String module, String type, String feature, List<Difference> differences) {
 
         OperateLogPO log = new OperateLogPO();
         log.setOperateModule(module);
@@ -57,12 +58,12 @@ public class LogUtils {
     /**
      * 日志记录方法-新增/删除
      *
-     * @param module  操作模块
-     * @param type    操作类型
-     * @param feature 操作功能
-     * @param value   新增/删除的数据
+     * @param module    操作模块
+     * @param type      操作类型
+     * @param feature   操作功能
+     * @param keyValues 键值对列表
      */
-    public static void log(String module, String type, String feature, Object value) {
+    public static void briefLog(String module, String type, String feature, List<KeyValue> keyValues) {
         OperateLogPO log = new OperateLogPO();
         log.setOperateModule(module);
         log.setOperateType(type);
@@ -71,9 +72,7 @@ public class LogUtils {
         log.setOperateTime(LocalDateTime.now());
         log.setClientIp(ContextUtils.getUserInfo().getIp());
         log.setClientUa(ContextUtils.getUserInfo().getUa());
-        if (value != null) {
-            log.setDataBrief(value);
-        }
+        log.setDataBrief(keyValues);
         operateLogMapper.insert(log);
     }
 }
