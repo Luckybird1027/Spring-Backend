@@ -28,6 +28,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
@@ -85,7 +86,6 @@ public class UserServiceImpl implements UserService {
     }
 
     private UserPO updateByReq(UserPO po, UserUpdateReq req) {
-        Optional.ofNullable(req.getAccount()).ifPresent(po::setAccount);
         Optional.ofNullable(req.getUsername()).ifPresent(po::setUsername);
         Optional.ofNullable(req.getTelephone()).ifPresent(po::setTelephone);
         Optional.ofNullable(req.getEmail()).ifPresent(po::setEmail);
@@ -138,28 +138,25 @@ public class UserServiceImpl implements UserService {
             return;
         }
         List<Difference> differences = new ArrayList<>();
-        if (!oldPo.getAccount().equals(newPo.getAccount())) {
-            differences.add(new Difference("account", oldPo.getAccount(), newPo.getAccount()));
-        }
-        if (!oldPo.getUsername().equals(newPo.getUsername())) {
+        if (!ObjectUtils.nullSafeEquals(oldPo.getUsername(), newPo.getUsername())) {
             differences.add(new Difference("username", oldPo.getUsername(), newPo.getUsername()));
         }
-        if (!oldPo.getTelephone().equals(newPo.getTelephone())) {
+        if (!ObjectUtils.nullSafeEquals(oldPo.getTelephone(), newPo.getTelephone())) {
             differences.add(new Difference("telephone", oldPo.getTelephone(), newPo.getTelephone()));
         }
-        if (!oldPo.getEmail().equals(newPo.getEmail())) {
+        if (!ObjectUtils.nullSafeEquals(oldPo.getEmail(), newPo.getEmail())) {
             differences.add(new Difference("email", oldPo.getEmail(), newPo.getEmail()));
         }
-        if (!oldPo.getOrganizationId().equals(newPo.getOrganizationId())) {
+        if (!ObjectUtils.nullSafeEquals(oldPo.getOrganizationId(), newPo.getOrganizationId())) {
             differences.add(new Difference("organizationId", oldPo.getOrganizationId(), newPo.getOrganizationId()));
         }
-        if (!oldPo.getDepartmentId().equals(newPo.getDepartmentId())) {
+        if (!ObjectUtils.nullSafeEquals(oldPo.getDepartmentId(), newPo.getDepartmentId())) {
             differences.add(new Difference("departmentId", oldPo.getDepartmentId(), newPo.getDepartmentId()));
         }
-        if (!oldPo.getOccupation().equals(newPo.getOccupation())) {
+        if (!ObjectUtils.nullSafeEquals(oldPo.getOccupation(), newPo.getOccupation())) {
             differences.add(new Difference("occupation", oldPo.getOccupation(), newPo.getOccupation()));
         }
-        if (!oldPo.getRemark().equals(newPo.getRemark())) {
+        if (!ObjectUtils.nullSafeEquals(oldPo.getRemark(), newPo.getRemark())) {
             differences.add(new Difference("remark", oldPo.getRemark(), newPo.getRemark()));
         }
         if (!differences.isEmpty()) {

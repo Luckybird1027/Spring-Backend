@@ -12,10 +12,6 @@ import java.util.List;
 @Data
 public class UserUpdateReq {
 
-    /**
-     * 账号
-     */
-    private String account;
 
     /**
      * 昵称

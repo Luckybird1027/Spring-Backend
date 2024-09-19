@@ -1,7 +1,5 @@
 package com.luckybird.operatelog.api.vo;
 
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler;
 import com.luckybird.common.base.Difference;
 import lombok.Data;
 
@@ -39,13 +37,11 @@ public class OperateLogVO {
     /**
      * 数据摘要
      */
-    @TableField(typeHandler = JacksonTypeHandler.class)
     private Object dataBrief;
 
     /**
      * 数据差异
      */
-    @TableField(typeHandler = JacksonTypeHandler.class)
     private List<Difference> dataDifference;
 
     /**

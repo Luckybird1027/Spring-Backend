@@ -1,8 +1,12 @@
 package com.luckybird.operatelog.service;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.luckybird.common.base.Difference;
 import com.luckybird.common.base.KeyValue;
 import com.luckybird.common.base.PageResult;
+import com.luckybird.common.exception.BizException;
 import com.luckybird.common.i18n.utils.StringResourceUtils;
 import com.luckybird.operatelog.api.req.OperateLogQueryReq;
 import com.luckybird.operatelog.api.vo.OperateLogVO;
@@ -46,12 +50,14 @@ public class OperateLogServiceImpl implements OperateLogService {
             for (KeyValue keyValue : keyValues) {
                 keyValue.setKey(StringResourceUtils.format(keyValue.getKey()));
             }
+            operateLogVO.setDataBrief(keyValues);
         }
         if (po.getDataDifference() != null) {
             List<Difference> differences = po.getDataDifference();
             for (Difference difference : differences) {
                 difference.setFieldName(StringResourceUtils.format(difference.getFieldName()));
             }
+            operateLogVO.setDataDifference(differences);
         }
         operateLogVO.setOperateTime(po.getOperateTime());
         operateLogVO.setClientIp(po.getClientIp());
@@ -60,10 +66,41 @@ public class OperateLogServiceImpl implements OperateLogService {
 
     }
 
+    private LambdaQueryWrapper<OperateLogPO> wrapperByReq(OperateLogQueryReq req) {
+        LambdaQueryWrapper<OperateLogPO> wrapper = new LambdaQueryWrapper<>();
+        if (StringUtils.hasText(req.getOperateModule())) {
+            wrapper.and(q -> q.like(OperateLogPO::getOperateModule, req.getOperateModule()));
+        }
+        if (StringUtils.hasText(req.getOperateType())) {
+            wrapper.and(q -> q.like(OperateLogPO::getOperateType, req.getOperateType()));
+        }
+        if (StringUtils.hasText(req.getOperateFeature())) {
+            wrapper.and(q -> q.like(OperateLogPO::getOperateFeature, req.getOperateFeature()));
+        }
+        if (req.getOperatorId() != null) {
+            wrapper.and(q -> q.eq(OperateLogPO::getOperatorId, req.getOperatorId()));
+        }
+        if (req.getStartTime() != null && req.getEndTime() != null && req.getStartTime().isAfter(req.getEndTime())) {
+            // TODO: 无法被i18n处理？
+            throw new BizException("TIME_RANGE_ERROR");
+        }
+        if (req.getStartTime() != null) {
+            wrapper.and(q -> q.ge(OperateLogPO::getOperateTime, req.getStartTime()));
+        }
+        if (req.getEndTime() != null) {
+            wrapper.and(q -> q.le(OperateLogPO::getOperateTime, req.getEndTime()));
+        }
+        return wrapper;
+    }
+
+
     private List<OperateLogVO> batchRenderVo(List<OperateLogPO> pos) {
         Set<Long> operatorIds = new HashSet<>();
         for (OperateLogPO po : pos) {
             operatorIds.add(po.getOperatorId());
+        }
+        if (operatorIds.isEmpty()){
+            return new ArrayList<>();
         }
         List<UserPO> operators = userMapper.selectBatchIds(operatorIds);
         Map<Long, UserPO> operatorMap = operators.stream().collect(Collectors.toMap(UserPO::getId, user -> user));
@@ -80,6 +117,7 @@ public class OperateLogServiceImpl implements OperateLogService {
             } else {
                 operateLogVO.setOperatorName(StringResourceUtils.format("unknown"));
             }
+            vos.add(operateLogVO);
         }
         return vos;
     }
@@ -115,11 +153,24 @@ public class OperateLogServiceImpl implements OperateLogService {
 
     @Override
     public List<OperateLogVO> list(OperateLogQueryReq req) {
-        return null;
+        List<OperateLogPO> pos = operateLogMapper.selectList(wrapperByReq(req));
+        if (pos == null || pos.isEmpty()) {
+            return new ArrayList<>();
+        }
+        return batchRenderVo(pos);
     }
 
     @Override
-    public PageResult<OperateLogVO> page(OperateLogQueryReq req, Long current, Long rows, boolean searchCount) {
-        return null;
+    public PageResult<OperateLogVO> page(OperateLogQueryReq req, Long current, Long pageSize, boolean searchCount) {
+        IPage<OperateLogPO> page = new Page<>(current, pageSize);
+        LambdaQueryWrapper<OperateLogPO> wrapper = wrapperByReq(req);
+        IPage<OperateLogPO> userPage = operateLogMapper.selectPage(page, wrapper);
+        List<OperateLogPO> poList = userPage.getRecords();
+        List<OperateLogVO> voList = batchRenderVo(poList);
+        if (searchCount) {
+            return new PageResult<>(userPage.getTotal(), voList);
+        } else {
+            return new PageResult<>(voList);
+        }
     }
 }

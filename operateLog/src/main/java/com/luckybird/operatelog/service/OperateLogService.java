@@ -19,5 +19,5 @@ public interface OperateLogService {
 
     List<OperateLogVO> list(OperateLogQueryReq req);
 
-    PageResult<OperateLogVO> page(OperateLogQueryReq req, Long current, Long rows, boolean searchCount);
+    PageResult<OperateLogVO> page(OperateLogQueryReq req, Long current, Long pageSize, boolean searchCount);
 }

@@ -24,6 +24,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
@@ -157,13 +158,13 @@ public class DeptServiceImpl implements DeptService {
             return;
         }
         List<Difference> differences = new ArrayList<>();
-        if (!oldPo.getName().equals(newPo.getName())) {
+        if (!ObjectUtils.nullSafeEquals(oldPo.getName(), newPo.getName())) {
             differences.add(new Difference("name", oldPo.getName(), newPo.getName()));
         }
-        if (!oldPo.getParentId().equals(newPo.getParentId())) {
+        if (!ObjectUtils.nullSafeEquals(oldPo.getParentId(), newPo.getParentId())) {
             differences.add(new Difference("parentId", oldPo.getParentId(), newPo.getParentId()));
         }
-        if (!oldPo.getRemark().equals(newPo.getRemark())) {
+        if (!ObjectUtils.nullSafeEquals(oldPo.getRemark(), newPo.getRemark())) {
             differences.add(new Difference("remark", oldPo.getRemark(), newPo.getRemark()));
         }
         if (!differences.isEmpty()) {

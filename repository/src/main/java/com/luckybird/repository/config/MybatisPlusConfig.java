@@ -15,7 +15,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
  */
 @EnableTransactionManagement
 @AutoConfiguration
-@MapperScan("com.luckybird.repository.mapper")
+@MapperScan("com.luckybird.repository")
 public class MybatisPlusConfig {
 
     /**
