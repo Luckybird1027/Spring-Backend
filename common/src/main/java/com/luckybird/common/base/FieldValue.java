@@ -5,19 +5,19 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * 键值对对象
+ * 字段值对象
  *
  * @author 新云鸟
  */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class KeyValue {
+public class FieldValue {
 
     /**
      * 键
      */
-    private String key;
+    private String field;
 
     /**
      * 值

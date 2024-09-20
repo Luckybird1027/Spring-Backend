@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.luckybird.common.base.Difference;
-import com.luckybird.common.base.KeyValue;
+import com.luckybird.common.base.FieldValue;
 import com.luckybird.common.base.PageResult;
 import com.luckybird.common.context.utils.ContextUtils;
 import com.luckybird.common.exception.BizException;
@@ -174,13 +174,13 @@ public class DeptServiceImpl implements DeptService {
 
     @Async
     protected void briefLog(DeptVO vo, String type, String feature) {
-        List<KeyValue> keyValues = new ArrayList<>();
-        keyValues.add(new KeyValue("id", vo.getId()));
-        keyValues.add(new KeyValue("name", vo.getName()));
-        keyValues.add(new KeyValue("parentId", vo.getParentId()));
-        keyValues.add(new KeyValue("path", vo.getPath()));
-        keyValues.add(new KeyValue("remark", vo.getRemark()));
-        LogUtils.briefLog(CURRENT_MODULE, type, feature, keyValues);
+        List<FieldValue> fieldValues = new ArrayList<>();
+        fieldValues.add(new FieldValue("id", vo.getId()));
+        fieldValues.add(new FieldValue("name", vo.getName()));
+        fieldValues.add(new FieldValue("parentId", vo.getParentId()));
+        fieldValues.add(new FieldValue("path", vo.getPath()));
+        fieldValues.add(new FieldValue("remark", vo.getRemark()));
+        LogUtils.briefLog(CURRENT_MODULE, type, feature, fieldValues);
     }
 
     @Override

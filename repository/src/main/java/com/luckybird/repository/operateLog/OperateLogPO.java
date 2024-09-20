@@ -6,7 +6,7 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler;
 import com.luckybird.common.base.Difference;
-import com.luckybird.common.base.KeyValue;
+import com.luckybird.common.base.FieldValue;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -47,7 +47,7 @@ public class OperateLogPO {
      * 数据摘要
      */
     @TableField(typeHandler = JacksonTypeHandler.class)
-    private List<KeyValue> dataBrief;
+    private List<FieldValue> dataBrief;
 
     /**
      * 数据差异

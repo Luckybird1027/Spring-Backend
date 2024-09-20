@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.luckybird.common.base.Difference;
-import com.luckybird.common.base.KeyValue;
+import com.luckybird.common.base.FieldValue;
 import com.luckybird.common.base.PageResult;
 import com.luckybird.common.exception.BizException;
 import com.luckybird.common.i18n.utils.StringResourceUtils;
@@ -34,9 +34,11 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class OperateLogServiceImpl implements OperateLogService {
 
-    private final OperateLogMapper operateLogMapper;
+    // TODO: 整个Service都无法使用i18n???
 
     private final UserMapper userMapper;
+
+    private final OperateLogMapper operateLogMapper;
 
     private OperateLogVO toVo(OperateLogPO po) {
         OperateLogVO operateLogVO = new OperateLogVO();
@@ -45,11 +47,11 @@ public class OperateLogServiceImpl implements OperateLogService {
         operateLogVO.setOperateType(StringResourceUtils.format(po.getOperateType()));
         operateLogVO.setOperateFeature(StringResourceUtils.format(po.getOperateFeature()));
         if (po.getDataBrief() != null) {
-            List<KeyValue> keyValues = po.getDataBrief();
-            for (KeyValue keyValue : keyValues) {
-                keyValue.setKey(StringResourceUtils.format(keyValue.getKey()));
+            List<FieldValue> fieldValues = po.getDataBrief();
+            for (FieldValue fieldValue : fieldValues) {
+                fieldValue.setField(StringResourceUtils.format(fieldValue.getField()));
             }
-            operateLogVO.setDataBrief(keyValues);
+            operateLogVO.setDataBrief(fieldValues);
         }
         if (po.getDataDifference() != null) {
             List<Difference> differences = po.getDataDifference();

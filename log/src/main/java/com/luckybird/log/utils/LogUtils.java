@@ -1,7 +1,7 @@
 package com.luckybird.log.utils;
 
 import com.luckybird.common.base.Difference;
-import com.luckybird.common.base.KeyValue;
+import com.luckybird.common.base.FieldValue;
 import com.luckybird.common.context.utils.ContextUtils;
 import com.luckybird.repository.operateLog.OperateLogMapper;
 import com.luckybird.repository.operateLog.OperateLogPO;
@@ -59,9 +59,9 @@ public class LogUtils {
      * @param module    操作模块
      * @param type      操作类型
      * @param feature   操作功能
-     * @param keyValues 键值对列表
+     * @param fieldValues 字段值列表
      */
-    public static void briefLog(String module, String type, String feature, List<KeyValue> keyValues) {
+    public static void briefLog(String module, String type, String feature, List<FieldValue> fieldValues) {
         OperateLogPO log = new OperateLogPO();
         log.setOperateModule(module);
         log.setOperateType(type);
@@ -70,7 +70,7 @@ public class LogUtils {
         log.setOperateTime(LocalDateTime.now());
         log.setClientIp(ContextUtils.getUserInfo().getIp());
         log.setClientUa(ContextUtils.getUserInfo().getUa());
-        log.setDataBrief(keyValues);
+        log.setDataBrief(fieldValues);
         operateLogMapper.insert(log);
     }
 }

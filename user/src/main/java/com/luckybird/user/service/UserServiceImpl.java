@@ -6,7 +6,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.luckybird.auth.base.TokenInfo;
 import com.luckybird.auth.service.TokenService;
 import com.luckybird.common.base.Difference;
-import com.luckybird.common.base.KeyValue;
+import com.luckybird.common.base.FieldValue;
 import com.luckybird.common.base.PageResult;
 import com.luckybird.common.base.UserInfo;
 import com.luckybird.common.context.utils.ContextUtils;
@@ -166,18 +166,18 @@ public class UserServiceImpl implements UserService {
 
     @Async
     protected void briefLog(UserVO vo, String type, String feature) {
-        List<KeyValue> keyValues = new ArrayList<>();
-        keyValues.add(new KeyValue("id", vo.getId()));
-        keyValues.add(new KeyValue("account", vo.getAccount()));
-        keyValues.add(new KeyValue("username", vo.getUsername()));
-        keyValues.add(new KeyValue("telephone", vo.getTelephone()));
-        keyValues.add(new KeyValue("email", vo.getEmail()));
-        keyValues.add(new KeyValue("status", vo.getStatus()));
-        keyValues.add(new KeyValue("organizationId", vo.getOrganizationId()));
-        keyValues.add(new KeyValue("departmentId", vo.getDepartmentId()));
-        keyValues.add(new KeyValue("occupation", vo.getOccupation()));
-        keyValues.add(new KeyValue("remark", vo.getRemark()));
-        LogUtils.briefLog(CURRENT_MODULE, type, feature, keyValues);
+        List<FieldValue> fieldValues = new ArrayList<>();
+        fieldValues.add(new FieldValue("id", vo.getId()));
+        fieldValues.add(new FieldValue("account", vo.getAccount()));
+        fieldValues.add(new FieldValue("username", vo.getUsername()));
+        fieldValues.add(new FieldValue("telephone", vo.getTelephone()));
+        fieldValues.add(new FieldValue("email", vo.getEmail()));
+        fieldValues.add(new FieldValue("status", vo.getStatus()));
+        fieldValues.add(new FieldValue("organizationId", vo.getOrganizationId()));
+        fieldValues.add(new FieldValue("departmentId", vo.getDepartmentId()));
+        fieldValues.add(new FieldValue("occupation", vo.getOccupation()));
+        fieldValues.add(new FieldValue("remark", vo.getRemark()));
+        LogUtils.briefLog(CURRENT_MODULE, type, feature, fieldValues);
     }
 
     @Override
