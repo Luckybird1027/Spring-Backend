@@ -2,6 +2,7 @@ package com.luckybird.dept.service;
 
 import com.luckybird.common.base.PageResult;
 import com.luckybird.dept.api.req.DeptCreateReq;
+import com.luckybird.dept.api.req.DeptMoveReq;
 import com.luckybird.dept.api.req.DeptQueryReq;
 import com.luckybird.dept.api.req.DeptUpdateReq;
 import com.luckybird.dept.api.vo.DeptTreeVO;
@@ -90,4 +91,13 @@ public interface DeptService {
      * @return DeptTreeVO 部门树
      */
     DeptTreeVO getDeptTree(Long id);
+
+    /**
+     * 移动部门
+     *
+     * @param id  部门id
+     * @param req 移动请求
+     * @return DeptTreeVO 移动后的部门树
+     */
+    DeptTreeVO moveDept(Long id, DeptMoveReq req);
 }

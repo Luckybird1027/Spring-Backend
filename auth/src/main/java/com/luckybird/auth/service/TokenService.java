@@ -1,7 +1,7 @@
 package com.luckybird.auth.service;
 
-import com.luckybird.common.base.UserInfo;
 import com.luckybird.auth.base.TokenInfo;
+import com.luckybird.common.base.UserInfo;
 
 /**
  * Token服务接口

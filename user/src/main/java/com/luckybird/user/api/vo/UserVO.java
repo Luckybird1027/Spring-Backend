@@ -1,6 +1,6 @@
 package com.luckybird.user.api.vo;
 
-import com.luckybird.user.constant.StatusEnum;
+import com.luckybird.repository.user.UserStatusEnum;
 import lombok.Data;
 
 import java.util.List;
@@ -41,7 +41,7 @@ public class UserVO {
     /**
      * 状态
      *
-     * @see StatusEnum
+     * @see UserStatusEnum
      */
     private Integer status;
 

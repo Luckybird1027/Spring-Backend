@@ -23,15 +23,17 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <scope>annotationProcessor</scope>
         </dependency>
     </dependencies>
 
     <modules>
         <module>common</module>
+        <module>repository</module>
+        <module>log</module>
         <module>auth</module>
         <module>user</module>
         <module>dept</module>
+        <module>operateLog</module>
         <module>starter</module>
     </modules>
 

@@ -26,6 +26,11 @@ public class DeptVO {
     private Long parentId;
 
     /**
+     * 部门路径
+     */
+    private String path;
+
+    /**
      * 备注
      */
     private String remark;

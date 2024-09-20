@@ -45,4 +45,14 @@ public class UserInfo {
 //     * 用户权限
 //     */
 //    private List<String> permission;
+
+    /**
+     * 用户IP
+     */
+    private String ip;
+
+    /**
+     * 用户UA
+     */
+    private String ua;
 }

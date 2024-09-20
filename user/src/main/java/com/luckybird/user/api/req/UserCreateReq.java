@@ -1,6 +1,6 @@
 package com.luckybird.user.api.req;
 
-import com.luckybird.user.constant.StatusEnum;
+import com.luckybird.repository.user.UserStatusEnum;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
@@ -44,7 +44,7 @@ public class UserCreateReq {
     /**
      * 状态
      *
-     * @see StatusEnum
+     * @see UserStatusEnum
      */
     private Integer status;
 

@@ -1,6 +1,6 @@
 package com.luckybird.common.exception;
 
-import com.luckybird.common.utils.StringResourceUtils;
+import com.luckybird.common.i18n.utils.StringResourceUtils;
 import lombok.Getter;
 
 /**
@@ -11,7 +11,7 @@ import lombok.Getter;
 @Getter
 public class BizException extends RuntimeException {
 
-    private String code;
+    private final String code;
 
     public BizException(String code, String message) {
         super(message);
