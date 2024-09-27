@@ -4,3 +4,4 @@ com.luckybird.common.config.RedisConfig
 com.luckybird.common.threadPool.config.AsyncTaskThreadPoolConfig
 com.luckybird.common.i18n.interceptor.LocaleInterceptor
 com.luckybird.common.i18n.utils.StringResourceUtils
+com.luckybird.common.i18n.other.StringResource

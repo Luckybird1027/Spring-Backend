@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * 操作日志控制器
+ * 操作日志
  *
  * @author 新云鸟
  */

@@ -1,8 +1,8 @@
 package com.luckybird.common.i18n.utils;
 
 import com.luckybird.common.context.utils.ContextUtils;
+import com.luckybird.common.i18n.other.StringResource;
 import jakarta.annotation.Resource;
-import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Component;
 
 import java.util.Locale;
@@ -15,11 +15,11 @@ import java.util.Locale;
 
 @Component
 public class StringResourceUtils {
-    private static MessageSource messageSource;
+    private static StringResource stringResource;
 
     @Resource
-    public void setMessageSource(MessageSource messageSource) {
-        StringResourceUtils.messageSource = messageSource;
+    public void setStringResource(StringResource stringResource) {
+        StringResourceUtils.stringResource = stringResource;
     }
 
     /**
@@ -29,7 +29,7 @@ public class StringResourceUtils {
      * @return 字符串资源
      */
     public static String format(String code) {
-        return messageSource.getMessage(code, null, code, ContextUtils.getLocale());
+        return stringResource.getMessage(code, null, code, ContextUtils.getLocale());
     }
 
     /**
@@ -40,7 +40,7 @@ public class StringResourceUtils {
      * @return 字符串资源
      */
     public static String format(String code, Object[] args) {
-        return messageSource.getMessage(code, args, code, ContextUtils.getLocale());
+        return stringResource.getMessage(code, args, code, ContextUtils.getLocale());
     }
 
     /**
@@ -51,7 +51,19 @@ public class StringResourceUtils {
      * @return 字符串资源
      */
     public static String format(String code, Locale locale) {
-        return messageSource.getMessage(code, null, code, locale);
+        return stringResource.getMessage(code, null, code, locale);
+    }
+
+    /**
+     * 获取字符串资源
+     *
+     * @param code   字符串资源编码
+     * @param args   参数
+     * @param locale 语言
+     * @return 字符串资源
+     */
+    public static String format(String code, Object[] args, Locale locale) {
+        return stringResource.getMessage(code, args, code, locale);
     }
 
 }
