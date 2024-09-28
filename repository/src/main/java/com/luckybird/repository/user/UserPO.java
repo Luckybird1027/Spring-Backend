@@ -3,12 +3,12 @@ package com.luckybird.repository.user;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler;
+import com.luckybird.repository.base.BasePO;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 
@@ -17,9 +17,10 @@ import java.util.List;
  *
  * @author 新云鸟
  */
+@EqualsAndHashCode(callSuper = true)
 @Data
 @TableName(value = "user", autoResultMap = true)
-public class UserPO {
+public class UserPO extends BasePO {
 
     /**
      * ID
@@ -87,29 +88,4 @@ public class UserPO {
      */
     private String remark;
 
-    /**
-     * 创建时间
-     */
-    private LocalDateTime createTime;
-
-    /**
-     * 创建人ID
-     */
-    private Long creatorId;
-
-    /**
-     * 更新时间
-     */
-    private LocalDateTime updateTime;
-
-    /**
-     * 更新人ID
-     */
-    private Long updaterId;
-
-    /**
-     * 逻辑删除
-     */
-    @TableLogic(value = "0", delval = "id")
-    private Long deleted;
 }

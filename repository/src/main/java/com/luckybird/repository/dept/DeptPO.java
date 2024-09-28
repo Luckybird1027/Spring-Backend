@@ -3,20 +3,20 @@ package com.luckybird.repository.dept;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.luckybird.repository.base.BasePO;
 import lombok.Data;
-
-import java.time.LocalDateTime;
+import lombok.EqualsAndHashCode;
 
 /**
  * 部门实体
  *
  * @author 新云鸟
  */
+@EqualsAndHashCode(callSuper = true)
 @Data
 @TableName(value = "dept", autoResultMap = true)
-public class DeptPO {
+public class DeptPO extends BasePO {
 
     /**
      * ID
@@ -44,29 +44,4 @@ public class DeptPO {
      */
     private String remark;
 
-    /**
-     * 创建时间
-     */
-    private LocalDateTime createTime;
-
-    /**
-     * 创建人ID
-     */
-    private Long creatorId;
-
-    /**
-     * 更新时间
-     */
-    private LocalDateTime updateTime;
-
-    /**
-     * 更新人ID
-     */
-    private Long updaterId;
-
-    /**
-     * 逻辑删除
-     */
-    @TableLogic(value = "-1", delval = "id")
-    private Long deleted;
 }
