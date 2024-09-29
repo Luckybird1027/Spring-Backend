@@ -1,8 +1,6 @@
 package com.luckybird.repository.dept;
 
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.luckybird.repository.base.BasePO;
 import lombok.Data;
@@ -17,12 +15,6 @@ import lombok.EqualsAndHashCode;
 @Data
 @TableName(value = "dept", autoResultMap = true)
 public class DeptPO extends BasePO {
-
-    /**
-     * ID
-     */
-    @TableId(value = "id", type = IdType.ASSIGN_ID)
-    private Long id;
 
     /**
      * 部门名称

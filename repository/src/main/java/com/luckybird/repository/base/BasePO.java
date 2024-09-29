@@ -1,5 +1,7 @@
 package com.luckybird.repository.base;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableLogic;
 import lombok.Data;
 
@@ -12,6 +14,12 @@ import java.time.LocalDateTime;
  */
 @Data
 public class BasePO {
+
+    /**
+     * ID
+     */
+    @TableId(value = "id", type = IdType.ASSIGN_ID)
+    private Long id;
 
     /**
      * 创建时间
