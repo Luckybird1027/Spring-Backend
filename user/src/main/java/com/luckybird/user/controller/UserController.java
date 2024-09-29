@@ -54,7 +54,7 @@ public class UserController implements UserApi {
     /**
      * 批量获取用户
      *
-     * @param ids 用户id数组
+     * @param ids 用户id集合
      * @return List<UserVO> 用户信息列表
      */
     @Override
