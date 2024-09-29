@@ -18,6 +18,7 @@ import java.util.List;
  *
  * @author 新云鸟
  */
+
 @Data
 @TableName(value = "operate_log", autoResultMap = true)
 public class OperateLogPO {

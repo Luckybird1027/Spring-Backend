@@ -28,7 +28,7 @@ import java.util.Set;
 public interface UserApi {
 
     /**
-     * Get 单个查询
+     * 获取用户
      *
      * @param id 用户id
      * @return UserVO 用户信息
@@ -37,16 +37,16 @@ public interface UserApi {
     UserVO get(@PathVariable Long id);
 
     /**
-     * BatchGet 批量查询
+     * 批量获取用户
      *
-     * @param ids 用户id数组
+     * @param ids 用户id集合
      * @return List<UserVO> 用户信息列表
      */
     @PostMapping("/v1/users/batchGet")
     List<UserVO> batchGet(@RequestBody Set<Long> ids);
 
     /**
-     * Create 创建
+     * 创建用户
      *
      * @param req 用户创建请求
      * @return UserVO 用户信息
@@ -55,7 +55,7 @@ public interface UserApi {
     UserVO create(@RequestBody @Valid UserCreateReq req);
 
     /**
-     * Update 更新
+     * 编辑用户
      *
      * @param id  用户id
      * @param req 用户更新请求
@@ -65,7 +65,7 @@ public interface UserApi {
     UserVO update(@PathVariable Long id, @RequestBody @Valid UserUpdateReq req);
 
     /**
-     * Delete 删除
+     * 删除用户
      *
      * @param id 用户id
      */
@@ -73,7 +73,7 @@ public interface UserApi {
     void delete(@PathVariable Long id);
 
     /**
-     * List 用户名 全量查询
+     * 查询用户列表
      *
      * @param req 用户查询请求
      * @return List<UserVO> 用户信息列表
@@ -83,7 +83,7 @@ public interface UserApi {
             @RequestBody UserQueryReq req);
 
     /**
-     * Page 用户名 分页查询
+     * 查询用户分页
      *
      * @param current     当前页
      * @param rows        每页条数

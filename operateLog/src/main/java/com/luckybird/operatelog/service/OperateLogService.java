@@ -24,6 +24,7 @@ public interface OperateLogService {
 
     /**
      * 批量获取操作日志
+     *
      * @param ids 日志ID集合
      * @return 操作日志信息集合
      */
@@ -31,6 +32,7 @@ public interface OperateLogService {
 
     /**
      * 获取操作日志列表
+     *
      * @param req 查询请求
      * @return 操作日志列表
      */
@@ -38,9 +40,10 @@ public interface OperateLogService {
 
     /**
      * 分页获取操作日志列表
-     * @param req 查询请求
-     * @param current 页码
-     * @param pageSize 页大小
+     *
+     * @param req         查询请求
+     * @param current     页码
+     * @param pageSize    页大小
      * @param searchCount 是否搜索总数
      * @return 分页结果
      */

@@ -56,9 +56,9 @@ public class LogUtils {
     /**
      * 日志记录方法-新增/删除
      *
-     * @param module    操作模块
-     * @param type      操作类型
-     * @param feature   操作功能
+     * @param module      操作模块
+     * @param type        操作类型
+     * @param feature     操作功能
      * @param fieldValues 字段值列表
      */
     public static void briefLog(String module, String type, String feature, List<FieldValue> fieldValues) {

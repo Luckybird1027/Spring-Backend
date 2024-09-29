@@ -71,18 +71,18 @@ public class UserServiceImpl implements UserService {
     }
 
     private UserVO toVo(UserPO po) {
-        UserVO userVO = new UserVO();
-        userVO.setId(po.getId());
-        userVO.setAccount(po.getAccount());
-        userVO.setUsername(po.getUsername());
-        userVO.setTelephone(po.getTelephone());
-        userVO.setEmail(po.getEmail());
-        userVO.setStatus(po.getStatus());
-        userVO.setOrganizationId(po.getOrganizationId());
-        userVO.setDepartmentId(po.getDepartmentId());
-        userVO.setOccupation(po.getOccupation());
-        userVO.setRemark(po.getRemark());
-        return userVO;
+        UserVO vo = new UserVO();
+        vo.setId(po.getId());
+        vo.setAccount(po.getAccount());
+        vo.setUsername(po.getUsername());
+        vo.setTelephone(po.getTelephone());
+        vo.setEmail(po.getEmail());
+        vo.setStatus(po.getStatus());
+        vo.setOrganizationId(po.getOrganizationId());
+        vo.setDepartmentId(po.getDepartmentId());
+        vo.setOccupation(po.getOccupation());
+        vo.setRemark(po.getRemark());
+        return vo;
     }
 
     private UserPO updateByReq(UserPO po, UserUpdateReq req) {

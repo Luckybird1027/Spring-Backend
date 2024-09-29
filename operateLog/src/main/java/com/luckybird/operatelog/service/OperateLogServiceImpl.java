@@ -100,7 +100,7 @@ public class OperateLogServiceImpl implements OperateLogService {
         for (OperateLogPO po : pos) {
             operatorIds.add(po.getOperatorId());
         }
-        if (operatorIds.isEmpty()){
+        if (operatorIds.isEmpty()) {
             return new ArrayList<>();
         }
         List<UserPO> operators = userMapper.selectBatchIds(operatorIds);
